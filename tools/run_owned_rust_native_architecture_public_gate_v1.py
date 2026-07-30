@@ -1,0 +1,1468 @@
+#!/usr/bin/env python3
+"""Freeze and, only after root authorization, compare isolated Rust builds.
+
+Every source-only mode installs a physical deny-default wall before inspecting
+an explicitly listed public owner.  It cannot import a matcher, open any
+candidate/native/final file, run a process, generate code, mutate a file, or
+sample a clock.  The separately authorized actual operation uses a fresh
+private overlay; no canonical candidate is ever activated or rewritten.
+"""
+
+from __future__ import annotations
+
+import sys
+
+if any(name in sys.modules for name in ("re", "_sre", "regex")):
+    raise SystemExit("the native public gate source imported a matching engine")
+
+import _io
+import builtins
+import hashlib
+import io
+import os
+import stat
+import time
+
+
+ROOT = "/home/dev-user/src/rebar"
+PYTHON = "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14"
+PYTHON_SHA256 = "255e900f44ce87c630e83b637a79435f9ae7778dd72f6e2a2f18a486e501d016"
+DEVICE = 2064
+PRIVATE_DEVICE = 2049
+SOURCE = "tools/run_owned_rust_native_architecture_public_gate_v1.py"
+PROTOCOL = "oracle/phase2/RUST-NATIVE-ARCHITECTURE-PUBLIC-GATE-V1.md"
+CONTRACT = "oracle/phase2/rust-native-architecture-public-gate-v1.json"
+SCHEMA = "rebar-owned-rust-native-architecture-public-gate-v1"
+NOT_MEASURED = "NOT MEASURED"
+MAX_OWNER_BYTES = 1_048_576
+MAX_PROCESS_BYTES = 128 * 1024 * 1024
+MAX_JSON_DEPTH = 80
+MAX_JSON_ITEMS = 600_000
+PUBLIC_CORRECTNESS_CASES = 10_434
+PUBLIC_PROFILE_CASES = 416
+PUBLIC_PAIRED_ROUNDS = 4
+PUBLIC_PAIRED_ROWS = 1_664
+PUBLIC_ITERATIONS = 3
+PUBLIC_WARMUPS = 1
+PUBLIC_PROFILE_PASSES = 3
+PUBLIC_CORRECTNESS_SEED = 5928217332825411634
+PUBLIC_PROFILE_SEED = 5932739705720426289
+PUBLIC_CORRECTNESS_MATRIX = "0c88d1ec7066ede05466c1a91126086cd52256548eda13a31778ff284439d97d"
+PUBLIC_PROFILE_MATRIX = "b13ff74122041ea792774fd5ee2d1f6d38033e94a1a6703c6e48522e461552a7"
+ADAPTER_SHA256 = "d47a976771206da468168ec22683e6d0204905a0f5b7e9e328fc1234b38f210e"
+ADAPTER_BYTES = 31_934
+BRIDGE_SHA256 = "adcb000c036e075a52f43926750648a4610e853e628d5433b1fbcc17e99a89e4"
+BRIDGE_BYTES = 148_720
+V26_ENGINE_SHA256 = "fde7b6a6193cd3877753e0f119d29727014b836b2aa2e4c07bdcec0c9f29c102"
+V27_ENGINE_SHA256 = "04492763937d0631f162514098ce5d3148e71de21fe7b4cd3f5f876b634f5876"
+
+# role, exact relative public owner, complete SHA-256, byte length, inode.
+OWNERS = (
+    ("goal", "GOAL.md", "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62", 3756, 31364044),
+    ("original_p0", "oracle/phase1/p0-completeness-v4.json", "aab7a301f646755cec9956904cd6f97498d8293da454a925bf1f75cdfc85b3b1", 34875, 524713),
+    ("actual_original_v25_failure", "oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v25-rust-capture-clamp-v1-root-provenance-original-p0-v25-failures-publication-receipt.json", "d2926ae0d08e8c17ef07232c916166946678b764bfed7c5176ce6f6d7fc33c59", 11832, 524846),
+    ("public_correctness_evidence_source", "tools/run_rust_public_correctness_evidence_v2.py", "e24a630c2ac60c49dd4ac707f80afc07a2516629e47c7b15fd4e7dca75102281", 56423, 429551),
+    ("public_correctness_evidence_protocol", "oracle/phase3/RUST-PUBLIC-CORRECTNESS-EVIDENCE-V2.md", "edfac4466b60ec287b29eea2c881cce65e20d21576b3652723b9fae1666e1fb4", 6710, 525990),
+    ("public_correctness_evidence_contract", "oracle/phase3/rust-public-correctness-evidence-v2.json", "3feeda3933ec0c54e76780da8f78c73ba07a951aa48ee3ff50007b6888569c73", 2634, 525989),
+    ("public_correctness_source", "tools/rust_public_practice_benchmark_v2.py", "a3d7e70343d231bf433fbad6a6669025a970d83691c49cb9f434a186aef3d9e6", 112729, 429259),
+    ("public_correctness_protocol", "oracle/phase3/RUST-PUBLIC-PRACTICE-BENCHMARK-V2.md", "4040c458119a6d347c1eb876e1120a4400f76b8f16611d21de15371b50508586", 8982, 525935),
+    ("public_correctness_contract", "oracle/phase3/rust-public-practice-benchmark-v2.json", "7c4120c549a006cc162abb545032e1808637cf3c088f4a21023d5c99fb351e4a", 10117, 525936),
+    ("public_profile_v1_source", "tools/rust_public_profile_v1.py", "ada1e9cfc8684ecb4fcf9294057347018b6058fc1619ae9de6a8b31097aa1562", 79693, 429476),
+    ("public_profile_v1_protocol", "oracle/phase3/RUST-PUBLIC-PROFILE-V1.md", "6664f17ddd65c1953782f43b7fe1fa01427f1f510adfbad86fe8efdb135829ba", 5281, 525927),
+    ("public_profile_v1_contract", "oracle/phase3/rust-public-profile-v1.json", "b791b141eabbf6eb8a67484f5deb82bb41e324aedbdfe5b53a98ebc1553372c5", 1797, 525928),
+    ("public_profile_v2_source", "tools/rust_public_profile_v2.py", "a4eb77c29e06b1a77152ebb2275525bfd75b3fa26fd25f100059c79cfb39437a", 31941, 429686),
+    ("public_profile_v2_protocol", "oracle/phase3/RUST-PUBLIC-PROFILE-V2.md", "aa96b3a2132be6557020a753da8e57e1c210b1a9b9216b6a015f36715e208b9d", 3128, 526049),
+    ("public_profile_v2_contract", "oracle/phase3/rust-public-profile-v2.json", "9687806994bcbb401ed89cba11197b79a491da023b95be89e1686a7c6cccafea", 3926, 526050),
+    ("previous_public_stdlib_observations", "experiments/rust_public_profile_v1/public-run-001/stdlib.correctness.raw.json", "efe0a3cc37194290b9577d5bd4f502a5c482016bc2b8ae90acec6254545b5381", 445036, 526005),
+    ("previous_public_rust_observations", "experiments/rust_public_profile_v1/public-run-001/rust.correctness.raw.json", "8774ad035e17126252803e75494a80d376386a85e13c46cb3e0380b82dae89b0", 445394, 526006),
+    ("previous_public_paired_timings", "experiments/rust_public_profile_v1/public-run-001/paired-timing.raw.json", "3da06bdb04ace9897d359aaa962ca412f3e9260a5c1a337703e0aa35567b6b85", 504907, 526015),
+    ("previous_public_v2_summary", "oracle/phase3/evidence/rust-public-profile-v2-complete-summary-v1.json", "1f2dcbdabfd8e7c054996fc044fcaa32bebf86f5a12e5486398a720833ea5e18", 509123, 524847),
+    ("previous_public_v2_receipt", "oracle/phase3/evidence/rust-public-profile-v2-run-001-publication-receipt.json", "dc3cf00d5cf070cd7b922b8aef8b21a59e9d7eae4ab0655b7a02898e2975ce8e", 757, 524844),
+    ("v26_source", "tools/reproduce_owned_rust_anchor_source_build_v26.py", "7a276a4bf675f818cfe3716aad13c5e741f4a45709e899c82af36e2b4cb10e66", 112085, 430771),
+    ("v26_protocol", "oracle/phase2/RUST-ANCHOR-SOURCE-BUILD-V26.md", "06ffb539e1f9e2bf7350b1d27478c988dd7c429f2ee295e40181b9320b3e3fd3", 7578, 524812),
+    ("v26_contract", "oracle/phase2/rust-anchor-source-build-v26.json", "ea213e235fb56ca4235763643d5569ebb1b63c45678363efe322a525eef65924", 21189, 524863),
+    ("v26_publication", "oracle/phase2/evidence/native-source-build-v26-rust-phase2-v26-rust-mandatory-anchor-root-provenance-publication-receipt.json", "8a0e9d70dab2a3e1f3738d6e0e1a4716b78e0a1b329ce3b16010bd94b6598cd6", 5075, 524963),
+    ("v26_root", "oracle/phase2/evidence/native-source-build-v26-rust-phase2-v26-rust-mandatory-anchor-root-provenance-root-provenance-receipt.json", "aaed35f9fe86090d75ce2162bae7902910461a7b4e731c22eba275406f328ba1", 76442, 524964),
+    ("v27_source", "tools/reproduce_owned_rust_compiler_fastpath_source_build_v27.py", "4ac3123d83db6858a9fddd311b3b7ac7966e29aede6e786594c7d956e2bf9e8e", 245008, 429062),
+    ("v27_protocol", "oracle/phase2/RUST-COMPILER-FASTPATH-SOURCE-BUILD-V27.md", "43b81f47a196d3db0972269d6fba4d94b4437cb59a1c5a3648d8d45f5939fa5f", 5810, 524809),
+    ("v27_contract", "oracle/phase2/rust-compiler-fastpath-source-build-v27.json", "a2ffa190a8fd15ec3bcf82f0e1eedc5eb4b919af8c6b3fbf99cf54a525604a41", 617433, 524861),
+    ("v27_publication", "oracle/phase2/evidence/native-source-build-v27-rust-phase2-v27-rust-compiler-fast-v1-root-provenance-publication-receipt.json", "7fcbe3e07885f2a488ed1b3c79bc02888ad22dd2b21179081b3cecfc7b464c99", 6444, 524869),
+    ("v27_root", "oracle/phase2/evidence/native-source-build-v27-rust-phase2-v27-rust-compiler-fast-v1-root-provenance-root-provenance-receipt.json", "c6958056757ab6145d613490db1a21165714dcb89c61e6d3bdf52500fad221b0", 64122, 524870),
+)
+
+# role, path, sha256, byte length, inode, exact permission.
+CANONICAL_ORIGINALS = (
+    ("rust_source", "candidates/rust/src/lib.rs", "c4901e83e359191badc39fbf42ea65f0eb07a3db870172acf8cae65ffb1eaf2d", 177967, 428096, 0o600),
+    ("rust_search_source", "candidates/rust/src/search_acceleration.rs", "4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe", 14773, 429682, 0o600),
+    ("rust_bridge_source", "candidates/rust/py_bridge.c", "f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b", 175676, 419054, 0o600),
+    ("rust_adapter", "candidates/rust_candidate.py", "6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b", 31151, 428100, 0o600),
+    ("rust_engine", "candidates/_rust_engine.so", "f8cd2e8ecac5ab6a12eb933e6d1d234700a71ab64fc1578800f46ce93d25b8b4", 660440, 430563, 0o755),
+    ("rust_bridge", "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so", "6fdd114c812b63acce88ef56b8077da5a260c8719ffe2058d29e5be418a26f15", 144992, 430629, 0o755),
+)
+
+
+class GateError(Exception):
+    """Reject substituted public evidence or an unsafe architecture run."""
+
+
+def require(value: object, message: str) -> None:
+    if value is not True:
+        raise GateError(message)
+
+
+def digest(value: bytes) -> str:
+    require(type(value) is bytes, "hash only complete actual bytes")
+    return hashlib.sha256(value).hexdigest()
+
+
+def check_sha(value: object, label: str) -> str:
+    require(type(value) is str and len(value) == 64
+            and all(item in "0123456789abcdef" for item in value),
+            "require an exact lowercase SHA-256: " + label)
+    assert isinstance(value, str)
+    return value
+
+
+def check_commit(value: object, label: str) -> str:
+    require(type(value) is str and len(value) == 40
+            and all(item in "0123456789abcdef" for item in value),
+            "require an exact 40-character lowercase Git commit: " + label)
+    assert isinstance(value, str)
+    return value
+
+
+def quoted(value: str) -> str:
+    require(type(value) is str, "require an actual JSON string")
+    escapes = {'"': '\\"', "\\": "\\\\", "\b": "\\b", "\f": "\\f",
+               "\n": "\\n", "\r": "\\r", "\t": "\\t"}
+    pieces = ['"']
+    for item in value:
+        point = ord(item)
+        require(not 0xD800 <= point <= 0xDFFF, "reject unpaired Unicode surrogates")
+        pieces.append(escapes.get(item, "\\u" + format(point, "04x")
+                                  if point < 32 else item))
+    pieces.append('"')
+    return "".join(pieces)
+
+
+def canonical(value: object, depth: int = 0) -> str:
+    require(depth <= MAX_JSON_DEPTH, "reject unbounded canonical JSON depth")
+    if value is None:
+        return "null"
+    if value is True:
+        return "true"
+    if value is False:
+        return "false"
+    if type(value) is str:
+        return quoted(value)
+    if type(value) is int:
+        return str(value)
+    if type(value) in (list, tuple):
+        return "[" + ",".join(canonical(item, depth + 1) for item in value) + "]"
+    if type(value) is dict:
+        require(all(type(key) is str for key in value), "reject nontext JSON keys")
+        return "{" + ",".join(quoted(key) + ":" + canonical(value[key], depth + 1)
+                                for key in sorted(value)) + "}"
+    raise GateError("reject unsupported, floating, or nonfinite source evidence")
+
+
+def document(value: object) -> bytes:
+    return (canonical(value) + "\n").encode("utf-8")
+
+
+class StrictJSON:
+    """Bounded strict parser that never imports CPython's regex engine."""
+
+    def __init__(self, raw: bytes) -> None:
+        require(type(raw) is bytes and 0 < len(raw) <= MAX_OWNER_BYTES,
+                "reject unbounded frozen public evidence")
+        self.text = raw.decode("utf-8", "strict")
+        self.index = 0
+        self.items = 0
+
+    def whitespace(self) -> None:
+        while self.index < len(self.text) and self.text[self.index] in " \t\r\n":
+            self.index += 1
+
+    def string(self) -> str:
+        require(self.text[self.index:self.index + 1] == '"', "require a JSON string")
+        self.index += 1
+        output: list[str] = []
+        escapes = {'"': '"', "\\": "\\", "/": "/", "b": "\b", "f": "\f",
+                   "n": "\n", "r": "\r", "t": "\t"}
+        while self.index < len(self.text):
+            item = self.text[self.index]
+            self.index += 1
+            if item == '"':
+                return "".join(output)
+            if item != "\\":
+                require(ord(item) >= 32 and not 0xD800 <= ord(item) <= 0xDFFF,
+                        "reject malformed raw JSON characters")
+                output.append(item)
+                continue
+            require(self.index < len(self.text), "reject incomplete JSON escape")
+            escaped = self.text[self.index]
+            self.index += 1
+            if escaped != "u":
+                require(escaped in escapes, "reject unknown JSON escape")
+                output.append(escapes[escaped])
+                continue
+            digits = self.text[self.index:self.index + 4]
+            require(len(digits) == 4
+                    and all(char in "0123456789abcdefABCDEF" for char in digits),
+                    "reject malformed escaped Unicode")
+            self.index += 4
+            point = int(digits, 16)
+            if 0xD800 <= point <= 0xDBFF:
+                require(self.text[self.index:self.index + 2] == "\\u",
+                        "reject unpaired high surrogate")
+                digits = self.text[self.index + 2:self.index + 6]
+                require(len(digits) == 4
+                        and all(char in "0123456789abcdefABCDEF" for char in digits),
+                        "reject malformed escaped low surrogate")
+                low = int(digits, 16)
+                require(0xDC00 <= low <= 0xDFFF, "reject unpaired high surrogate")
+                self.index += 6
+                output.append(chr(0x10000 + ((point - 0xD800) << 10)
+                                  + low - 0xDC00))
+            else:
+                require(not 0xDC00 <= point <= 0xDFFF,
+                        "reject unpaired low surrogate")
+                output.append(chr(point))
+        raise GateError("reject an unterminated JSON string")
+
+    def number(self) -> int | float:
+        start = self.index
+        if self.text[self.index:self.index + 1] == "-":
+            self.index += 1
+        require(self.index < len(self.text), "reject an incomplete JSON number")
+        if self.text[self.index] == "0":
+            self.index += 1
+            require(self.index == len(self.text)
+                    or self.text[self.index] not in "0123456789",
+                    "reject a leading-zero JSON integer")
+        else:
+            require(self.text[self.index] in "123456789", "reject malformed JSON")
+            while self.index < len(self.text) and self.text[self.index] in "0123456789":
+                self.index += 1
+        fractional = self.text[self.index:self.index + 1] == "."
+        if fractional:
+            self.index += 1
+            digits = self.index
+            while self.index < len(self.text) and self.text[self.index] in "0123456789":
+                self.index += 1
+            require(self.index > digits, "reject an incomplete JSON decimal")
+        require(self.index - start <= 128, "reject an oversized JSON number")
+        require(self.text[self.index:self.index + 1] not in ("e", "E"),
+                "reject unbounded or nonfinite exponential frozen evidence")
+        token = self.text[start:self.index]
+        if not fractional:
+            return int(token)
+        value = float(token)
+        require(value == value and -1e300 < value < 1e300,
+                "reject a nonfinite frozen public decimal")
+        return value
+
+    def value(self, depth: int = 0) -> object:
+        require(depth <= MAX_JSON_DEPTH, "reject unbounded JSON depth")
+        self.whitespace()
+        require(self.index < len(self.text), "reject missing JSON values")
+        item = self.text[self.index]
+        if item == '"':
+            return self.string()
+        if item == "{":
+            self.index += 1
+            result: dict[str, object] = {}
+            self.whitespace()
+            if self.text[self.index:self.index + 1] == "}":
+                self.index += 1
+                return result
+            while True:
+                self.whitespace()
+                key = self.string()
+                require(key not in result, "reject duplicate JSON key: " + key)
+                self.items += 1
+                require(self.items <= MAX_JSON_ITEMS, "reject an oversized JSON object")
+                self.whitespace()
+                require(self.text[self.index:self.index + 1] == ":",
+                        "reject missing JSON object colon")
+                self.index += 1
+                result[key] = self.value(depth + 1)
+                self.whitespace()
+                separator = self.text[self.index:self.index + 1]
+                self.index += 1
+                if separator == "}":
+                    return result
+                require(separator == ",", "reject malformed JSON object")
+        if item == "[":
+            self.index += 1
+            result: list[object] = []
+            self.whitespace()
+            if self.text[self.index:self.index + 1] == "]":
+                self.index += 1
+                return result
+            while True:
+                self.items += 1
+                require(self.items <= MAX_JSON_ITEMS, "reject an oversized JSON array")
+                result.append(self.value(depth + 1))
+                self.whitespace()
+                separator = self.text[self.index:self.index + 1]
+                self.index += 1
+                if separator == "]":
+                    return result
+                require(separator == ",", "reject malformed JSON array")
+        if item == "-" or item in "0123456789":
+            return self.number()
+        for literal, value in (("true", True), ("false", False), ("null", None)):
+            if self.text.startswith(literal, self.index):
+                self.index += len(literal)
+                return value
+        raise GateError("reject malformed or nonfinite frozen JSON")
+
+    def decode(self) -> object:
+        result = self.value()
+        self.whitespace()
+        require(self.index == len(self.text), "reject trailing frozen JSON data")
+        return result
+
+
+def json_object(raw: bytes, role: str) -> dict:
+    result = StrictJSON(raw).decode()
+    require(type(result) is dict, "require a complete JSON object: " + role)
+    assert isinstance(result, dict)
+    return result
+
+
+def no_matching_imports() -> None:
+    forbidden = ("re", "_sre", "regex", "_regex", "re2", "pcre", "pcre2",
+                 "oniguruma", "sre_compile", "sre_parse", "ctypes", "candidates",
+                 "rebar", "subprocess", "socket", "threading", "multiprocessing",
+                 "concurrent.interpreters")
+    require(not any(name == item or name.startswith(item + ".")
+                    for name in sys.modules for item in forbidden),
+            "source-only gate imported a matcher, candidate, native loader, or worker")
+
+
+class SourceWall:
+    """Physically deny all paths except the exact frozen public source owners."""
+
+    def __init__(self) -> None:
+        self.allowed = frozenset((ROOT + "/" + SOURCE, ROOT + "/" + PROTOCOL,
+                                  ROOT + "/" + CONTRACT)
+                                 + tuple(ROOT + "/" + row[1] for row in OWNERS))
+        self.live: set[int] = set()
+        self.blocked: dict[str, int] = {}
+        self.holdout_content_open_count = 0
+        self.native_content_open_count = 0
+        self.candidate_content_open_count = 0
+        self.write_count = 0
+        self.process_count = 0
+        self.clock_samples = 0
+        self.installed = False
+        self.native_open = os.open
+        self.native_read = os.read
+        self.native_fstat = os.fstat
+        self.native_close = os.close
+
+    def deny(self, category: str) -> None:
+        self.blocked[category] = self.blocked.get(category, 0) + 1
+        raise GateError("native architecture source wall rejected " + category)
+
+    def approved_read(self, path: object) -> bool:
+        if type(path) is not str or path not in self.allowed:
+            return False
+        assert isinstance(path, str)
+        return (path.startswith(ROOT + "/") and path == os.path.normpath(path)
+                and not any(item in (".", "..") for item in path.split("/"))
+                and not path.endswith((".so", ".gz", ".er"))
+                and "/candidates/" not in path
+                and not any(token in path.lower()
+                            for token in ("holdout", "hidden", "sealed")))
+
+    def audit(self, event: str, args: tuple) -> None:
+        if event == "open":
+            path = args[0] if args else None
+            mode = args[1] if len(args) > 1 else None
+            flags = args[2] if len(args) > 2 else None
+            forbidden = (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC
+                         | os.O_APPEND | getattr(os, "O_TMPFILE", 0))
+            if (self.approved_read(path) and type(flags) is int
+                    and not flags & forbidden
+                    and bool(flags & getattr(os, "O_NOFOLLOW", 0))
+                    and not (type(mode) is str and any(char in mode for char in "wax+"))):
+                return
+            if type(path) is str and any(token in path.lower()
+                                         for token in ("holdout", "hidden", "sealed")):
+                self.deny("unopened-final-holdout-content-open")
+            self.deny("unowned-candidate-native-public-or-write-open")
+        if (event in ("import", "exec", "compile", "marshal.loads", "os.system",
+                      "os.fork", "os.posix_spawn", "os.posix_spawnp", "os.mkdir",
+                      "os.rename", "os.replace", "os.remove", "os.unlink",
+                      "os.rmdir", "os.chmod", "os.chown", "os.urandom",
+                      "os.getrandom", "_interpreters.create", "_interpreters.exec",
+                      "cpython.PyInterpreterState_New", "code.__new__")
+                or event.startswith(("subprocess.", "socket.", "ctypes.",
+                                     "threading.", "multiprocessing.", "tempfile.",
+                                     "time.", "os.exec", "os.spawn"))):
+            self.deny("candidate-native-process-clock-mutation-or-dynamic-code")
+
+    def forbidden(self, category: str):
+        def reject(*_args: object, **_kwargs: object) -> object:
+            self.deny(category)
+        return reject
+
+    def guarded_open(self, path: object, flags: object,
+                     mode: int = 0o777, *, dir_fd: object = None) -> int:
+        forbidden = (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC
+                     | os.O_APPEND | getattr(os, "O_TMPFILE", 0)
+                     | getattr(os, "O_DIRECTORY", 0))
+        if (dir_fd is not None or not self.approved_read(path)
+                or type(flags) is not int or bool(flags & forbidden)
+                or not flags & getattr(os, "O_NOFOLLOW", 0)):
+            self.deny("unowned-destructive-or-symlink-os-open")
+        assert isinstance(path, str) and isinstance(flags, int)
+        descriptor = self.native_open(path, flags, mode)
+        require(type(descriptor) is int and descriptor >= 0
+                and descriptor not in self.live,
+                "reject a repeated or invalid source descriptor")
+        self.live.add(descriptor)
+        return descriptor
+
+    def guarded_read(self, descriptor: object, count: object) -> bytes:
+        if (type(descriptor) is not int or descriptor not in self.live
+                or type(count) is not int or not 0 <= count <= MAX_OWNER_BYTES):
+            self.deny("foreign-or-unbounded-descriptor-read")
+        assert isinstance(descriptor, int) and isinstance(count, int)
+        return self.native_read(descriptor, count)
+
+    def guarded_fstat(self, descriptor: object) -> os.stat_result:
+        if type(descriptor) is not int or descriptor not in self.live:
+            self.deny("foreign-descriptor-metadata")
+        assert isinstance(descriptor, int)
+        return self.native_fstat(descriptor)
+
+    def guarded_close(self, descriptor: object) -> None:
+        if type(descriptor) is not int or descriptor not in self.live:
+            self.deny("foreign-descriptor-close")
+        self.live.remove(descriptor)
+        self.native_close(descriptor)
+
+    def install(self) -> None:
+        require(not self.installed, "install the source wall exactly once")
+        sys.addaudithook(self.audit)
+        builtins.open = self.forbidden("builtins-open")
+        _io.open = self.forbidden("direct-_io-open")
+        _io.FileIO = self.forbidden("direct-_io-fileio")
+        io.open = self.forbidden("direct-io-open")
+        io.FileIO = self.forbidden("direct-io-fileio")
+        for module in (_io, io):
+            if hasattr(module, "open_code"):
+                setattr(module, "open_code", self.forbidden("direct-open-code"))
+        os.open = self.guarded_open
+        os.read = self.guarded_read
+        os.fstat = self.guarded_fstat
+        os.close = self.guarded_close
+        for name in ("write", "fsync", "fdopen", "dup", "dup2", "stat", "lstat",
+                     "readlink", "listdir", "scandir", "walk", "fwalk", "access",
+                     "fork", "posix_spawn", "posix_spawnp", "system", "mkdir",
+                     "makedirs", "remove", "unlink", "rename", "replace", "rmdir",
+                     "chmod", "chown", "urandom", "getrandom"):
+            if hasattr(os, name):
+                setattr(os, name, self.forbidden("direct-os-" + name))
+        for name in ("time", "time_ns", "monotonic", "monotonic_ns",
+                     "perf_counter", "perf_counter_ns", "process_time",
+                     "process_time_ns", "thread_time", "thread_time_ns",
+                     "clock_gettime", "clock_gettime_ns", "sleep"):
+            if hasattr(time, name):
+                setattr(time, name, self.forbidden("clock-" + name))
+        self.installed = True
+
+
+def read_owner(wall: SourceWall | None, row: tuple) -> bytes:
+    role, relative, expected, count, inode = row
+    check_sha(expected, relative)
+    require(type(role) is str and type(relative) is str and type(count) is int
+            and 0 < count <= MAX_OWNER_BYTES and type(inode) is int and inode > 0,
+            "reject an incomplete pinned public owner")
+    path = ROOT + "/" + relative
+    require(wall is None or wall.installed and wall.approved_read(path),
+            "install the physical source wall before opening public owners")
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(path, flags)
+    try:
+        before = os.fstat(descriptor)
+        require(stat.S_ISREG(before.st_mode)
+                and stat.S_IMODE(before.st_mode) == 0o600
+                and before.st_dev == DEVICE and before.st_ino == inode
+                and before.st_size == count and before.st_nlink == 1
+                and before.st_uid == os.geteuid(),
+                "reject a substituted frozen public owner: " + role)
+        remaining = count
+        blocks: list[bytes] = []
+        while remaining:
+            block = os.read(descriptor, min(remaining, 65536))
+            require(type(block) is bytes and bool(block),
+                    "reject a truncated public owner: " + role)
+            blocks.append(block)
+            remaining -= len(block)
+        require(os.read(descriptor, 1) == b"", "reject a grown public owner")
+        after = os.fstat(descriptor)
+        require(all(getattr(before, name) == getattr(after, name)
+                    for name in ("st_dev", "st_ino", "st_size", "st_nlink",
+                                 "st_mtime_ns", "st_ctime_ns")),
+                "reject a concurrently altered public owner: " + role)
+        result = b"".join(blocks)
+        require(digest(result) == expected, "reject altered public owner: " + role)
+        return result
+    finally:
+        os.close(descriptor)
+
+
+def dynamic_owner(wall: SourceWall | None, role: str,
+                  relative: str, expected: str) -> tuple:
+    require(relative in (SOURCE, PROTOCOL, CONTRACT),
+            "reject an unrelated dynamic public architecture owner")
+    check_sha(expected, relative)
+    path = ROOT + "/" + relative
+    require(wall is None or wall.installed and wall.approved_read(path),
+            "install the wall before inspecting its own source")
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_CLOEXEC", 0)
+                         | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        info = os.fstat(descriptor)
+        require(stat.S_ISREG(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o600
+                and info.st_dev == DEVICE and info.st_nlink == 1
+                and info.st_uid == os.geteuid()
+                and 0 < info.st_size <= MAX_OWNER_BYTES,
+                "reject a replaced live public architecture owner")
+        return role, relative, expected, info.st_size, info.st_ino
+    finally:
+        os.close(descriptor)
+
+
+def owner_pin(row: tuple) -> dict:
+    role, relative, sha256, size, inode = row
+    return {"role": role, "path": relative, "sha256": sha256, "bytes": size,
+            "device": DEVICE, "inode": inode, "mode": "0600", "nlink": 1}
+
+
+WORKER_BOOTSTRAP = r'''
+import hashlib
+import os
+from pathlib import Path
+import sys
+import types
+
+overlay, harness, source_hash, role, engine, mode = sys.argv[1:]
+if not overlay.startswith('/tmp/rebar-rust-native-public-v1-'):
+    raise RuntimeError('reject nonexclusive public architecture overlay')
+if harness not in ('rust_public_practice_benchmark_v2.py', 'rust_public_profile_v1.py'):
+    raise RuntimeError('reject unapproved public architecture worker harness')
+path = os.path.join(overlay, 'tools', harness)
+descriptor = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW)
+try:
+    chunks = []
+    while True:
+        chunk = os.read(descriptor, 65536)
+        if not chunk:
+            break
+        chunks.append(chunk)
+    payload = b''.join(chunks)
+finally:
+    os.close(descriptor)
+if hashlib.sha256(payload).hexdigest() != source_hash:
+    raise RuntimeError('reject altered unchanged public architecture harness')
+sys.path[:] = [overlay] + [item for item in sys.path
+                            if item != '/home/dev-user/src/rebar']
+namespace = {'__name__': '_rebar_owned_public_worker', '__file__': path,
+             '__package__': None}
+exec(compile(payload, path, 'exec'), namespace)
+namespace['ROOT'] = Path(overlay)
+sys.path[:] = [overlay] + [item for item in sys.path
+                            if item not in (overlay, '/home/dev-user/src/rebar')]
+namespace['verify_pinned_runtime']()
+if mode == 'observe':
+    result = namespace['observe_worker'](role, engine)
+elif mode == 'timing':
+    result = namespace['timing_worker'](role, engine)
+elif mode == 'profile':
+    result = namespace['profile_worker'](role, engine)
+else:
+    raise RuntimeError('reject an unapproved public architecture worker mode')
+sys.stdout.buffer.write(namespace['canonical'](result))
+'''.strip()
+
+
+def validate_public_context(payloads: dict[str, bytes]) -> dict:
+    original = json_object(payloads["original_p0"], "original P0")
+    require(original.get("schema") == "rebar-cpython-re-p0-completeness-v4"
+            and original.get("status") == "PASS"
+            and original.get("original_case_execution_denominator") == 31237
+            and original.get("original_suite_count") == 13
+            and original.get("qualified_candidate_count") == 0,
+            "preserve the original 31,237-case failed qualification boundary")
+    failure = json_object(payloads["actual_original_v25_failure"], "actual V25")
+    require(failure.get("schema")
+            == "rebar-owned-repaired-rust-original-campaign-v25-durable-publication-receipt"
+            and failure.get("status") == "PASS"
+            and failure.get("publication_status") == "PASS"
+            and failure.get("candidate_status") == "FAIL"
+            and failure.get("case_execution_denominator") == 31237
+            and failure.get("completed_suite_count") == 13
+            and failure.get("actual_candidate_workers") == 13
+            and failure.get("semantic_mismatch_count") == 1352
+            and failure.get("verified_passing_case_count") == 15877
+            and failure.get("candidate_qualified") is False
+            and failure.get("holdout") == "NOT OPENED",
+            "preserve all actual failed original-correctness evidence")
+    failing = {row["suite"]: row["mismatch_count"]
+               for row in failure["suite_integrity"] if row["mismatch_count"]}
+    require(failing == {"substitution_v2": 240, "shape_v2": 1112},
+            "preserve the exact 1,352 published original-suite mismatches")
+    practice = json_object(payloads["public_correctness_contract"], "public 10,434")
+    evidence = json_object(payloads["public_correctness_evidence_contract"],
+                           "public correctness evidence")
+    profile1 = json_object(payloads["public_profile_v1_contract"], "public 416 v1")
+    profile2 = json_object(payloads["public_profile_v2_contract"], "public 416 v2")
+    require(practice.get("case_count") == PUBLIC_CORRECTNESS_CASES
+            and practice.get("published_seed") == PUBLIC_CORRECTNESS_SEED
+            and practice.get("dataset_count") == 94
+            and practice.get("operation_count") == 111
+            and evidence.get("case_count") == PUBLIC_CORRECTNESS_CASES,
+            "preserve the exact frozen balanced 10,434-case public matrix")
+    for name, contract in (("v1", profile1), ("v2", profile2)):
+        require(contract.get("case_count") == PUBLIC_PROFILE_CASES
+                and contract.get("dataset_count") == 16
+                and contract.get("operation_count") == 26
+                and contract.get("published_seed") == PUBLIC_PROFILE_SEED
+                and contract.get("matrix_sha256") == PUBLIC_PROFILE_MATRIX,
+                "preserve the exact frozen 416-case public profiler " + name)
+    prior = json_object(payloads["previous_public_v2_receipt"], "prior public receipt")
+    require(prior.get("status") == "PASS", "authenticate the prior public profile")
+    return {"original_case_denominator": 31237,
+            "original_mismatch_count": 1352,
+            "original_failing_suites": failing,
+            "public_correctness_case_count": PUBLIC_CORRECTNESS_CASES,
+            "public_profile_case_count": PUBLIC_PROFILE_CASES,
+            "public_profile_paired_row_count": PUBLIC_PAIRED_ROWS}
+
+
+def validate_architecture(payloads: dict[str, bytes], version: str) -> dict:
+    require(version in ("v26", "v27"), "reject an unknown native architecture")
+    publication = json_object(payloads[version + "_publication"], version + " publication")
+    root = json_object(payloads[version + "_root"], version + " root provenance")
+    source = next(row for row in OWNERS if row[0] == version + "_source")
+    protocol = next(row for row in OWNERS if row[0] == version + "_protocol")
+    contract = next(row for row in OWNERS if row[0] == version + "_contract")
+    schema_part = "anchor" if version == "v26" else "compiler-fastpath"
+    require(publication.get("schema")
+            == "rebar-phase2-owned-rust-" + schema_part + "-source-build-"
+            + version + "-durable-publication-receipt"
+            and publication.get("status") == "PASS"
+            and publication.get("build_status") == "PASS"
+            and root.get("schema")
+            == "rebar-phase2-owned-rust-" + schema_part + "-source-build-"
+            + version + "-durable-root-provenance-receipt"
+            and root.get("status") == "PASS",
+            "require a complete successful independently built native architecture")
+    for record in (publication, root):
+        require(record.get("source_sha256") == source[2]
+                and record.get("protocol_sha256") == protocol[2]
+                and record.get("contract_sha256") == contract[2]
+                and record.get("corrected_public_adapter_sha256") == ADAPTER_SHA256
+                and record.get("runtime_non_delegation") == "NOT ESTABLISHED"
+                and record.get("candidate_qualified") is False
+                and record.get("holdout") == "NOT OPENED",
+                "preserve exact source-build provenance and its qualification limits")
+    tree = root.get("root")
+    expected_root = ("/tmp/rebar-phase2-native-build-v9-rust-b3xca14k", 11676933)
+    if version == "v27":
+        expected_root = ("/tmp/rebar-phase2-native-build-v9-rust-uxfnwja4", 11676854)
+    require(type(tree) is dict and tree.get("path") == expected_root[0]
+            and tree.get("device") == PRIVATE_DEVICE
+            and tree.get("inode") == expected_root[1]
+            and tree.get("mode") == "0700"
+            and tree.get("phase_count") == 2
+            and tree.get("directory_scanned") is False
+            and type(tree.get("phases")) is list and len(tree["phases"]) == 2,
+            "reject substituted independent private native build roots")
+    engine_sha = V26_ENGINE_SHA256 if version == "v26" else V27_ENGINE_SHA256
+    expected_size = 672664 if version == "v26" else 658120
+    for index, phase in enumerate(tree["phases"]):
+        name = ("reference-a", "reference-b")[index]
+        require(type(phase) is dict and phase.get("name") == name
+                and phase.get("absolute_path") == tree["path"] + "/" + name
+                and phase.get("device") == PRIVATE_DEVICE
+                and phase.get("mode") == "0700"
+                and type(phase.get("native_outputs")) is list
+                and len(phase["native_outputs"]) == 2,
+                "reject an incomplete independently reproduced native phase")
+        for output in phase["native_outputs"]:
+            require(type(output) is dict and output.get("role") in ("engine", "bridge")
+                    and output.get("device") == PRIVATE_DEVICE
+                    and output.get("nlink") == 1
+                    and output.get("absolute_path") == phase["absolute_path"]
+                    + "/native/" + output.get("file_name", ""),
+                    "reject a substituted root-authenticated native output")
+            if output["role"] == "engine":
+                require(output.get("file_name") == "_rust_engine.so"
+                        and output.get("sha256") == engine_sha
+                        and output.get("bytes") == expected_size
+                        and output.get("mode") == "0600",
+                        "reject a substituted first-party native Rust engine")
+            else:
+                require(output.get("file_name")
+                        == "_rust_bridge.cpython-314-x86_64-linux-gnu.so"
+                        and output.get("sha256") == BRIDGE_SHA256
+                        and output.get("bytes") == BRIDGE_BYTES
+                        and output.get("mode") == "0700",
+                        "reject a substituted first-party CPython native bridge")
+        require({row["role"] for row in phase["native_outputs"]}
+                == {"engine", "bridge"},
+                "require both independently reproduced native artifacts")
+    return {"version": version, "publication_sha256": digest(payloads[version + "_publication"]),
+            "root_receipt_sha256": digest(payloads[version + "_root"]),
+            "source_sha256": source[2], "protocol_sha256": protocol[2],
+            "contract_sha256": contract[2], "root": tree,
+            "engine_sha256": engine_sha, "engine_bytes": expected_size,
+            "bridge_sha256": BRIDGE_SHA256, "adapter_sha256": ADAPTER_SHA256}
+
+
+def validate_adapter_provenance(payloads: dict[str, bytes], v26: dict) -> dict:
+    receipt = json_object(payloads["v26_root"], "independent V26 adapter provenance")
+    private = receipt.get("actual_private_source_owners")
+    require(type(private) is list and len(private) == 2,
+            "require actual corrected first-party adapter phase provenance")
+    actual = None
+    for index, phase in enumerate(private):
+        name = ("reference-a", "reference-b")[index]
+        require(type(phase) is dict and phase.get("phase") == name
+                and type(phase.get("owners")) is dict,
+                "reject incomplete corrected private adapter provenance")
+        row = phase["owners"].get("candidates/rust_candidate.py")
+        require(type(row) is dict and type(row.get("path")) is str,
+                "require exactly one corrected phase adapter")
+        overlay = row.get("source_overlay")
+        require(row.get("path") == "<FRESH_PRIVATE_TMP>/" + name
+                + "/source/candidates/rust_candidate.py"
+                and row.get("sha256") == ADAPTER_SHA256
+                and row.get("bytes") == ADAPTER_BYTES
+                and row.get("device") == PRIVATE_DEVICE
+                and row.get("exclusive_creation") is True
+                and row.get("same_inode_readback_verified") is True
+                and type(overlay) is dict
+                and overlay.get("status") == "PASS"
+                and overlay.get("canonical_candidate_modified") is False
+                and overlay.get("candidate_original_modified") is False
+                and overlay.get("derived_source_sha256") == ADAPTER_SHA256
+                and overlay.get("source_apply_count") == 1,
+                "reject a substituted corrected independent adapter owner")
+        if index == 0:
+            actual = {"path": v26["root"]["path"] + "/" + name
+                      + "/source/candidates/rust_candidate.py",
+                      "sha256": ADAPTER_SHA256, "bytes": ADAPTER_BYTES,
+                      "device": PRIVATE_DEVICE, "inode": row["inode"],
+                      "mode": "0600", "nlink": 1,
+                      "source_root_receipt_sha256": digest(payloads["v26_root"])}
+    assert isinstance(actual, dict)
+    return actual
+
+
+def architecture_freeze(payloads: dict[str, bytes], source_pin: str,
+                        protocol_pin: str) -> dict:
+    public = validate_public_context(payloads)
+    v26 = validate_architecture(payloads, "v26")
+    v27 = validate_architecture(payloads, "v27")
+    adapter = validate_adapter_provenance(payloads, v26)
+    return {"schema": SCHEMA + "-source-freeze", "python": "3.14.6",
+            "python_executable": PYTHON, "python_sha256": PYTHON_SHA256,
+            "source_sha256": source_pin, "protocol_sha256": protocol_pin,
+            "published_owners": [owner_pin(row) for row in OWNERS],
+            "public_context": public,
+            "architectures": {"v26": v26, "v27": v27},
+            "private_corrected_adapter": adapter,
+            "canonical_candidates": [
+                {"role": role, "path": path, "sha256": sha, "bytes": size,
+                 "device": DEVICE, "inode": inode, "mode": format(mode, "04o")}
+                for role, path, sha, size, inode, mode in CANONICAL_ORIGINALS
+            ],
+            "worker_bootstrap_sha256": digest(WORKER_BOOTSTRAP.encode("utf-8")),
+            "public_correctness": {"case_count": PUBLIC_CORRECTNESS_CASES,
+                                    "published_seed": PUBLIC_CORRECTNESS_SEED,
+                                    "matrix_sha256": PUBLIC_CORRECTNESS_MATRIX,
+                                    "preserve_all_mismatches": True},
+            "public_profile": {"case_count": PUBLIC_PROFILE_CASES,
+                               "published_seed": PUBLIC_PROFILE_SEED,
+                               "matrix_sha256": PUBLIC_PROFILE_MATRIX,
+                               "paired_rounds": PUBLIC_PAIRED_ROUNDS,
+                               "paired_row_count": PUBLIC_PAIRED_ROWS,
+                               "iterations": PUBLIC_ITERATIONS,
+                               "warmups": PUBLIC_WARMUPS,
+                               "profile_passes": PUBLIC_PROFILE_PASSES,
+                               "timing_requires_complete_416_case_parity": True,
+                               "timing_after_10434_failure": "EXPLORATORY ONLY"},
+            "runtime_non_delegation": "NOT ESTABLISHED; V4 STRICT AUDIT FAIL 1",
+            "candidate_qualified": False,
+            "qualified_independent_family_count": 0,
+            "minimum_qualified_independent_family_count": 3,
+            "winner_selected": False,
+            "holdout_scope": "ONLY THIS FROZEN CONTROLLER AND ITS AUTHORIZED WORKERS",
+            "other_agent_historical_holdout_access": "NOT ATTESTED",
+            "controller_final_holdout_content_open_count": 0,
+            "hidden_case_files_generated": 0,
+            "hidden_cases_read": 0,
+            "current_final_holdout": "INVALIDATED; REKEYED SUCCESSOR REQUIRED",
+            "retired_v2_proposal_status": "COMPROMISED; RETIRED; NOT ACCESSED BY THIS CONTROLLER",
+            "final_holdout_case_status": "NOT GENERATED; INVALIDATED; REKEYED SUCCESSOR REQUIRED",
+            "sealed_final_protocol_status": "NOT FROZEN",
+            "performance": NOT_MEASURED,
+            "native_cpu_samples": NOT_MEASURED,
+            "memory": NOT_MEASURED}
+
+
+def load_context(wall: SourceWall | None, source_pin: str, protocol_pin: str,
+                 contract_pin: str | None) -> tuple[dict[str, bytes], dict]:
+    rows = dict((row[0], row) for row in OWNERS)
+    require(len(rows) == len(OWNERS), "reject duplicated frozen public owner roles")
+    payloads = {role: read_owner(wall, row) for role, row in rows.items()}
+    source_row = dynamic_owner(wall, "gate_source", SOURCE, source_pin)
+    protocol_row = dynamic_owner(wall, "gate_protocol", PROTOCOL, protocol_pin)
+    payloads["gate_source"] = read_owner(wall, source_row)
+    payloads["gate_protocol"] = read_owner(wall, protocol_row)
+    freeze = architecture_freeze(payloads, source_pin, protocol_pin)
+    if contract_pin is not None:
+        contract_row = dynamic_owner(wall, "gate_contract", CONTRACT, contract_pin)
+        contract_raw = read_owner(wall, contract_row)
+        require(contract_raw == document(freeze),
+                "reject a noncanonical or substituted public architecture contract")
+        payloads["gate_contract"] = contract_raw
+    return payloads, freeze
+
+
+def wall_summary(wall: SourceWall) -> dict:
+    require(wall.installed and not wall.live,
+            "source-only public gate leaked an owned descriptor")
+    no_matching_imports()
+    require(wall.holdout_content_open_count == 0
+            and wall.native_content_open_count == 0
+            and wall.candidate_content_open_count == 0
+            and wall.write_count == 0 and wall.process_count == 0
+            and wall.clock_samples == 0,
+            "source-only public gate crossed a physical isolation boundary")
+    return {"physical_source_wall": "PASS", "candidate_content_open_count": 0,
+            "native_content_open_count": 0, "process_count": 0,
+            "clock_samples": 0, "write_count": 0,
+            "controller_final_holdout_content_open_count": 0,
+            "hidden_case_files_generated": 0, "hidden_cases_read": 0,
+            "current_final_holdout": "INVALIDATED; REKEYED SUCCESSOR REQUIRED",
+            "holdout_scope": "ONLY THIS FROZEN CONTROLLER AND ITS AUTHORIZED WORKERS",
+            "other_agent_historical_holdout_access": "NOT ATTESTED"}
+
+
+def test_rejection(wall: SourceWall, name: str, callback) -> None:
+    try:
+        callback()
+    except (GateError, OSError, ValueError, TypeError, ImportError):
+        return
+    raise GateError("source wall accepted forbidden action: " + name)
+
+
+def source_self_test(wall: SourceWall, freeze: dict) -> dict:
+    require(check_commit("a" * 40, "valid Git commit") == "a" * 40,
+            "accept a genuine complete 40-character Git commit")
+    test_rejection(wall, "64-character Git commit", lambda: check_commit(
+        "a" * 64, "invalid Git commit"))
+    test_rejection(wall, "canonical candidate open", lambda: os.open(
+        ROOT + "/candidates/rust_candidate.py",
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)))
+    test_rejection(wall, "native engine open", lambda: os.open(
+        ROOT + "/candidates/_rust_engine.so",
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)))
+    test_rejection(wall, "private artifact open", lambda: os.open(
+        freeze["architectures"]["v27"]["root"]["phases"][0]
+        ["native_outputs"][0]["absolute_path"],
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)))
+    test_rejection(wall, "sealed content open", lambda: os.open(
+        ROOT + "/oracle/phase3/expanded-sealed-holdout-v2.json",
+        os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)))
+    test_rejection(wall, "builtins candidate open", lambda: builtins.open(
+        ROOT + "/candidates/rust_candidate.py", "rb"))
+    test_rejection(wall, "direct io open", lambda: io.open(ROOT + "/GOAL.md", "rb"))
+    test_rejection(wall, "candidate import audit", lambda: sys.audit(
+        "import", "candidates.rust_candidate", None, None, None, None))
+    test_rejection(wall, "worker audit", lambda: sys.audit("subprocess.Popen", []))
+    test_rejection(wall, "dynamic compile audit", lambda: sys.audit(
+        "compile", b"1", "<forbidden>"))
+    test_rejection(wall, "native loader audit", lambda: sys.audit(
+        "ctypes.dlopen", "forbidden.so"))
+    test_rejection(wall, "timing", lambda: time.perf_counter_ns())
+    test_rejection(wall, "filesystem mutation", lambda: os.mkdir(
+        ROOT + "/experiments/forbidden-native-public-gate"))
+    test_rejection(wall, "duplicate JSON", lambda: json_object(
+        b'{"a":1,"a":2}', "duplicate"))
+    test_rejection(wall, "nonfinite JSON", lambda: json_object(
+        b'{"a":1e999}', "nonfinite"))
+    test_rejection(wall, "wrong architecture", lambda: validate_architecture(
+        {}, "v28"))
+    summary = wall_summary(wall)
+    summary.update({"schema": SCHEMA + "-source-self-test", "status": "PASS",
+                    "self_test_rejection_count": 16,
+                    "public_case_counts": [PUBLIC_CORRECTNESS_CASES,
+                                           PUBLIC_PROFILE_CASES],
+                    "paired_row_count": PUBLIC_PAIRED_ROWS,
+                    "runtime_non_delegation": freeze["runtime_non_delegation"],
+                    "candidate_qualified": False,
+                    "blocked_categories": dict(sorted(wall.blocked.items()))})
+    return summary
+
+
+def exact_file(path: str, *, expected_sha: str, expected_bytes: int,
+               device: int, inode: int, mode: int, role: str) -> bytes:
+    require(type(path) is str and path.startswith((ROOT + "/", "/tmp/"))
+            and "/../" not in path, "reject an unowned actual file path")
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_CLOEXEC", 0)
+                         | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        before = os.fstat(descriptor)
+        require(stat.S_ISREG(before.st_mode)
+                and stat.S_IMODE(before.st_mode) == mode
+                and before.st_dev == device and before.st_ino == inode
+                and before.st_size == expected_bytes and before.st_nlink == 1
+                and before.st_uid == os.geteuid(),
+                "reject a substituted actual artifact: " + role)
+        blocks = []
+        while True:
+            block = os.read(descriptor, 65536)
+            if not block:
+                break
+            blocks.append(block)
+        payload = b"".join(blocks)
+        after = os.fstat(descriptor)
+        require(len(payload) == expected_bytes and digest(payload) == expected_sha
+                and all(getattr(before, field) == getattr(after, field)
+                        for field in ("st_dev", "st_ino", "st_size", "st_nlink",
+                                      "st_mtime_ns", "st_ctime_ns")),
+                "reject altered or concurrent actual artifact: " + role)
+        return payload
+    finally:
+        os.close(descriptor)
+
+
+def snapshot_canonical() -> list[dict]:
+    result = []
+    for role, relative, expected, count, inode, mode in CANONICAL_ORIGINALS:
+        exact_file(ROOT + "/" + relative, expected_sha=expected,
+                   expected_bytes=count, device=DEVICE, inode=inode,
+                   mode=mode, role="canonical " + role)
+        result.append({"role": role, "path": relative, "sha256": expected,
+                       "bytes": count, "device": DEVICE, "inode": inode,
+                       "mode": format(mode, "04o")})
+    return result
+
+
+def exclusive_write(path: str, payload: bytes, mode: int = 0o600) -> dict:
+    require(type(path) is str and type(payload) is bytes
+            and path.startswith((ROOT + "/experiments/rust_native_architecture_public_v1/",
+                                 ROOT + "/oracle/phase2/evidence/",
+                                 "/tmp/rebar-rust-native-public-v1-"))
+            and "/../" not in path,
+            "reject an unapproved nonexclusive public architecture output")
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                         | getattr(os, "O_CLOEXEC", 0)
+                         | getattr(os, "O_NOFOLLOW", 0), mode)
+    try:
+        view = memoryview(payload)
+        while view:
+            count = os.write(descriptor, view)
+            require(type(count) is int and count > 0,
+                    "reject an incomplete exclusive public output write")
+            view = view[count:]
+        os.fsync(descriptor)
+        info = os.fstat(descriptor)
+        require(stat.S_ISREG(info.st_mode)
+                and stat.S_IMODE(info.st_mode) == mode
+                and info.st_nlink == 1 and info.st_size == len(payload),
+                "reject substituted exclusive public architecture output")
+        return {"path": path, "sha256": digest(payload), "bytes": len(payload),
+                "device": info.st_dev, "inode": info.st_ino,
+                "mode": format(mode, "04o")}
+    finally:
+        os.close(descriptor)
+
+
+def load_harness(payload: bytes, overlay: str, basename: str):
+    import pathlib
+    import types
+
+    path = overlay + "/tools/" + basename
+    module = types.ModuleType("_rebar_owned_public_parent_" + basename.replace(".", "_"))
+    module.__file__ = path
+    module.__package__ = None
+    previous = list(sys.path)
+    try:
+        sys.path[:] = [overlay] + [item for item in previous
+                                   if item != ROOT and item != overlay]
+        exec(compile(payload, path, "exec"), module.__dict__)
+        module.ROOT = pathlib.Path(overlay)
+        sys.path[:] = [overlay] + [item for item in sys.path
+                                   if item != ROOT and item != overlay]
+        module.verify_pinned_runtime()
+        return module
+    finally:
+        # Parent must retain the overlay as entry zero for unchanged harness checks.
+        sys.path[:] = [overlay] + [item for item in previous
+                                   if item != ROOT and item != overlay]
+
+
+def run_worker(overlay: str, basename: str, source_sha: str,
+               role: str, engine: str, mode: str, request: dict | None = None):
+    import json
+    import subprocess
+
+    require(engine in ("stdlib", "rust") and mode in ("observe", "timing", "profile")
+            and basename in ("rust_public_practice_benchmark_v2.py",
+                             "rust_public_profile_v1.py"),
+            "reject an unapproved public architecture worker")
+    payload = None if request is None else (
+        json.dumps(request, ensure_ascii=True, allow_nan=False,
+                   sort_keys=True, separators=(",", ":")) + "\n").encode("ascii")
+    require(payload is None or len(payload) <= MAX_PROCESS_BYTES,
+            "reject an unbounded public architecture worker request")
+    process = subprocess.Popen(
+        [PYTHON, "-I", "-B", "-S", "-c", WORKER_BOOTSTRAP, overlay,
+         basename, source_sha, role, engine, mode],
+        stdin=subprocess.PIPE if payload is not None else subprocess.DEVNULL,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=overlay,
+        shell=False, close_fds=True,
+        env={"PATH": "/usr/bin:/bin", "LC_ALL": "C", "PYTHONDONTWRITEBYTECODE": "1",
+             "PYTHONHASHSEED": "0", "PYTHONMALLOC": "malloc"},
+    )
+    stdout, stderr = process.communicate(input=payload)
+    require(process.returncode == 0 and not stderr
+            and 0 < len(stdout) <= MAX_PROCESS_BYTES,
+            "isolated public worker failed: " + role + "; stderr="
+            + stderr[:4000].decode("utf-8", "replace"))
+    result = json.loads(stdout.decode("utf-8"))
+    require(type(result) is dict and result.get("status") == "PASS"
+            and result.get("role") == role and result.get("engine") == engine
+            and result.get("python") == "3.14.6"
+            and type(result.get("pid")) is int,
+            "reject a substituted isolated public architecture worker document")
+    return result, stdout
+
+
+def paired_summary(rows: list[dict]) -> dict:
+    import math
+    import random
+
+    require(len(rows) == PUBLIC_PAIRED_ROWS,
+            "require every correctness-gated public paired timing row")
+    case_rows: dict[str, list[dict]] = {}
+    for row in rows:
+        case_rows.setdefault(row["case"], []).append(row)
+    require(len(case_rows) == PUBLIC_PROFILE_CASES
+            and all(len(values) == PUBLIC_PAIRED_ROUNDS
+                    for values in case_rows.values()),
+            "reject a missing or duplicated frozen public profile case")
+    case_ratios = {}
+    regressions = []
+    for case, values in sorted(case_rows.items()):
+        baseline = sum(item["baseline_elapsed_ns"] for item in values)
+        rust = sum(item["rust_elapsed_ns"] for item in values)
+        require(baseline > 0 and rust > 0, "reject a nonpositive paired interval")
+        ratio = baseline / rust
+        case_ratios[case] = ratio
+        if rust > baseline * 1.2:
+            regressions.append({"case": case, "cohort": values[0]["cohort"],
+                                "operation": values[0]["operation"],
+                                "baseline_elapsed_ns": baseline,
+                                "rust_elapsed_ns": rust,
+                                "slowdown_ratio": rust / baseline})
+    values = list(case_ratios.values())
+    geomean = math.exp(sum(math.log(value) for value in values) / len(values))
+    rng = random.Random(PUBLIC_PROFILE_SEED ^ 0xA263_001)
+    samples = []
+    for _ in range(400):
+        sample = [values[rng.randrange(len(values))] for _ in values]
+        samples.append(math.exp(sum(math.log(value) for value in sample)
+                                / len(sample)))
+    samples.sort()
+    by_cohort: dict[str, list[float]] = {}
+    by_operation: dict[str, list[float]] = {}
+    for case, value in case_ratios.items():
+        row = case_rows[case][0]
+        by_cohort.setdefault(row["cohort"], []).append(value)
+        by_operation.setdefault(row["operation"], []).append(value)
+    group = lambda grouped: {key: {"case_count": len(items),
+                                  "geomean_speedup": math.exp(sum(map(math.log, items))
+                                                                / len(items)),
+                                  "faster_case_count": sum(item > 1 for item in items)}
+                             for key, items in sorted(grouped.items())}
+    return {"case_count": PUBLIC_PROFILE_CASES,
+            "paired_row_count": PUBLIC_PAIRED_ROWS,
+            "geomean_speedup_vs_stdlib": geomean,
+            "confidence_interval_95": {"lower": samples[9],
+                                         "upper": samples[389],
+                                         "resamples": len(samples),
+                                         "seed": PUBLIC_PROFILE_SEED ^ 0xA263_001},
+            "faster_case_count": sum(value > 1 for value in values),
+            "slower_case_count": sum(value < 1 for value in values),
+            "equal_case_count": sum(value == 1 for value in values),
+            "case_ratios": case_ratios,
+            "all_regressions_over_20_percent": regressions,
+            "regression_over_20_percent_count": len(regressions),
+            "cohorts": group(by_cohort), "operations": group(by_operation)}
+
+
+def actual_run(payloads: dict[str, bytes], freeze: dict, args: dict) -> dict:
+    import json
+    import tempfile
+
+    architecture = args["--architecture"]
+    require(architecture in ("v26", "v27"), "choose an exact independently built architecture")
+    session = args["--session"]
+    require(type(session) is str and 1 <= len(session) <= 80
+            and all(char in "abcdefghijklmnopqrstuvwxyz0123456789-" for char in session)
+            and session.startswith(architecture + "-")
+            and not any(token in session for token in ("holdout", "hidden", "final", "sealed")),
+            "require an exclusive architecture-prefixed public session")
+    require(args["--root-authorized"] == "YES"
+            and check_commit(args["--frozen-commit"], "frozen commit")
+            == check_commit(args["--pushed-commit"], "pushed commit"),
+            "require root authority and the identical already-pushed frozen commit")
+    selected = freeze["architectures"][architecture]
+    require(args["--v26-publication-sha256"] == freeze["architectures"]["v26"]["publication_sha256"]
+            and args["--v26-root-sha256"] == freeze["architectures"]["v26"]["root_receipt_sha256"]
+            and args["--v27-publication-sha256"] == freeze["architectures"]["v27"]["publication_sha256"]
+            and args["--v27-root-sha256"] == freeze["architectures"]["v27"]["root_receipt_sha256"],
+            "require explicit complete root authentication for both build receipt pairs")
+    canonical_before = snapshot_canonical()
+    root = selected["root"]
+    phase = root["phases"][0]
+    adapter_pin = freeze["private_corrected_adapter"]
+    adapter = exact_file(adapter_pin["path"], expected_sha=adapter_pin["sha256"],
+                         expected_bytes=adapter_pin["bytes"], device=adapter_pin["device"],
+                         inode=adapter_pin["inode"], mode=0o600,
+                         role="receipt-authenticated independent corrected adapter")
+    artifact_payloads = {}
+    for artifact in phase["native_outputs"]:
+        artifact_payloads[artifact["role"]] = exact_file(
+            artifact["absolute_path"], expected_sha=artifact["sha256"],
+            expected_bytes=artifact["bytes"], device=artifact["device"],
+            inode=artifact["inode"], mode=int(artifact["mode"], 8),
+            role=architecture + " independent " + artifact["role"])
+    overlay = tempfile.mkdtemp(prefix="rebar-rust-native-public-v1-", dir="/tmp")
+    require(os.path.realpath(overlay) == overlay
+            and stat.S_IMODE(os.stat(overlay).st_mode) == 0o700,
+            "require a genuinely fresh private native architecture overlay")
+    os.mkdir(overlay + "/tools", 0o700)
+    os.mkdir(overlay + "/candidates", 0o700)
+    exclusive_write(overlay + "/candidates/__init__.py", b"", 0o600)
+    exclusive_write(overlay + "/candidates/rust_candidate.py", adapter, 0o600)
+    exclusive_write(overlay + "/candidates/_rust_engine.so",
+                    artifact_payloads["engine"], 0o600)
+    exclusive_write(overlay + "/candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+                    artifact_payloads["bridge"], 0o700)
+    exclusive_write(overlay + "/tools/rust_public_practice_benchmark_v2.py",
+                    payloads["public_correctness_source"], 0o600)
+    exclusive_write(overlay + "/tools/rust_public_profile_v1.py",
+                    payloads["public_profile_v1_source"], 0o600)
+
+    parent = ROOT + "/experiments/rust_native_architecture_public_v1"
+    try:
+        os.mkdir(parent, 0o700)
+    except FileExistsError:
+        info = os.stat(parent, follow_symlinks=False)
+        require(stat.S_ISDIR(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o700
+                and info.st_uid == os.geteuid(),
+                "reject a substituted public architecture evidence directory")
+    output = parent + "/" + session
+    os.mkdir(output, 0o700)
+    artifacts = []
+
+    correctness_module = load_harness(payloads["public_correctness_source"], overlay,
+                                      "rust_public_practice_benchmark_v2.py")
+    originals = {}
+
+    def isolated_correctness(role: str, engine: str, mode: str, **_kwargs):
+        result, raw = run_worker(overlay, "rust_public_practice_benchmark_v2.py",
+                                 next(row[2] for row in OWNERS
+                                      if row[0] == "public_correctness_source"),
+                                 architecture + "-" + role, engine, mode)
+        originals[engine] = (result, raw)
+        return result
+
+    correctness_module.run_isolated_worker = isolated_correctness
+    full = correctness_module.run_correctness_only()
+    require(full.get("case_denominator") == PUBLIC_CORRECTNESS_CASES
+            and full.get("actual_baseline_cases") == PUBLIC_CORRECTNESS_CASES
+            and full.get("actual_rust_cases") == PUBLIC_CORRECTNESS_CASES
+            and len(full.get("all_mismatches", ())) == full.get("mismatch_count"),
+            "reject missing full-matrix public correctness cases or mismatches")
+    for engine in ("stdlib", "rust"):
+        artifacts.append(exclusive_write(output + "/public-10434-" + engine
+                                        + ".correctness.raw.json", originals[engine][1]))
+    artifacts.append(exclusive_write(output + "/public-10434-correctness.raw.json",
+                                    document(full)))
+
+    profile = load_harness(payloads["public_profile_v1_source"], overlay,
+                           "rust_public_profile_v1.py")
+    matrix = profile.build_public_matrix()
+    profile.validate_public_matrix(matrix)
+    require(len(matrix) == PUBLIC_PROFILE_CASES
+            and profile.MATRIX_SHA256 == PUBLIC_PROFILE_MATRIX,
+            "reject the complete unchanged 416-case public profile matrix")
+    observations = {}
+    for engine in ("stdlib", "rust"):
+        result, raw = run_worker(overlay, "rust_public_profile_v1.py",
+                                 next(row[2] for row in OWNERS
+                                      if row[0] == "public_profile_v1_source"),
+                                 architecture + "-public-416-observe-" + engine,
+                                 engine, "observe")
+        observations[engine] = result
+        artifacts.append(exclusive_write(output + "/public-416-" + engine
+                                        + ".correctness.raw.json", raw))
+    require(observations["stdlib"]["pid"] != observations["rust"]["pid"]
+            and len(observations["stdlib"]["records"]) == PUBLIC_PROFILE_CASES
+            and len(observations["rust"]["records"]) == PUBLIC_PROFILE_CASES,
+            "reject incomplete or nonisolated complete 416-case observations")
+    mismatches = [{"case": baseline["case"],
+                   "baseline_outcome": baseline["outcome"],
+                   "rust_outcome": actual["outcome"]}
+                  for baseline, actual in zip(observations["stdlib"]["records"],
+                                              observations["rust"]["records"], strict=True)
+                  if baseline != actual]
+    profile_gate = {"status": "FAIL" if mismatches else "PASS",
+                    "case_count": PUBLIC_PROFILE_CASES,
+                    "mismatch_count": len(mismatches), "all_mismatches": mismatches,
+                    "baseline_pid": observations["stdlib"]["pid"],
+                    "rust_pid": observations["rust"]["pid"]}
+    artifacts.append(exclusive_write(output + "/public-416-correctness-gate.raw.json",
+                                    document(profile_gate)))
+    rows = []
+    profiles = {}
+    summary = NOT_MEASURED
+    if not mismatches:
+        ids = [case["case"] for case in matrix]
+        matrix_by_id = {case["case"]: case for case in matrix}
+        for round_number in range(PUBLIC_PAIRED_ROUNDS):
+            offset = (PUBLIC_PROFILE_SEED + round_number * 37) % len(ids)
+            order = ids[offset:] + ids[:offset]
+            if round_number % 2:
+                order.reverse()
+            request = {"schema": profile.SCHEMA + "-worker-request",
+                       "published_seed": PUBLIC_PROFILE_SEED,
+                       "matrix_sha256": PUBLIC_PROFILE_MATRIX,
+                       "expected_records_sha256": observations["stdlib"]["records_sha256"],
+                       "expected_records": observations["stdlib"]["records"],
+                       "round": round_number, "iterations": PUBLIC_ITERATIONS,
+                       "warmups": PUBLIC_WARMUPS, "case_order": order}
+            engines = ("stdlib", "rust") if round_number % 2 == 0 else ("rust", "stdlib")
+            rounds = {}
+            for engine in engines:
+                result, raw = run_worker(
+                    overlay, "rust_public_profile_v1.py",
+                    next(row[2] for row in OWNERS if row[0] == "public_profile_v1_source"),
+                    architecture + "-public-timing-" + format(round_number, "02d")
+                    + "-" + engine, engine, "timing", request)
+                rounds[engine] = result
+                artifacts.append(exclusive_write(output + "/public-416-" + engine
+                                                + "-round-" + format(round_number, "02d")
+                                                + ".raw.json", raw))
+            require(rounds["stdlib"]["pid"] != rounds["rust"]["pid"],
+                    "reject a paired timing round sharing a candidate process")
+            for baseline, actual in zip(rounds["stdlib"]["rows"],
+                                        rounds["rust"]["rows"], strict=True):
+                case = matrix_by_id[baseline["case"]]
+                require(actual["case"] == baseline["case"]
+                        and actual["round"] == baseline["round"] == round_number
+                        and actual["position"] == baseline["position"]
+                        and actual["iterations"] == baseline["iterations"]
+                        == PUBLIC_ITERATIONS
+                        and actual["expected_outcome_sha256"]
+                        == baseline["expected_outcome_sha256"],
+                        "reject a mismatched correctness-gated public timing pair")
+                rows.append({"case": baseline["case"], "round": round_number,
+                             "position": baseline["position"], "cohort": case["cohort"],
+                             "operation": case["operation"], "pair_order": list(engines),
+                             "baseline_pid": rounds["stdlib"]["pid"],
+                             "rust_pid": rounds["rust"]["pid"],
+                             "iterations": PUBLIC_ITERATIONS,
+                             "correctness_checks_per_engine": baseline["correctness_checks"],
+                             "baseline_elapsed_ns": baseline["elapsed_ns"],
+                             "rust_elapsed_ns": actual["elapsed_ns"]})
+        artifacts.append(exclusive_write(output + "/public-416-paired-timing.raw.json",
+                                        profile.canonical({"schema": SCHEMA + "-paired-rows",
+                                                           "rows": rows})))
+        profile_request = {"schema": profile.SCHEMA + "-worker-request",
+                           "published_seed": PUBLIC_PROFILE_SEED,
+                           "matrix_sha256": PUBLIC_PROFILE_MATRIX,
+                           "expected_records_sha256": observations["stdlib"]["records_sha256"],
+                           "expected_records": observations["stdlib"]["records"],
+                           "profile_passes": PUBLIC_PROFILE_PASSES}
+        for engine in ("stdlib", "rust"):
+            result, raw = run_worker(
+                overlay, "rust_public_profile_v1.py",
+                next(row[2] for row in OWNERS if row[0] == "public_profile_v1_source"),
+                architecture + "-public-profile-" + engine,
+                engine, "profile", profile_request)
+            profiles[engine] = result
+            artifacts.append(exclusive_write(output + "/public-416-" + engine
+                                            + "-memory-profile.raw.json", raw))
+        summary = paired_summary(rows)
+        # JSON floats are actual measured performance only, never source-gate evidence.
+        artifacts.append(exclusive_write(
+            output + "/public-416-performance-summary.raw.json",
+            (json.dumps(summary, ensure_ascii=True, allow_nan=False,
+                        sort_keys=True, separators=(",", ":")) + "\n").encode("ascii")))
+    canonical_after = snapshot_canonical()
+    require(canonical_before == canonical_after,
+            "a canonical candidate identity changed during isolated architecture use")
+    full_pass = full["status"] == "PASS"
+    result = {"schema": SCHEMA + "-durable-publication-receipt", "status": "PASS",
+              "architecture": architecture, "session": session,
+              "source_sha256": freeze["source_sha256"],
+              "protocol_sha256": freeze["protocol_sha256"],
+              "contract_sha256": args["--contract-sha256"],
+              "frozen_commit": args["--frozen-commit"],
+              "pushed_commit": args["--pushed-commit"],
+              "root_authorization": "EXPLICIT",
+              "architecture_publication_sha256": selected["publication_sha256"],
+              "architecture_root_receipt_sha256": selected["root_receipt_sha256"],
+              "engine_sha256": selected["engine_sha256"],
+              "bridge_sha256": BRIDGE_SHA256,
+              "adapter_sha256": ADAPTER_SHA256,
+              "adapter_provenance_root_receipt_sha256": adapter_pin["source_root_receipt_sha256"],
+              "private_overlay": overlay, "canonical_candidates_before": canonical_before,
+              "canonical_candidates_after": canonical_after,
+              "canonical_candidate_modified": False,
+              "public_10434_correctness_status": full["status"],
+              "public_10434_case_count": PUBLIC_CORRECTNESS_CASES,
+              "public_10434_mismatch_count": full["mismatch_count"],
+              "public_416_correctness_gate": profile_gate,
+              "public_416_timing_status": "NOT RUN" if mismatches else "PASS",
+              "paired_row_count": len(rows),
+              "performance_evidence_scope":
+              "NOT MEASURED" if mismatches else
+              "CORRECTNESS-GATED PUBLIC 416 ONLY" if full_pass else
+              "EXPLORATORY CORRECTNESS-GATED PUBLIC 416 ONLY; PUBLIC 10434 FAILED",
+              "performance_summary": summary,
+              "memory_profiles": profiles if profiles else NOT_MEASURED,
+              "native_external_cpu_profiler": NOT_MEASURED,
+              "artifacts": artifacts,
+              "runtime_non_delegation": "NOT ESTABLISHED; V4 STRICT AUDIT FAIL 1",
+              "candidate_qualified": False,
+              "qualified_independent_family_count": 0,
+              "minimum_qualified_independent_family_count": 3,
+              "winner_selected": False,
+              "holdout_scope": "ONLY THIS FROZEN CONTROLLER AND ITS AUTHORIZED WORKERS",
+              "other_agent_historical_holdout_access": "NOT ATTESTED",
+              "controller_final_holdout_content_open_count": 0,
+              "hidden_case_files_generated": 0, "hidden_cases_read": 0,
+              "current_final_holdout": "INVALIDATED; REKEYED SUCCESSOR REQUIRED",
+              "retired_v2_proposal_status": "COMPROMISED; RETIRED; NOT ACCESSED BY THIS CONTROLLER",
+              "holdout": "INVALIDATED; REKEYED SUCCESSOR REQUIRED",
+              "final_holdout_case_status": "NOT GENERATED; REKEYED SUCCESSOR REQUIRED"}
+    encoded = (json.dumps(result, ensure_ascii=True, allow_nan=False,
+                          sort_keys=True, separators=(",", ":")) + "\n").encode("ascii")
+    receipt = exclusive_write(ROOT + "/oracle/phase2/evidence/"
+                              + "rust-native-architecture-public-gate-v1-"
+                              + session + "-publication-receipt.json", encoded)
+    return {"schema": SCHEMA + "-actual-root-operation", "status": "PASS",
+            "architecture": architecture, "session": session,
+            "public_10434_correctness_status": full["status"],
+            "public_10434_mismatch_count": full["mismatch_count"],
+            "public_416_correctness_status": profile_gate["status"],
+            "paired_row_count": len(rows),
+            "candidate_qualified": False,
+            "runtime_non_delegation": result["runtime_non_delegation"],
+            "canonical_candidate_modified": False,
+            "controller_final_holdout_content_open_count": 0,
+            "hidden_case_files_generated": 0, "hidden_cases_read": 0,
+            "current_final_holdout": "INVALIDATED; REKEYED SUCCESSOR REQUIRED",
+            "publication_receipt": receipt,
+            "performance_summary": summary}
+
+
+def parse_arguments(argv: list[str]) -> tuple[str, dict[str, str]]:
+    require(bool(argv), "require one explicit source-only or authorized-root mode")
+    mode = argv[0]
+    require(mode in ("--render-contract", "--verify-source", "--self-test", "--run"),
+            "reject an unknown native architecture public gate mode")
+    require((len(argv) - 1) % 2 == 0, "require exact named option/value pairs")
+    args = {}
+    for index in range(1, len(argv), 2):
+        name, value = argv[index:index + 2]
+        require(name.startswith("--") and name not in args and bool(value),
+                "reject duplicated or malformed public gate arguments")
+        args[name] = value
+    expected = {"--source-sha256", "--protocol-sha256"}
+    if mode in ("--verify-source", "--self-test", "--run"):
+        expected.add("--contract-sha256")
+    if mode == "--run":
+        expected |= {"--architecture", "--session", "--root-authorized",
+                     "--frozen-commit", "--pushed-commit",
+                     "--v26-publication-sha256", "--v26-root-sha256",
+                     "--v27-publication-sha256", "--v27-root-sha256"}
+    require(set(args) == expected, "reject missing or unexpected public gate options")
+    for key in expected:
+        if key.endswith("-sha256"):
+            check_sha(args[key], key)
+        elif key.endswith("-commit"):
+            check_commit(args[key], key)
+    return mode, args
+
+
+def main(argv: list[str]) -> int:
+    require(sys.implementation.name == "cpython"
+            and tuple(sys.version_info[:3]) == (3, 14, 6)
+            and sys.flags.isolated == 1 and sys.flags.no_site == 1
+            and sys.dont_write_bytecode is True
+            and os.path.abspath(sys.executable) == PYTHON
+            and os.path.realpath(sys.executable) == PYTHON,
+            "use only pinned isolated no-site CPython 3.14.6")
+    no_matching_imports()
+    mode, args = parse_arguments(argv)
+    source_only = mode != "--run"
+    wall = SourceWall() if source_only else None
+    if wall is not None:
+        wall.install()
+    payloads, freeze = load_context(wall, args["--source-sha256"],
+                                    args["--protocol-sha256"],
+                                    args.get("--contract-sha256"))
+    if mode == "--render-contract":
+        assert wall is not None
+        wall_summary(wall)
+        sys.stdout.buffer.write(document(freeze))
+    elif mode == "--verify-source":
+        assert wall is not None
+        summary = wall_summary(wall)
+        summary.update({"schema": SCHEMA + "-verified-source", "status": "PASS",
+                        "source_sha256": args["--source-sha256"],
+                        "protocol_sha256": args["--protocol-sha256"],
+                        "contract_sha256": args["--contract-sha256"],
+                        "published_owner_count": len(OWNERS),
+                        "actual_native_architecture_count": 2,
+                        "public_correctness_case_count": PUBLIC_CORRECTNESS_CASES,
+                        "public_profile_case_count": PUBLIC_PROFILE_CASES,
+                        "paired_row_count": PUBLIC_PAIRED_ROWS,
+                        "runtime_non_delegation": freeze["runtime_non_delegation"],
+                        "candidate_qualified": False})
+        sys.stdout.buffer.write(document(summary))
+    elif mode == "--self-test":
+        assert wall is not None
+        sys.stdout.buffer.write(document(source_self_test(wall, freeze)))
+    else:
+        sys.stdout.buffer.write((__import__("json").dumps(
+            actual_run(payloads, freeze, args), ensure_ascii=True,
+            allow_nan=False, sort_keys=True, separators=(",", ":"))
+            + "\n").encode("ascii"))
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main(sys.argv[1:]))
+    except (GateError, OSError, ValueError, TypeError, KeyError) as error:
+        sys.stderr.write("native architecture public gate rejected: " + str(error) + "\n")
+        raise SystemExit(2)
