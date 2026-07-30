@@ -2,6 +2,17 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Independently rebuild the optimized, lifetime-safe Rust engine
+
+The [optimized Rust build](../oracle/phase2/evidence/native-source-build-v35-rust-phase2-v35-rust-optimized-safe-source-root-provenance-publication-receipt.json)
+combines the independently written exact-literal matching improvements
+with native ownership that keeps compiled engines alive through callbacks,
+scanners, and iterators. Two isolated builds and **28** compiler or audit
+processes produce byte-identical native engines and bridges. The new
+engine and bridge are different binaries from the earlier **1.24×** result;
+their compatibility, runtime safety, independence, and speed remain
+**NOT MEASURED** until fresh exact-build tests are completed.
+
 ## Preserve Zig's strict-guard failure before wider matching
 
 The [second Zig wider-public attempt](../oracle/phase2/evidence/zig-full-public-correctness-v2-v17-zig-public-v2-run-001-guard-failure.json)
