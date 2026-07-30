@@ -205,6 +205,17 @@ global inspection failure remains unchanged; this newer result is specific to
 the corrected Rust candidate, and live runtime no-delegation remains
 **NOT ESTABLISHED**.
 
+## Freeze 330 independent C compatibility corrections
+
+The [first-party C candidate's corrected Python adapter](../oracle/phase2/C-PUBLIC-ADAPTER-SEMANTICS-V1.md)
+targets exactly **330** previously recorded failures: public error identity,
+string-subclass cache identity, regular-expression flag representation,
+debug-mode caching, and bounded-cache eviction. Seven additional public flag
+aliases and the flag type's public module identity are independently checked
+without changing the **330-case** witnessed denominator. Four ordinary and
+clean-environment source-only checks pass **275** hostile and **244** semantic
+controls; no candidate variant has yet been created or tested.
+
 ## Combine all original Rust fixes with the wider scanner correction
 
 The [composed first-party Rust scanner bridge](../oracle/phase2/RUST-COMPLETE-SCANNER-BRIDGE-V1.md)
