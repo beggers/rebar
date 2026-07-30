@@ -30,6 +30,25 @@ adversarial controls. Both commands also pass outside the empty
 environment. The final protocol is **NOT FROZEN**, and its cases
 are **NOT GENERATED** and **NOT OPENED**.
 
+## Verify the expanded public development suite
+
+Regenerate the complete **10,434**-case public matrix from its
+independent source, without running either Python's matcher or a
+candidate and without reading hidden cases:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/rust_public_practice_benchmark_v2.py --verify-source
+```
+
+Replace `--verify-source` with `--self-test` to rerun the source-only
+case, weighting, typed-buffer, output-path, and canonical-evidence
+checks. Both commands also pass outside the clean environment. The
+frozen public matrix SHA-256 is
+`0c88d1ec7066ede05466c1a91126086cd52256548eda13a31778ff284439d97d`.
+The public suite is never the sealed final comparison.
+
 ## Verify the current version-99 comparison
 
 The current chart shows actual compatibility results, never speed:

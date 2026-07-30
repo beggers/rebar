@@ -8,6 +8,26 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Expand public development coverage to 10,434 cases
+
+The [independent public development suite](../oracle/phase3/RUST-PUBLIC-PRACTICE-BENCHMARK-V2.md)
+contains **10,434** equally weighted public cases: **94** independently
+generated datasets across **111** Python operations, with exactly
+**5,217** text and **5,217** byte-oriented cases. The previous
+development suite had **864** cases across **36** operations.
+
+New public coverage includes cache lifecycle and eviction, native
+method signatures, scanner serialization, Unicode comments, changing
+buffer ownership, replacement-error precedence, callback cleanup,
+and opposing hard-to-search text shapes. Candidate and official
+Python run only in isolated, explicitly authorized processes.
+
+All four ordinary and clean source-only checks passed. They started
+no candidate or reference worker, read no hidden case or archive,
+and never accessed the final holdout. Candidate results on these
+expanded cases are **NOT MEASURED** at this source freeze; a later
+timing run must first pass every public correctness case.
+
 ## Expand the unopened final comparison tenfold
 
 The [expanded final-speed-test proposal](../oracle/phase3/EXPANDED-SEALED-HOLDOUT-V2.md)

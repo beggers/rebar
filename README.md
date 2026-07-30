@@ -97,6 +97,11 @@ Speed, memory, and statistical confidence are **NOT MEASURED**. It may
 run only after at least three independently written engines pass every
 required correctness and no-delegation test.
 
+A separate public development suite covers **10,434** equally weighted
+cases across **111** Python operations, with **5,217** text and
+**5,217** byte-oriented cases. It is not the hidden final test;
+expanded-suite Rust compatibility and speed are **NOT MEASURED**.
+
 A winner must be at least **1.5×** faster overall, faster on at least
 **60%** of measured cases, and explain every slowdown over **20%**.
 
@@ -128,6 +133,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved Rust activation failure](oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json).
 - [141,557,760-case unopened final-speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V2.md).
 - [Preserved previous 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).
+- [10,434-case public development and correctness-gated timing suite](oracle/phase3/RUST-PUBLIC-PRACTICE-BENCHMARK-V2.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
   [later clarifications](AMENDMENTS.md).
