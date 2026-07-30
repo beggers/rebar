@@ -205,6 +205,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved exact-build rerun failure: an inherited setup check rejected its newer build before matching](oracle/phase2/evidence/repaired-rust-original-campaign-v27-preactivation-failure.json).
 - [Corrected frozen exact-build Rust retest](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V28.md).
 - [Preserved second exact-build rerun failure; detailed worker output was not recorded](oracle/phase2/evidence/repaired-rust-original-campaign-v28-unrecorded-worker-failure.json).
+- [Exact reproduced setup failure: the unchanged test requires its pinned C locale and clean process environment](oracle/phase2/evidence/repaired-rust-original-campaign-v28-exact-reproduction-failure.json).
 - [Frozen first-party correction removing Rust's unused external-introspection path](oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md).
 - [Actual first-party bridge source with no indirect Python-regex import](oracle/phase2/evidence/rust-no-external-introspection-v1-application.json).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
