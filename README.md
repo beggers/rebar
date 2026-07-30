@@ -40,6 +40,10 @@ A new, independently written Rust/Python boundary optimization targets
 **10 of 14** substantial measured slowdowns. Its corrected behavior and
 speed are **NOT MEASURED**.
 
+A potential Rust native-object lifetime error has also been identified
+from source inspection. Its proposed ownership correction is frozen;
+runtime safety remains **NOT ESTABLISHED**.
+
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
 unfinished group are never counted as passing. The same Rust build now

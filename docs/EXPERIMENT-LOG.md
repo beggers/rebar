@@ -25327,3 +25327,7 @@ The [recorded C source application](../oracle/phase2/evidence/c-final-public-sem
 ## Frozen current correctness graph for Rust, Zig, and C
 
 The [frozen current compatibility graph](../oracle/phase2/UPDATED-CORRECTNESS-HEADLINE-V107.md) authenticates the latest complete results without opening a candidate or hidden test: Rust and Zig each pass all **31,237** original Python checks, Rust separately passes all **10,434** wider checks, and C has passed **22,798** original checks with **224** preserved differences. Four independent source-only gates pass, including **811** hostile controls per self-test. The graph is **NOT RENDERED** until this freeze is committed and pushed.
+
+## Frozen native Rust ownership and callback lifetime correction
+
+The [frozen native-handle lifetime correction](../oracle/phase2/RUST-NATIVE-HANDLE-LEASE-V1.md) identifies a source-proven possible use-after-free when a replacement callback, scanner, or iterator explicitly destroys a compiled pattern while its native engine is still needed. Its independently written ownership model retains the native engine until every active user has released it and preserves the existing first-party literal optimization. Four source-only gates pass, including **32,768** callback action sequences, **103,184** callback-finalization checks, and **42** hostile boundary controls per self-test. The historical Rust audit covers only an older build; exact-build static independence, live independence, actual safety, correctness, and speed remain **NOT ESTABLISHED** or **NOT MEASURED**.
