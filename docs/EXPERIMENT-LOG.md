@@ -2,6 +2,15 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Preserve Zig's strict-guard failure before wider matching
+
+The [second Zig wider-public attempt](../oracle/phase2/evidence/zig-full-public-correctness-v2-v17-zig-public-v2-run-001-guard-failure.json)
+fixes the earlier recovery-directory rejection but stops inside its isolated
+worker before running any matching case: the worker cannot authenticate its
+required version-four runtime guard. All original candidate files are
+restored. Both failed attempts remain visible, the **10,434** frozen cases
+are unchanged, and wider Zig compatibility remains **NOT MEASURED**.
+
 ## Pass every original Python check with three independent engines
 
 The [fully corrected C result](../oracle/phase2/evidence/repaired-c-original-campaign-v16-c-phase2-v24-c-final-public-semantics-original-p0-v16-results-publication-receipt.json)
