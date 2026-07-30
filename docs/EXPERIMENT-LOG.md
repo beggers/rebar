@@ -241,6 +241,20 @@ It preserves the original engine source and the separate **576** capture-history
 allocations. This new architecture has not yet been built, correctness-tested,
 or timed; speed and qualification remain **NOT MEASURED**.
 
+## Freeze an independent offline build of Rust's reusable workspace
+
+The [standalone reusable-workspace native-build protocol](../oracle/phase2/RUST-WORKSPACE-SOURCE-BUILD-V29.md)
+preserves the original Rust search implementation while independently
+testing the **178,647-byte** reusable matching engine and its clean,
+first-party no-introspection bridge. Two isolated offline builds must use
+zero external Rust packages and produce identical verified native artifacts.
+
+Four ordinary and clean-environment source gates authenticate **58** frozen
+owners and reject **46** hostile actions. The experiment preserves all **408**
+previously observed reusable allocation targets and the full **31,237-case**
+original denominator. Actual compilation, correctness, and speed have not
+yet been measured for this standalone architecture.
+
 ## Freeze the independently accelerated Rust search-engine build
 
 The [version-26 first-party Rust search build](../oracle/phase2/RUST-ANCHOR-SOURCE-BUILD-V26.md)
