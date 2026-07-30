@@ -8,6 +8,21 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze lossless recording for all 10,434 public Rust checks
+
+The [public Rust correctness recorder](../oracle/phase3/RUST-PUBLIC-CORRECTNESS-EVIDENCE-V2.md)
+preserves the exact result of every independently generated public case,
+including all failures and worker diagnostics. Its suite covers **10,434**
+operations: **5,217** text and **5,217** byte-oriented checks. It may execute
+only an explicitly authenticated safety-corrected first-party Rust candidate
+after the recorder itself has been committed and pushed.
+
+Both ordinary and empty-environment source checks pass **13** accepted and
+**45** hostile controls without candidate imports, native loading, process
+creation, clocks, archives, hidden cases, or writes. These checks do not
+change the original **31,237**-case denominator. The full public candidate
+run, final speed, and candidate qualification remain **NOT MEASURED**.
+
 ## Freeze a correct, lossless public native profiler
 
 The [version-two public-only profiling procedure](../oracle/phase3/RUST-PUBLIC-PROFILE-V2.md)
