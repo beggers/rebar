@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="1100" viewBox="0 0 1480 1100" role="img" aria-labelledby="title description">
+<title id="title">Public practice only: Rust is slower overall despite six faster cohorts</title>
+<desc id="description">Public practice only, not final benchmarking. All 416 public Rust correctness cases match Python. Across 1,664 paired public timings, aggregate Python-over-Rust speed is 0.595803047189324 times, equal-case geometric speed is 0.8649792983684755 times, and equal-pair geometric speed is 0.8608014813128971 times. Rust wins 222 of 416 cases and 807 of 1,664 individual pairs. Dense same-letter no-match workloads are 0.21409330078969788 times as fast in aggregate and 0.42168362785 times as fast by equal case; the other six cohorts combined are 1.26812071029 times as fast. Of 73 cases over twenty percent slower, 69 are dense. Native CPU per-function profiling and confidence intervals are not measured: both profiler timers failed and the supposed CPU report is leaked bytes. The final holdout remains unopened, no candidate qualifies, and no winner is selected.</desc>
+<rect width="1480" height="1100" rx="24" fill="#0b1220"/>
+<rect x="56" y="39" width="271" height="36" rx="10" fill="#713f12"/>
+<text x="72" y="64" fill="#fef3c7" font-size="16" font-family="system-ui,sans-serif" font-weight="730">PUBLIC PRACTICE ONLY</text>
+<text x="57" y="116" fill="#f8fafc" font-size="35" font-family="system-ui,sans-serif" font-weight="760">Rust is slower overall on this complete public run</text>
+<text x="60" y="150" fill="#cbd5e1" font-size="18" font-family="system-ui,sans-serif">All 416 exploratory cases match Python; this is not qualification or a final benchmark.</text>
+<rect x="57" y="177" width="423" height="119" rx="15" fill="#291820" stroke="#794254"/>
+<text x="80" y="209" fill="#fda4af" font-size="15" font-family="system-ui,sans-serif" font-weight="650">TOTAL ELAPSED-TIME SPEED</text>
+<text x="79" y="255" fill="#fb7185" font-size="42" font-family="system-ui,sans-serif" font-weight="770">0.596×</text>
+<text x="239" y="251" fill="#f8fafc" font-size="17" font-family="system-ui,sans-serif">1.68× more total time</text>
+<rect x="501" y="177" width="432" height="119" rx="15" fill="#142238" stroke="#324155"/>
+<text x="524" y="209" fill="#cbd5e1" font-size="15" font-family="system-ui,sans-serif" font-weight="650">EQUAL-CASE GEOMETRIC SPEED</text>
+<text x="524" y="254" fill="#f8fafc" font-size="39" font-family="system-ui,sans-serif" font-weight="740">0.865×</text>
+<text x="676" y="251" fill="#e2e8f0" font-size="16" font-family="system-ui,sans-serif">222 / 416 cases faster</text>
+<rect x="955" y="177" width="466" height="119" rx="15" fill="#142238" stroke="#324155"/>
+<text x="978" y="209" fill="#cbd5e1" font-size="15" font-family="system-ui,sans-serif" font-weight="650">FASTER INDIVIDUAL PAIRS</text>
+<text x="977" y="254" fill="#f8fafc" font-size="38" font-family="system-ui,sans-serif" font-weight="750">807 / 1,664</text>
+<text x="980" y="279" fill="#fda4af" font-size="14" font-family="system-ui,sans-serif">857 slower  ·  none hidden</text>
+<text x="66" y="340" fill="#94a3b8" font-size="14" font-family="system-ui,sans-serif" font-weight="650">PUBLIC WORKLOAD COHORT</text>
+<text x="477" y="340" fill="#94a3b8" font-size="14" font-family="system-ui,sans-serif" font-weight="650">TOTAL-TIME SPEED  ·  1.00× = SAME SPEED</text>
+<text x="1071" y="340" fill="#94a3b8" font-size="14" font-family="system-ui,sans-serif" font-weight="650">OBSERVATIONS</text>
+<rect x="58" y="370" width="1363" height="53" rx="10" fill="#101b2b"/>
+<text x="76" y="402" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif">Dense same-letter no-match</text>
+<rect x="477" y="384" width="455" height="18" rx="6" fill="#27364b"/>
+<rect x="477" y="384" width="65" height="18" rx="6" fill="#fb7185"/>
+<line x1="780" y1="378" x2="780" y2="407" stroke="#f8fafc" stroke-width="2"/>
+<text x="951" y="402" fill="#fb7185" font-size="17" font-family="system-ui,sans-serif" font-weight="710">0.214×</text>
+<text x="1073" y="402" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">416 pairs · 339 slower</text>
+<rect x="58" y="434" width="1363" height="53" rx="10" fill="#101b2b"/>
+<text x="76" y="466" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif">Anchored multiline matching</text>
+<rect x="477" y="448" width="455" height="18" rx="6" fill="#27364b"/>
+<rect x="477" y="448" width="382" height="18" rx="6" fill="#34d399"/>
+<line x1="780" y1="442" x2="780" y2="471" stroke="#f8fafc" stroke-width="2"/>
+<text x="951" y="466" fill="#34d399" font-size="17" font-family="system-ui,sans-serif" font-weight="710">1.259×</text>
+<text x="1073" y="466" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">208 pairs · 83 slower</text>
+<rect x="58" y="498" width="1363" height="53" rx="10" fill="#101b2b"/>
+<text x="76" y="530" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif">Large lookahead capture guards</text>
+<rect x="477" y="512" width="455" height="18" rx="6" fill="#27364b"/>
+<rect x="477" y="512" width="399" height="18" rx="6" fill="#34d399"/>
+<line x1="780" y1="506" x2="780" y2="535" stroke="#f8fafc" stroke-width="2"/>
+<text x="951" y="530" fill="#34d399" font-size="17" font-family="system-ui,sans-serif" font-weight="710">1.317×</text>
+<text x="1073" y="530" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">208 pairs · 150 slower</text>
+<rect x="58" y="562" width="1363" height="53" rx="10" fill="#101b2b"/>
+<text x="76" y="594" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif">Large capture groups</text>
+<rect x="477" y="576" width="455" height="18" rx="6" fill="#27364b"/>
+<rect x="477" y="576" width="409" height="18" rx="6" fill="#34d399"/>
+<line x1="780" y1="570" x2="780" y2="599" stroke="#f8fafc" stroke-width="2"/>
+<text x="951" y="594" fill="#34d399" font-size="17" font-family="system-ui,sans-serif" font-weight="710">1.350×</text>
+<text x="1073" y="594" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">208 pairs · 109 slower</text>
+<rect x="58" y="626" width="1363" height="53" rx="10" fill="#101b2b"/>
+<text x="76" y="658" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif">Deep bounded repetition</text>
+<rect x="477" y="640" width="455" height="18" rx="6" fill="#27364b"/>
+<rect x="477" y="640" width="402" height="18" rx="6" fill="#34d399"/>
+<line x1="780" y1="634" x2="780" y2="663" stroke="#f8fafc" stroke-width="2"/>
+<text x="951" y="658" fill="#34d399" font-size="17" font-family="system-ui,sans-serif" font-weight="710">1.325×</text>
+<text x="1073" y="658" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">208 pairs · 9 slower</text>
+<rect x="58" y="690" width="1363" height="53" rx="10" fill="#101b2b"/>
+<text x="76" y="722" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif">Scanners and callbacks</text>
+<rect x="477" y="704" width="455" height="18" rx="6" fill="#27364b"/>
+<rect x="477" y="704" width="350" height="18" rx="6" fill="#34d399"/>
+<line x1="780" y1="698" x2="780" y2="727" stroke="#f8fafc" stroke-width="2"/>
+<text x="951" y="722" fill="#34d399" font-size="17" font-family="system-ui,sans-serif" font-weight="710">1.154×</text>
+<text x="1073" y="722" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">208 pairs · 97 slower</text>
+<rect x="58" y="754" width="1363" height="53" rx="10" fill="#101b2b"/>
+<text x="76" y="786" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif">Unicode and named captures</text>
+<rect x="477" y="768" width="455" height="18" rx="6" fill="#27364b"/>
+<rect x="477" y="768" width="350" height="18" rx="6" fill="#34d399"/>
+<line x1="780" y1="762" x2="780" y2="791" stroke="#f8fafc" stroke-width="2"/>
+<text x="951" y="786" fill="#34d399" font-size="17" font-family="system-ui,sans-serif" font-weight="710">1.154×</text>
+<text x="1073" y="786" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">208 pairs · 70 slower</text>
+<text x="72" y="822" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Exact public values: aggregate 0.595803047189324×  ·  dense 0.21409330078969788×  ·  equal-case geometric 0.8649792983684755×  ·  equal-pair geometric 0.8608014813128971×</text>
+<text x="72" y="845" fill="#fda4af" font-size="13" font-family="system-ui,sans-serif">73 cases &gt;20% slower (69 dense)  ·  dense equal-case 0.42168362785×  ·  six non-dense cohorts combined 1.26812071029×</text>
+<rect x="59" y="860" width="1361" height="102" rx="14" fill="#2a1c26" stroke="#794254"/>
+<text x="80" y="889" fill="#fda4af" font-size="18" font-family="system-ui,sans-serif" font-weight="720">Per-function CPU: NOT MEASURED</text>
+<text x="81" y="916" fill="#f8fafc" font-size="14" font-family="system-ui,sans-serif">Both profiler logs: itimer could not be set. Files named .cpu.txt are sorted by Inclusive Bytes Leaked.</text>
+<text x="81" y="943" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">80 independently owned Rust FFI markers confirm native participation, not per-function CPU time.</text>
+<rect x="59" y="973" width="1361" height="90" rx="14" fill="#142238" stroke="#324155"/>
+<text x="81" y="1008" fill="#fcd34d" font-size="15" font-family="system-ui,sans-serif">FINAL SPEED: NOT MEASURED  ·  CONFIDENCE: NOT MEASURED  ·  FINAL HOLDOUT: NOT OPENED</text>
+<text x="81" y="1038" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Public practice only. All 26 operations and all 857 slower pairs are retained. No candidate qualifies; no winner.</text>
+</svg>

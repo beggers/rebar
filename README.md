@@ -28,10 +28,10 @@ Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
 unfinished group are never counted as passing.
 
-![Public practice only: Rust is 0.849 times Python's typical-case speed and 0.596 times Python's speed across all recorded time. Six workload groups are faster; difficult repeated-character searches are slower.](docs/evidence/rust-public-practice-overall-v1.svg)
+![Public practice only: Rust is 0.865 times Python's typical-case speed and 0.596 times Python's speed across all recorded time. Six workload groups are faster; difficult repeated-character searches are slower.](docs/evidence/rust-public-practice-overall-v2.svg)
 
 In this separate **416-case public practice test**, Rust matched Python's
-answer every time. Its typical-case speed was **0.85× Python**; across all
+answer every time. Its typical-case speed was **0.865× Python**; across all
 recorded time it was **0.60× Python**. Six kinds of work were faster, but
 one repeated-character search was much slower. All **1,664** paired
 observations and every slower result are preserved. This is exploratory
@@ -43,6 +43,8 @@ time. Its native allocation totals were **104.2 MB** for Rust and **100.5 MB**
 for Python. Whole-process memory and Python-only memory are recorded
 separately; per-function CPU time is **NOT MEASURED** because the profiler
 could not start its sampling timer.
+
+![Public practice memory comparison: Rust and Python native heap allocation totals and peaks, whole-process memory, and Python-only traced allocations are clearly labeled separately.](docs/evidence/rust-public-practice-memory-v2.svg)
 
 | Engine | Verified Python checks | Current result |
 | --- | --- | --- |
@@ -185,6 +187,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Complete first public-profile interruption and all 1,664 practice measurements](oracle/phase3/evidence/rust-public-profile-v1-run-001-prepublication-failure.json).
 - [Corrected public profiler preserving the real profiler output and all raw measurements](oracle/phase3/RUST-PUBLIC-PROFILE-V2.md).
 - [Actual complete public Rust/Python timing, native allocation, and memory result](oracle/phase3/evidence/rust-public-profile-v2-run-001-publication-receipt.json).
+- [Complete verified practice comparisons, every slowdown, and exact memory categories](oracle/phase3/evidence/rust-public-profile-v2-complete-summary-v1.json).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
   [later clarifications](AMENDMENTS.md).

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="1140" viewBox="0 0 1480 1140" role="img" aria-labelledby="title description">
+<title id="title">Public practice memory: native heap, process RSS, and Python allocations are different</title>
+<desc id="description">Public practice only. Rust allocated 104,211,416 native bytes over 260,204 allocation calls; Python allocated 100,547,111 bytes over 284,705 calls. Native heap peaks were 53,002,684 Rust and 53,002,716 Python bytes. Whole-process peak RSS was 71,660 Rust and 38,172 Python kibibytes. Python-only tracemalloc peaks were 114,389 Rust and 192,184 Python bytes. These measure different scopes and must never be conflated. The files called CPU reports are sorted by leaked bytes; per-function CPU is not measured. Both profiler logs explicitly report that the sampling timer could not be set. Confidence, final memory, final speed, and the sealed holdout remain unmeasured or unopened.</desc>
+<rect width="1480" height="1140" rx="24" fill="#0b1220"/>
+<rect x="55" y="36" width="271" height="36" rx="10" fill="#713f12"/>
+<text x="72" y="61" fill="#fef3c7" font-size="16" font-family="system-ui,sans-serif" font-weight="730">PUBLIC PRACTICE ONLY</text>
+<text x="57" y="113" fill="#f8fafc" font-size="35" font-family="system-ui,sans-serif" font-weight="760">Three memory scopes tell different stories</text>
+<text x="59" y="147" fill="#cbd5e1" font-size="18" font-family="system-ui,sans-serif">Native heap, whole-process RSS, and Python-only tracing are separate measurements.</text>
+<rect x="60" y="169" width="1349" height="72" rx="13" fill="#172338" stroke="#324155"/>
+<rect x="85" y="192" width="15" height="15" rx="4" fill="#94a3b8"/>
+<text x="111" y="205" fill="#e2e8f0" font-size="15" font-family="system-ui,sans-serif">Python stdlib</text>
+<rect x="253" y="192" width="15" height="15" rx="4" fill="#60a5fa"/>
+<text x="280" y="205" fill="#e2e8f0" font-size="15" font-family="system-ui,sans-serif">Rust first-party engine</text>
+<text x="532" y="205" fill="#fcd34d" font-size="14" font-family="system-ui,sans-serif">Compare bars only within the same row; units and scopes differ.</text>
+<rect x="58" y="265" width="1350" height="94" rx="11" fill="#101b2b"/>
+<text x="77" y="291" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="660">Total native bytes allocated</text>
+<text x="77" y="315" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Cumulative allocations over the whole public run</text>
+<rect x="561" y="282" width="361" height="14" rx="5" fill="#94a3b8"/>
+<rect x="561" y="308" width="374" height="14" rx="5" fill="#60a5fa"/>
+<text x="956" y="295" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">100,547,111 bytes</text>
+<text x="956" y="321" fill="#93c5fd" font-size="14" font-family="system-ui,sans-serif">104,211,416 bytes</text>
+<text x="1377" y="312" text-anchor="end" fill="#fb7185" font-size="14" font-family="system-ui,sans-serif" font-weight="680">+3.6%</text>
+<rect x="58" y="370" width="1350" height="94" rx="11" fill="#101b2b"/>
+<text x="77" y="396" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="660">Native allocation events</text>
+<text x="77" y="420" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Number of native allocation calls</text>
+<rect x="561" y="387" width="374" height="14" rx="5" fill="#94a3b8"/>
+<rect x="561" y="413" width="342" height="14" rx="5" fill="#60a5fa"/>
+<text x="956" y="400" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">284,705 events</text>
+<text x="956" y="426" fill="#93c5fd" font-size="14" font-family="system-ui,sans-serif">260,204 events</text>
+<text x="1377" y="417" text-anchor="end" fill="#34d399" font-size="14" font-family="system-ui,sans-serif" font-weight="680">-8.6%</text>
+<rect x="58" y="475" width="1350" height="94" rx="11" fill="#101b2b"/>
+<text x="77" y="501" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="660">Peak native heap</text>
+<text x="77" y="525" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Profiler-observed live native heap peak</text>
+<rect x="561" y="492" width="374" height="14" rx="5" fill="#94a3b8"/>
+<rect x="561" y="518" width="374" height="14" rx="5" fill="#60a5fa"/>
+<text x="956" y="505" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">53,002,716 bytes</text>
+<text x="956" y="531" fill="#93c5fd" font-size="14" font-family="system-ui,sans-serif">53,002,684 bytes</text>
+<text x="1377" y="522" text-anchor="end" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif" font-weight="680">approximately equal</text>
+<rect x="58" y="580" width="1350" height="94" rx="11" fill="#101b2b"/>
+<text x="77" y="606" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="660">Peak whole-process RSS</text>
+<text x="77" y="630" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Entire Python process, native engine, and profiler overhead</text>
+<rect x="561" y="597" width="199" height="14" rx="5" fill="#94a3b8"/>
+<rect x="561" y="623" width="374" height="14" rx="5" fill="#60a5fa"/>
+<text x="956" y="610" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">38,172 KiB</text>
+<text x="956" y="636" fill="#93c5fd" font-size="14" font-family="system-ui,sans-serif">71,660 KiB</text>
+<text x="1377" y="627" text-anchor="end" fill="#fb7185" font-size="14" font-family="system-ui,sans-serif" font-weight="680">+87.7%</text>
+<rect x="58" y="685" width="1350" height="94" rx="11" fill="#101b2b"/>
+<text x="77" y="711" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="660">Peak Python-traced allocations</text>
+<text x="77" y="735" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Python tracemalloc only; native allocations are excluded</text>
+<rect x="561" y="702" width="374" height="14" rx="5" fill="#94a3b8"/>
+<rect x="561" y="728" width="223" height="14" rx="5" fill="#60a5fa"/>
+<text x="956" y="715" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">192,184 bytes</text>
+<text x="956" y="741" fill="#93c5fd" font-size="14" font-family="system-ui,sans-serif">114,389 bytes</text>
+<text x="1377" y="732" text-anchor="end" fill="#34d399" font-size="14" font-family="system-ui,sans-serif" font-weight="680">-40.5%</text>
+<rect x="58" y="790" width="1350" height="94" rx="11" fill="#101b2b"/>
+<text x="77" y="816" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="660">Native leaked bytes reported</text>
+<text x="77" y="840" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Profiler leak accounting; not total RSS or live heap</text>
+<rect x="561" y="807" width="374" height="14" rx="5" fill="#94a3b8"/>
+<rect x="561" y="833" width="367" height="14" rx="5" fill="#60a5fa"/>
+<text x="956" y="820" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">17,097,737 bytes</text>
+<text x="956" y="846" fill="#93c5fd" font-size="14" font-family="system-ui,sans-serif">16,771,634 bytes</text>
+<text x="1377" y="837" text-anchor="end" fill="#34d399" font-size="14" font-family="system-ui,sans-serif" font-weight="680">-1.9%</text>
+<rect x="59" y="909" width="1350" height="104" rx="14" fill="#291820" stroke="#794254"/>
+<text x="81" y="944" fill="#fda4af" font-size="18" font-family="system-ui,sans-serif" font-weight="730">Per-function CPU is NOT MEASURED</text>
+<text x="82" y="973" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif">Both logs: itimer could not be set. The .cpu.txt files are sorted by Inclusive Bytes Leaked.</text>
+<text x="82" y="997" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">80 genuine first-party Rust FFI markers show native participation; they do not provide CPU timings.</text>
+<text x="64" y="1052" fill="#fcd34d" font-size="15" font-family="system-ui,sans-serif">FINAL MEMORY: NOT MEASURED  ·  CONFIDENCE: NOT MEASURED  ·  FINAL HOLDOUT: NOT OPENED</text>
+<text x="65" y="1082" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Measured practice RSS includes the complete process; tracemalloc excludes native allocations; native bytes are cumulative.</text>
+</svg>

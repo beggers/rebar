@@ -35,6 +35,18 @@ allocations and **408** overflow-allocation events. The Rust bridge has
 **80** first-party native boundary markers. Final performance, statistical
 confidence, qualification, and a winner remain **NOT MEASURED**.
 
+The [fully verified overall comparison](evidence/rust-public-practice-overall-v2.svg)
+correctly gives each of the **416** cases equal weight: Rust's case-level
+speed is **0.8649792983684755×**, with **222** faster cases. Its separate
+pair-level speed is **0.8608014813128971×**, with **807** faster and
+**857** slower observations. All **73** case-level slowdowns over **20%**
+are recorded; **69** belong to the difficult repeated-character group.
+The [separate memory comparison](evidence/rust-public-practice-memory-v2.svg)
+labels native allocations, native heap peaks, whole-process memory, and
+Python-only tracing independently. Its authenticated renderer passes **64**
+hostile controls and retains the real missing CPU samples, every regression,
+and all raw profiler errors.
+
 ## Freeze removal of Rust's only remaining indirect regex import
 
 The [first-party Rust introspection correction](../oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md)
