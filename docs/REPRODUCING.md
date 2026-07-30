@@ -238,6 +238,28 @@ outside the clean environment. Neither command starts a reference
 worker, imports `re`, creates a buffer, or accesses the speed
 holdout.
 
+## Verify the next complete Rust correctness test
+
+The next Rust procedure authenticates the real **14,725** verified
+checks, all **2,018** observed failures, the complete original
+contracts, and the recorded interpreter failure. It does not claim
+that a corrected Rust engine has been built or executed.
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/run_owned_repaired_rust_original_campaign_v23.py \
+  --verify-frozen-context \
+  --source-sha256 dfa8b2a4d2a8ecbadbe36097a7dc55ce92abfeda56bf6cd0a8f02ae72b544b29 \
+  --protocol-sha256 289fb9f2ddd20d3f29749f0328894be2f540eaec8485ad0d7ba4d5e932eaf68e \
+  --contract-sha256 08cb3111855de792b2708db0c281c6d110735f79f3e85a3ef6c5de9944be5aa6
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce
+all **1,310** adversarial controls. Both modes also pass in a
+normal environment; actual run, worker, and recovery modes remain
+blocked until a separately verified first-party build exists.
+
 ## Verify the next first-party Rust buffer correction
 
 The proposed Rust correction removes one overbroad replacement-buffer

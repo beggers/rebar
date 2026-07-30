@@ -8,6 +8,23 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the next Rust test without claiming a repaired build
+
+The [version-23 Rust procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V23.md)
+preserves all **13** groups of the latest real Rust run: **14,725**
+verified checks, at least **2,018** observed differences, and the
+unfinished interpreter group. It retains all **435** current test
+obligations, all **402** inherited obligations, and the complete
+original failure receipt.
+
+Its source checks pass **1,310** adversarial controls in both
+normal and clean environments. They neither execute a candidate nor
+substitute the previously failed native engine. A successful test
+of this procedure is not a successful Rust build or proof that
+matching is fixed. The new native build, corrected matching,
+interpreter behavior, and runtime no-delegation remain
+**NOT MEASURED**.
+
 ## Freeze an independent Python answer for every new buffer question
 
 The [two-process Python reference](../oracle/phase1/P0-PUBLIC-BUFFER-CARRIERS-REFERENCE-V1.md)
