@@ -236,7 +236,12 @@ The [corrected independent comment-adapter freeze](../oracle/phase2/RUST-CORRECT
 keeps the candidate source inaccessible until all **98** hostile controls
 finish. It preserves the earlier rejected freeze and failure, all **914**
 semantic checks, and the same **324** targeted wider cases. No candidate has
-yet been created or run under the corrected procedure.
+yet been run under the corrected procedure. The [actual corrected comment
+adapter](../oracle/phase2/evidence/rust-corrected-comment-adapter-v2-application.json)
+now exists at its predicted **34,039-byte** source identity after the
+candidate source remained inaccessible throughout all **98** hostile
+controls. Its complete native candidate and wider-suite result have
+**NOT BEEN RUN**.
 
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 

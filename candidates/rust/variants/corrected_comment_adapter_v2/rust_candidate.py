@@ -1,0 +1,926 @@
+"""From-scratch Rust regular expressions with a mandatory native bridge."""
+
+import enum
+import operator
+import os
+import types
+import unicodedata
+import warnings
+
+from candidates import _rust_bridge
+
+
+__version__ = "2.2.1"
+
+
+class RegexFlag(enum.IntFlag):
+    NOFLAG = 0
+    ASCII = A = 256
+    IGNORECASE = I = 2
+    LOCALE = L = 4
+    UNICODE = U = 32
+    MULTILINE = M = 8
+    DOTALL = S = 16
+    VERBOSE = X = 64
+    DEBUG = 128
+    _numeric_repr_ = hex
+
+    def __repr__(self):
+        value = int(self)
+        if not value:
+            return "re.NOFLAG"
+        ordered = (
+            (self.ASCII, "ASCII"),
+            (self.IGNORECASE, "IGNORECASE"),
+            (self.LOCALE, "LOCALE"),
+            (self.UNICODE, "UNICODE"),
+            (self.MULTILINE, "MULTILINE"),
+            (self.DOTALL, "DOTALL"),
+            (self.VERBOSE, "VERBOSE"),
+            (self.DEBUG, "DEBUG"),
+        )
+        known = sum(int(bit) for bit, _ in ordered)
+        parts = [f"re.{name}" for bit, name in ordered if value & int(bit)]
+        unknown = value & ~known
+        if unknown:
+            if not parts:
+                return f"re.RegexFlag({value})"
+            parts.append(hex(unknown))
+        return "|".join(parts)
+
+    __str__ = __repr__
+
+
+A = ASCII = RegexFlag.ASCII
+I = IGNORECASE = RegexFlag.IGNORECASE
+L = LOCALE = RegexFlag.LOCALE
+M = MULTILINE = RegexFlag.MULTILINE
+S = DOTALL = RegexFlag.DOTALL
+X = VERBOSE = RegexFlag.VERBOSE
+U = UNICODE = RegexFlag.UNICODE
+DEBUG = RegexFlag.DEBUG
+NOFLAG = RegexFlag.NOFLAG
+_BYTE = 1 << 31
+_ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
+_MISSING = object()
+_WARNING_PREFIX = (os.path.dirname(__file__),)
+_MAX_ENDPOS = (1 << 63) - 1
+_MIN_ENDPOS = -_MAX_ENDPOS - 1
+_PATTERN_METHODS = ("search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn", "scanner")
+_SIMPLE_TEMPLATE_ESCAPES = {"a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v", "\\": "\\"}
+
+
+class PatternError(Exception):
+    __module__ = "re"
+
+    def __init__(self, msg, pattern=None, pos=None):
+        self.msg = msg
+        self.pattern = pattern
+        self.pos = pos
+        if pattern is None or pos is None:
+            self.lineno = self.colno = None
+            text = msg
+        else:
+            scan = pattern.decode("latin1") if isinstance(pattern, bytes) else pattern
+            self.lineno = scan.count("\n", 0, pos) + 1
+            self.colno = pos - scan.rfind("\n", 0, pos)
+            text = f"{msg} at position {pos}"
+            if "\n" in scan:
+                text += f" (line {self.lineno}, column {self.colno})"
+        super().__init__(text)
+
+
+error = PatternError
+
+
+def _name_text(value):
+    if isinstance(value, bytes):
+        return value.decode("ascii", "backslashreplace")
+    return value
+
+
+def _character_range_error(pattern, message, position):
+    if (
+        not isinstance(pattern, str)
+        or not message.startswith("bad character range ")
+        or position is None
+        or position < 0
+        or position + 2 >= len(pattern)
+        or pattern[position + 1] != "-"
+    ):
+        return message, position
+
+    dash = position + 1
+
+    def escape_end(start):
+        if start + 1 >= len(pattern) or pattern[start] != "\\":
+            return start + 1
+        marker = pattern[start + 1]
+        if marker == "x":
+            return start + 4
+        if marker == "u":
+            return start + 6
+        if marker == "U":
+            return start + 10
+        if marker == "N" and pattern[start + 2:start + 3] == "{":
+            close = pattern.find("}", start + 3)
+            return len(pattern) if close < 0 else close + 1
+        return start + 2
+
+    escaped_left = pattern.rfind("\\", 0, dash)
+    if escaped_left >= 0 and escape_end(escaped_left) == dash:
+        left = pattern[escaped_left:escaped_left + 2]
+    else:
+        left = pattern[dash - 1]
+    right_start = dash + 1
+    if pattern[right_start] == "\\":
+        right = pattern[right_start:right_start + 2]
+        right_end = escape_end(right_start)
+    else:
+        right = pattern[right_start]
+        right_end = right_start + 1
+    return f"bad character range {left}-{right}", right_end - len(left) - len(right) - 1
+
+
+def _group_name_error(pattern, message, position):
+    if (
+        not isinstance(pattern, str)
+        or position is None
+        or not 0 <= position < len(pattern)
+    ):
+        return message
+    if message.startswith("bad character in group name "):
+        prefix = "bad character in group name"
+    elif message.startswith("unknown group name "):
+        prefix = "unknown group name"
+    elif message == "invalid group reference ":
+        prefix = "bad character in group name"
+    else:
+        return message
+    end = min(
+        (
+            index
+            for index in (pattern.find(">", position), pattern.find(")", position))
+            if index >= 0
+        ),
+        default=len(pattern),
+    )
+    name = pattern[position:end]
+    if name and not name.isprintable():
+        return f"{prefix} {name!r}"
+    return message
+
+
+class _Native:
+    __slots__ = ("native_compile", "native_error", "native_free")
+
+    def __init__(self):
+        self.native_compile = _rust_bridge.compile
+        self.native_error = _rust_bridge.error
+        self.native_free = _rust_bridge.free
+
+    def error(self, pattern):
+        message, position, include = self.native_error()
+        message, position = _character_range_error(pattern, message, position)
+        message = _group_name_error(pattern, message, position)
+        if message == "the repetition number is too large":
+            raise OverflowError(message)
+        if message == "maximum recursion depth exceeded":
+            raise RecursionError(message)
+        if message.startswith("redefinition of group name "):
+            try:
+                raise PatternError(message)
+            except PatternError:
+                raise PatternError(
+                    message,
+                    pattern if include else None,
+                    position if position is not None and position >= 0 else None,
+                ) from None
+        raise PatternError(message, pattern if include else None, position if position is not None and position >= 0 else None)
+
+    def compile(self, pattern, flags):
+        named = _named_escapes(pattern, flags) if isinstance(pattern, str) and "\\N" in pattern else ()
+        if named:
+            positions = tuple(item[0] for item in named)
+            values = tuple(item[1] for item in named)
+        else:
+            positions = values = ()
+        compiled = self.native_compile(pattern, flags, positions, values)
+        if compiled is None:
+            self.error(pattern)
+        return compiled
+
+    def compile_scanner(self, patterns, flags):
+        all_positions = []
+        all_values = []
+        for pattern in patterns:
+            named = (
+                _named_escapes(pattern, flags)
+                if isinstance(pattern, str) and "\\N" in pattern
+                else ()
+            )
+            all_positions.append(tuple(item[0] for item in named))
+            all_values.append(tuple(item[1] for item in named))
+        compiled = _rust_bridge.compile_scanner(
+            patterns,
+            flags,
+            tuple(all_positions),
+            tuple(all_values),
+        )
+        if compiled[0] is None:
+            message, _, _ = self.native_error()
+            if message == "invalid SRE code":
+                raise RuntimeError(message)
+            if message in (
+                "cannot use LOCALE flag with a str pattern",
+                "cannot use UNICODE flag with a bytes pattern",
+                "ASCII and UNICODE flags are incompatible",
+                "ASCII and LOCALE flags are incompatible",
+            ):
+                raise ValueError(message)
+            self.error(patterns[compiled[1]])
+        return compiled
+
+    def run(self, handle, string, groups, pos, endpos, mode, nonempty):
+        return _rust_bridge.run(handle, string, groups, pos, endpos, mode, nonempty)
+
+    def collect(self, handle, string, groups, pos, endpos):
+        return _rust_bridge.collect(handle, string, groups, pos, endpos)
+
+    def free(self, handle):
+        self.native_free(handle)
+
+
+_NATIVE = _Native()
+
+
+def _named_escapes(pattern, flags=0):
+    if isinstance(pattern, bytes):
+        return []
+    found = []
+    index = 0
+    verbose = bool(flags & int(VERBOSE))
+    scopes = []
+    in_class = False
+    class_start = -1
+    while index < len(pattern):
+        char = pattern[index]
+        if char == "\\":
+            slash = index
+            index += 1
+            if pattern[index:index + 2] != "N{":
+                index += bool(pattern[index:index + 1])
+                continue
+            close = pattern.find("}", index + 2)
+            if close == index + 2 or (close < 0 and index + 2 == len(pattern)):
+                raise PatternError("missing character name", pattern, slash + 3)
+            if close < 0:
+                raise PatternError("missing }, unterminated name", pattern, slash + 3)
+            name = pattern[index + 2:close]
+            try:
+                value = unicodedata.lookup(name)
+            except KeyError:
+                raise PatternError(f"undefined character name {name!r}", pattern, slash) from None
+            if len(value) != 1:
+                raise PatternError(f"undefined character name {name!r}", pattern, slash)
+            found.append((slash, ord(value)))
+            index = close + 1
+            continue
+        if in_class:
+            if char == "]" and index > class_start:
+                in_class = False
+            index += 1
+            continue
+        if verbose and char == "#":
+            newline = pattern.find("\n", index + 1)
+            if newline < 0:
+                break
+            index = newline + 1
+            continue
+        if char == "[":
+            in_class = True
+            class_start = index + 1
+            if pattern[class_start:class_start + 1] == "^":
+                class_start += 1
+            index += 1
+            continue
+        if char == "(":
+            if pattern[index:index + 3] == "(?#":
+                close = pattern.find(")", index + 3)
+                index = len(pattern) if close < 0 else close + 1
+                continue
+            if pattern[index:index + 2] == "(?":
+                marker = index + 2
+                while (marker < len(pattern)
+                       and pattern[marker] in "aiLmsux-"):
+                    marker += 1
+                if (marker > index + 2
+                        and pattern[marker:marker + 1] in (":", ")")):
+                    enabled, _, disabled = pattern[index + 2:marker].partition("-")
+                    scoped_verbose = verbose
+                    if "x" in enabled:
+                        scoped_verbose = True
+                    if "x" in disabled:
+                        scoped_verbose = False
+                    if pattern[marker] == ")":
+                        verbose = scoped_verbose
+                        index = marker + 1
+                        continue
+                    scopes.append(verbose)
+                    verbose = scoped_verbose
+                    index = marker + 1
+                    continue
+            scopes.append(verbose)
+            index += 1
+            continue
+        if char == ")" and scopes:
+            verbose = scopes.pop()
+        index += 1
+    return found
+
+
+def _warn_ambiguous(pattern):
+    text = pattern.decode("latin1") if isinstance(pattern, bytes) else pattern
+    opening = -1
+    escaped = False
+    for index, char in enumerate(text):
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+        elif char == "[" and opening < 0:
+            opening = index
+        elif char == "]":
+            first = opening + 1 + (text[opening + 1:opening + 2] == "^")
+            if opening < 0 or index != first:
+                opening = -1
+        elif opening >= 0:
+            if char == "[" and index == opening + 1:
+                warnings.warn(f"Possible nested set at position {index}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
+            first = opening + 1 + (text[opening + 1:opening + 2] == "^")
+            if index > first:
+                for marker, label in (("&&", "intersection"), ("||", "union"), ("~~", "symmetric difference"), ("--", "difference")):
+                    if text[index:index + 2] == marker:
+                        warnings.warn(f"Possible set {label} at position {index}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
+
+
+def _template(value, match, validate_only=False):
+    if isinstance(value, memoryview):
+        hash(value)
+        value = str(value, "latin1").encode("latin1")
+    elif isinstance(value, bytearray):
+        value = bytes(value)
+    elif not isinstance(value, (str, bytes)):
+        hash(value)
+        try:
+            view = memoryview(value)
+        except TypeError:
+            value = str(value, "latin1").encode("latin1")
+        else:
+            try:
+                value = view.tobytes()
+            finally:
+                view.release()
+    byte_mode = isinstance(value, bytes)
+    text = value.decode("latin1") if isinstance(value, bytes) else value
+    output = []
+    index = 0
+    while index < len(text):
+        char = text[index]
+        if char != "\\":
+            output.append(char)
+            index += 1
+            continue
+        slash = index
+        index += 1
+        if index == len(text):
+            raise PatternError("bad escape (end of pattern)", value, slash)
+        char = text[index]
+        index += 1
+        if char == "g":
+            if index >= len(text) or text[index] != "<":
+                raise PatternError("missing <", value, index)
+            index += 1
+            name_start = index
+            close = text.find(">", index)
+            if close < 0:
+                name = text[index:]
+                if not name:
+                    raise PatternError("missing group name", value, name_start)
+                raise PatternError("missing >, unterminated name", value, name_start)
+            name = text[index:close]
+            index = close + 1
+            if not name:
+                raise PatternError("missing group name", value, name_start)
+            if all(item in "0123456789" for item in name):
+                number = int(name)
+                if number > match.re.groups:
+                    raise PatternError(f"invalid group reference {number}", value, name_start)
+            else:
+                if not name.isidentifier() or (byte_mode and not name.isascii()):
+                    shown = "".join(item if item.isascii() else f"\\x{ord(item):02x}" for item in name) if byte_mode else name
+                    raise PatternError(f"bad character in group name '{shown}'", value, name_start)
+                if name not in match.re.groupindex:
+                    raise IndexError(f"unknown group name {name!r}")
+                number = match.re.groupindex[name]
+            part = (b"" if byte_mode else "") if validate_only else match.group(number)
+            if part is not None and byte_mode != isinstance(part, bytes):
+                expected = "a bytes-like object" if byte_mode else "str instance"
+                raise TypeError(f"sequence item 1: expected {expected}, {type(part).__name__} found")
+            output.append("" if part is None else part.decode("latin1") if isinstance(part, bytes) else part)
+        elif char in "0123456789":
+            digits = char
+            octal = char == "0" or (
+                char in "1234567"
+                and index + 1 < len(text)
+                and text[index] in "01234567"
+                and text[index + 1] in "01234567"
+            )
+            if octal:
+                while len(digits) < 3 and index < len(text) and text[index] in "01234567":
+                    digits += text[index]
+                    index += 1
+                number = int(digits, 8)
+                if number > 0o377:
+                    raise PatternError(f"octal escape value \\{digits} outside of range 0-0o377", value, slash)
+                output.append(chr(number))
+                continue
+            if index < len(text) and text[index] in "0123456789":
+                digits += text[index]
+                index += 1
+            number = int(digits)
+            if number > match.re.groups:
+                raise PatternError(f"invalid group reference {number}", value, slash + 1)
+            part = (b"" if byte_mode else "") if validate_only else match.group(number)
+            if part is not None and byte_mode != isinstance(part, bytes):
+                expected = "a bytes-like object" if byte_mode else "str instance"
+                raise TypeError(f"sequence item 1: expected {expected}, {type(part).__name__} found")
+            output.append("" if part is None else part.decode("latin1") if isinstance(part, bytes) else part)
+        elif char in _SIMPLE_TEMPLATE_ESCAPES:
+            output.append(_SIMPLE_TEMPLATE_ESCAPES[char])
+        elif char.isalpha():
+            raise PatternError(f"bad escape \\{char}", value, slash)
+        else:
+            output.append("\\" + char)
+    joined = "".join(output)
+    return joined.encode("latin1") if byte_mode else joined
+
+
+def _template_tokens(value, pattern):
+    byte_mode = isinstance(value, bytes)
+    text = value.decode("latin1") if byte_mode else value
+    tokens = []
+    literal = []
+    index = 0
+
+    def group(number):
+        if literal:
+            joined = "".join(literal)
+            tokens.append(joined.encode("latin1") if byte_mode else joined)
+            literal.clear()
+        tokens.append(number)
+
+    while index < len(text):
+        char = text[index]
+        index += 1
+        if char != "\\":
+            literal.append(char)
+            continue
+        char = text[index]
+        index += 1
+        if char == "g":
+            index += 1
+            close = text.index(">", index)
+            name = text[index:close]
+            index = close + 1
+            group(int(name) if all(item in "0123456789" for item in name) else pattern.groupindex[name])
+        elif char in "0123456789":
+            digits = char
+            octal = char == "0" or (char in "1234567" and index + 1 < len(text) and text[index] in "01234567" and text[index + 1] in "01234567")
+            if octal:
+                while len(digits) < 3 and index < len(text) and text[index] in "01234567":
+                    digits += text[index]
+                    index += 1
+                literal.append(chr(int(digits, 8)))
+            else:
+                if index < len(text) and text[index] in "0123456789":
+                    digits += text[index]
+                    index += 1
+                group(int(digits))
+        elif char in _SIMPLE_TEMPLATE_ESCAPES:
+            literal.append(_SIMPLE_TEMPLATE_ESCAPES[char])
+        else:
+            literal.extend(("\\", char))
+    if literal:
+        joined = "".join(literal)
+        tokens.append(joined.encode("latin1") if byte_mode else joined)
+    return tuple(tokens)
+
+
+def _expand_tokens(tokens, match, byte_mode):
+    empty = b"" if byte_mode else ""
+    return empty.join(empty if value is None else value for value in (match.group(token) if isinstance(token, int) else token for token in tokens))
+
+
+def _slice(value, start, end):
+    if isinstance(value, str):
+        return str(value)[start:end]
+    if isinstance(value, bytes):
+        return bytes(value)[start:end]
+    return memoryview(value).cast("B")[start:end].tobytes()
+
+
+def _subject_length(value):
+    if isinstance(value, (str, bytes, bytearray)):
+        return len(value)
+    return memoryview(value).nbytes
+
+
+def _normalize_window(string, pos, endpos):
+    length = _subject_length(string)
+    start = pos if type(pos) is int else operator.index(pos)
+    end = endpos if type(endpos) is int else operator.index(endpos)
+    if start > _MAX_ENDPOS or start < _MIN_ENDPOS or end > _MAX_ENDPOS or end < _MIN_ENDPOS:
+        raise OverflowError("Python int too large to convert to C ssize_t")
+    return min(max(start, 0), length), min(max(end, 0), length), length
+
+
+def _normalize_count(value):
+    count = value if type(value) is int else operator.index(value)
+    if count > _MAX_ENDPOS or count < _MIN_ENDPOS:
+        raise OverflowError("Python int too large to convert to C ssize_t")
+    return count
+
+
+class _OwnedGenericAlias(types.GenericAlias):
+    __slots__ = ()
+
+    def __reduce__(self):
+        origin = self.__origin__
+        if origin is Pattern:
+            name = "Pattern"
+        elif origin is Match:
+            name = "Match"
+        else:
+            raise TypeError(
+                "cannot pickle an unowned Rust regular-expression generic alias"
+            )
+        return _restore_owned_generic_alias, (name, self.__args__)
+
+
+def _restore_owned_generic_alias(name, arguments):
+    if type(name) is not str or type(arguments) is not tuple:
+        raise TypeError("invalid owned Rust regular-expression generic alias")
+    if name == "Pattern":
+        origin = Pattern
+    elif name == "Match":
+        origin = Match
+    else:
+        raise ValueError("unknown owned Rust regular-expression generic alias")
+    return _OwnedGenericAlias(origin, arguments)
+
+
+Match = _rust_bridge.Match
+_NATIVE_BIND = _rust_bridge.bind
+
+
+class _PatternType(type):
+    pass
+
+
+class Pattern(metaclass=_PatternType):
+    __module__ = "re"
+    __slots__ = (
+        "pattern", "flags", "groups", "_groupindex", "_handle",
+        "_literal", "_bound_methods", "_templates", "__weakref__",
+    )
+
+    def __init__(self, value, flags, handle, groups, groupindex):
+        names = dict(groupindex)
+        object.__setattr__(self, "pattern", value)
+        object.__setattr__(self, "flags", flags)
+        object.__setattr__(self, "groups", groups)
+        self._groupindex = names
+        self._handle = handle
+        self._bound_methods = None
+        self._templates = None
+        metacharacters = b".^$*+?{}[]\\|()" if isinstance(value, bytes) else ".^$*+?{}[]\\|()"
+        self._literal = value if value and not flags & int(IGNORECASE | VERBOSE) and not any(char in metacharacters for char in value) else None
+
+    @property
+    def groupindex(self):
+        names = self._groupindex
+        return types.MappingProxyType(names) if names else {}
+
+    def __setattr__(self, name, value):
+        if name in ("pattern", "flags", "groups"):
+            raise AttributeError("readonly attribute")
+        if name == "groupindex":
+            raise AttributeError("attribute 'groupindex' of 're.Pattern' objects is not writable")
+        if name in _PATTERN_METHODS:
+            raise AttributeError(f"'re.Pattern' object attribute '{name}' is read-only")
+        object.__setattr__(self, name, value)
+
+    def __del__(self):
+        handle = getattr(self, "_handle", None)
+        if handle:
+            _NATIVE.free(handle)
+            self._handle = None
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
+
+    def __reduce__(self):
+        return compile, (self.pattern, self.flags)
+
+    @classmethod
+    def __class_getitem__(cls, item):
+        return _OwnedGenericAlias(cls, item)
+
+    def __repr__(self):
+        flags = self.flags & ~int(UNICODE)
+        shown = repr(self.pattern)
+        if len(shown) > 200:
+            shown = shown[:200]
+        if flags:
+            ordered = (
+                (int(IGNORECASE), "re.IGNORECASE"),
+                (int(LOCALE), "re.LOCALE"),
+                (int(MULTILINE), "re.MULTILINE"),
+                (int(DOTALL), "re.DOTALL"),
+                (int(UNICODE), "re.UNICODE"),
+                (int(VERBOSE), "re.VERBOSE"),
+                (int(DEBUG), "re.DEBUG"),
+                (int(ASCII), "re.ASCII"),
+            )
+            parts = [name for bit, name in ordered if flags & bit]
+            unknown = flags & ~sum(bit for bit, _ in ordered)
+            if unknown:
+                parts.append(hex(unknown))
+            suffix = ", " + "|".join(parts)
+        else:
+            suffix = ""
+        return f"re.compile({shown}{suffix})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Pattern):
+            return NotImplemented
+        return (self.pattern, self.flags) == (other.pattern, other.flags)
+
+    def __hash__(self):
+        return hash((self.pattern, self.flags))
+
+    def _cached_template(self, repl, string, length):
+        raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
+        templates = self._templates
+        if templates is not None:
+            cached = templates.get(raw, _MISSING)
+            if cached is not _MISSING:
+                return raw, cached
+
+        _template(
+            repl,
+            Match(self, string, ((0, 0),) + (None,) * self.groups, None, 0, length),
+            True,
+        )
+        escaped = b"\\" in raw if isinstance(raw, bytes) else "\\" in raw
+        tokens = _template_tokens(raw, self) if escaped else None
+        if templates is None:
+            templates = {}
+            self._templates = templates
+        elif len(templates) >= 32:
+            templates.clear()
+        templates[raw] = tokens
+        return raw, tokens
+
+Pattern = _rust_bridge.pattern_type(Pattern)
+
+for _pattern_descriptor in _rust_bridge.pattern_descriptors(Pattern):
+    type.__setattr__(
+        Pattern, _pattern_descriptor.__name__, _pattern_descriptor
+    )
+
+_rust_bridge.set_template(_template)
+
+
+class Scanner:
+    def __init__(self, lexicon, flags=0):
+        if isinstance(flags, RegexFlag):
+            flags = flags.value
+        self.lexicon = lexicon
+        phrases = tuple(phrase for phrase, _ in lexicon)
+        if not phrases:
+            raise RuntimeError("invalid SRE code")
+        for phrase in phrases:
+            if isinstance(phrase, bytes):
+                if b"[" in phrase:
+                    _warn_ambiguous(phrase)
+            elif isinstance(phrase, str):
+                if "[" in phrase:
+                    _warn_ambiguous(phrase)
+        handle, groups, effective_flags, groupindex = _NATIVE.compile_scanner(
+            phrases,
+            flags,
+        )
+        self.scanner = Pattern(
+            None,
+            effective_flags,
+            handle,
+            groups,
+            groupindex,
+        )
+
+    def scan(self, string):
+        result = []
+        append = result.append
+        match = self.scanner.scanner(string).match
+        position = 0
+        while True:
+            matched = match()
+            if not matched:
+                break
+            end = matched.end()
+            if position == end:
+                break
+            action = self.lexicon[matched.lastindex - 1][1]
+            if callable(action):
+                self.match = matched
+                action = action(self, matched.group())
+            if action is not None:
+                append(action)
+            position = end
+        return result, string[position:]
+
+
+_cache = {}
+_cache2 = {}
+_MAXCACHE = 512
+_MAXCACHE2 = 256
+_CACHE = _cache
+_CACHE2 = _cache2
+_MAX_CACHE = _MAXCACHE
+_MAX_CACHE2 = _MAXCACHE2
+
+
+def _cache_pattern(key, pattern):
+    if len(_cache) >= _MAXCACHE:
+        try:
+            del _cache[next(iter(_cache))]
+        except (StopIteration, RuntimeError, KeyError):
+            pass
+    _cache[key] = pattern
+    if len(_cache2) >= _MAXCACHE2:
+        try:
+            del _cache2[next(iter(_cache2))]
+        except (StopIteration, RuntimeError, KeyError):
+            pass
+    _cache2[key] = pattern
+    return pattern
+
+
+def _compile(pattern, flags):
+    if isinstance(flags, RegexFlag):
+        flags = flags.value
+    try:
+        return _cache2[type(pattern), pattern, flags]
+    except KeyError:
+        pass
+
+    key = (type(pattern), pattern, flags)
+    cached = _cache.pop(key, None)
+    if cached is not None:
+        return _cache_pattern(key, cached)
+
+    if isinstance(pattern, Pattern):
+        if flags:
+            raise ValueError("cannot process flags argument with a compiled pattern")
+        return pattern
+    if not isinstance(pattern, (str, bytes)):
+        raise TypeError("first argument must be string or compiled pattern")
+
+    if isinstance(pattern, str) and flags & int(LOCALE):
+        raise ValueError("cannot use LOCALE flag with a str pattern")
+    if isinstance(pattern, bytes) and flags & int(UNICODE):
+        raise ValueError("cannot use UNICODE flag with a bytes pattern")
+    if isinstance(pattern, str) and flags & int(ASCII) and flags & int(UNICODE):
+        raise ValueError("ASCII and UNICODE flags are incompatible")
+    if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
+        raise ValueError("ASCII and LOCALE flags are incompatible")
+    if flags > (1 << 31) - 1 or flags < -(1 << 31):
+        raise OverflowError("Python int too large to convert to C int")
+    implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
+    if (b"[" if isinstance(pattern, bytes) else "[") in pattern:
+        _warn_ambiguous(pattern)
+    native_flags = int(flags | implicit_unicode) & ((1 << 32) - 1)
+    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, native_flags)
+    if flags < 0:
+        effective_flags |= flags
+    if isinstance(pattern, str) and ((flags & int(ASCII) and effective_flags & int(UNICODE)) or (flags & int(UNICODE) and effective_flags & int(ASCII))):
+        _NATIVE.free(handle)
+        raise ValueError("ASCII and UNICODE flags are incompatible")
+    if isinstance(pattern, bytes) and ((flags & int(ASCII) and effective_flags & int(LOCALE)) or (flags & int(LOCALE) and effective_flags & int(ASCII))):
+        _NATIVE.free(handle)
+        raise ValueError("ASCII and LOCALE flags are incompatible")
+    result = Pattern(pattern, effective_flags, handle, groups, groupindex)
+    if flags & int(DEBUG):
+        print(f"RUST-CONTINUATION groups={groups} flags={effective_flags}")
+        return result
+    return _cache_pattern(key, result)
+
+
+def compile(pattern, flags=0):
+    return _compile(pattern, flags)
+
+
+def purge():
+    _cache.clear()
+    _cache2.clear()
+
+
+def search(pattern, string, flags=0):
+    return _compile(pattern, flags).search(string)
+
+
+def match(pattern, string, flags=0):
+    return _compile(pattern, flags).match(string)
+
+
+def fullmatch(pattern, string, flags=0):
+    return _compile(pattern, flags).fullmatch(string)
+
+
+def findall(pattern, string, flags=0):
+    return _compile(pattern, flags).findall(string)
+
+
+def finditer(pattern, string, flags=0):
+    return _compile(pattern, flags).finditer(string)
+
+
+def split(pattern, string, *args, maxsplit=_MISSING, flags=_MISSING):
+    keyword_maxsplit = maxsplit is not _MISSING
+    keyword_flags = flags is not _MISSING
+    maxsplit = 0 if maxsplit is _MISSING else maxsplit
+    flags = 0 if flags is _MISSING else flags
+    if args:
+        if len(args) > 2:
+            raise TypeError(f"split() takes from 2 to 4 positional arguments but {len(args) + 2} were given")
+        if keyword_maxsplit:
+            raise TypeError("split() got multiple values for argument 'maxsplit'")
+        if len(args) > 1 and keyword_flags:
+            raise TypeError("split() got multiple values for argument 'flags'")
+        warnings.warn("'maxsplit' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
+        maxsplit, flags = (args + (flags,))[:2]
+    return _compile(pattern, flags).split(string, maxsplit)
+
+
+def sub(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
+    keyword_count = count is not _MISSING
+    keyword_flags = flags is not _MISSING
+    count = 0 if count is _MISSING else count
+    flags = 0 if flags is _MISSING else flags
+    if args:
+        if len(args) > 2:
+            raise TypeError(f"sub() takes from 3 to 5 positional arguments but {len(args) + 3} were given")
+        if keyword_count:
+            raise TypeError("sub() got multiple values for argument 'count'")
+        if len(args) > 1 and keyword_flags:
+            raise TypeError("sub() got multiple values for argument 'flags'")
+        warnings.warn("'count' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
+        count, flags = (args + (flags,))[:2]
+    return _compile(pattern, flags).sub(repl, string, count)
+
+
+def subn(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
+    keyword_count = count is not _MISSING
+    keyword_flags = flags is not _MISSING
+    count = 0 if count is _MISSING else count
+    flags = 0 if flags is _MISSING else flags
+    if args:
+        if len(args) > 2:
+            raise TypeError(f"subn() takes from 3 to 5 positional arguments but {len(args) + 3} were given")
+        if keyword_count:
+            raise TypeError("subn() got multiple values for argument 'count'")
+        if len(args) > 1 and keyword_flags:
+            raise TypeError("subn() got multiple values for argument 'flags'")
+        warnings.warn("'count' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
+        count, flags = (args + (flags,))[:2]
+    return _compile(pattern, flags).subn(repl, string, count)
+
+
+split.__text_signature__ = "(pattern, string, maxsplit=0, flags=0)"
+sub.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
+subn.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
+
+
+def escape(pattern):
+    if isinstance(pattern, str):
+        return pattern.translate(_ESCAPE_MAP)
+    return str(pattern, "latin1").translate(_ESCAPE_MAP).encode("latin1")
+
+
+__all__ = ["match", "fullmatch", "search", "sub", "subn", "split", "findall", "finditer", "compile", "purge", "escape", "error", "Pattern", "Match", "A", "I", "L", "M", "S", "X", "U", "ASCII", "IGNORECASE", "LOCALE", "MULTILINE", "DOTALL", "VERBOSE", "UNICODE", "NOFLAG", "RegexFlag", "PatternError"]
