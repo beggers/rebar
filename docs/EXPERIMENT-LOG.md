@@ -126,6 +126,14 @@ any variant or running any candidate. The exact failure remains preserved;
 a separately frozen successor must correct the source-surface check without
 weakening the no-external-engine protection.
 
+The [independently corrected second replacement-order freeze](../oracle/phase2/RUST-SUBSTITUTION-EVENT-ORDER-V2.md)
+distinguishes the legitimate forward declaration of `Match.expand` from its
+actual implementation. The corrected bridge itself is unchanged from the
+original prediction: **177,335 bytes**, with all **1,264** target event
+models preserved. Four ordinary and clean-environment source gates pass **93**
+hostile controls while preserving the earlier failed attempt. Its source
+variant has not yet been created, built, or tested.
+
 ## Freeze the separate correction for 88 Rust expansion differences
 
 The [independent Rust expansion and buffer-probe correction](../oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md)
