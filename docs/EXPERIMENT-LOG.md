@@ -31,8 +31,14 @@ workspace for nested assertions and callbacks.
 Four ordinary and clean-environment source gates cover **18,144** modeled
 matching behaviors, including **12,096** nested or reentrant checks and
 **16,848** modeled avoided allocations. The source gates run no candidate,
-load no native engine, and leave the larger final test unopened. The actual
-variant has not yet been created, built, correctness-tested, or timed.
+load no native engine, and leave the larger final test unopened.
+
+The [actual exclusively created Rust source variant](../oracle/phase2/evidence/rust-vm-workspace-reuse-v1-application.json)
+has the frozen **178,647-byte** contents and SHA-256
+`0bd199957ed96cbf67109d4621698a6be300cb5c88d0ae30d25402f51777ba36`.
+It preserves the original engine source and the separate **576** capture-history
+allocations. This new architecture has not yet been built, correctness-tested,
+or timed; speed and qualification remain **NOT MEASURED**.
 
 ## Freeze the independently accelerated Rust search-engine build
 
