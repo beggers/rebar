@@ -197,6 +197,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved first replacement-order correction rejection before any source variant or candidate was created](oracle/phase2/evidence/rust-substitution-event-order-v1-preapplication-failure.json).
 - [Corrected first-party replacement-order experiment preserving the original rejected source freeze](oracle/phase2/RUST-SUBSTITUTION-EVENT-ORDER-V2.md).
 - [Actual Rust bridge correction preserving input lifetimes and targeting 1,264 known compatibility differences](oracle/phase2/evidence/rust-substitution-event-order-v2-application.json).
+- [Frozen first-party Rust scanner serialization correction targeting 470 public compatibility failures](oracle/phase2/RUST-SCANNER-PICKLE-SEMANTICS-V1.md).
 - [Frozen independent first-party correction for 88 remaining Rust template-expansion and buffer-probe differences](oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md).
 - [Actual isolated Rust bridge source correcting template expansion and outer buffer checks](oracle/phase2/evidence/rust-expand-probe-semantics-v1-application.json).
 - [Frozen combined first-party Rust correction covering all 1,352 known original compatibility failures](oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V1.md).

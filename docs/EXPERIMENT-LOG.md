@@ -211,6 +211,21 @@ It preserves the existing buffer safety correction and removes all external
 introspection imports. The corrected candidate has not yet been built or
 retested; actual compatibility remains **NOT MEASURED**.
 
+## Freeze the Rust scanner correction for 470 public failures
+
+The [first-party scanner serialization correction](../oracle/phase2/RUST-SCANNER-PICKLE-SEMANTICS-V1.md)
+addresses five scanner protocol operations across all **94** public datasets:
+**470** total failures. Exactly **15** overlap separately broken comment
+parsing, leaving **455** independently attributable improvements. The
+correction copies the already owned match-object protocol behavior: validate
+the requested Python serialization protocol, preserve conversion exceptions,
+and use first-party reconstruction only for protocols below two.
+
+Four ordinary and clean-environment source gates model all **470** cases,
+preserve **188** valid newer-protocol controls, and reject **63** hostile
+actions. The projected correction remains **NOT BUILT** and its actual
+public effect remains **NOT MEASURED**.
+
 ## Freeze the separate correction for 88 Rust expansion differences
 
 The [independent Rust expansion and buffer-probe correction](../oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md)
