@@ -286,6 +286,15 @@ ordinary and clean-environment gates pass all **1,352** disjoint historical
 models. The predicted corrected bridge remains exactly **178,270 bytes**;
 actual compilation and full correctness are still **NOT MEASURED**.
 
+The [actual exclusively materialized complete Rust correction](../oracle/phase2/evidence/rust-complete-semantic-correction-v2-application.json)
+has the predicted SHA-256
+`254a8cea354556789496ce9dbfe70b4fed73ed9ee8e3b7f1c107dfe8662d7f55`
+and exactly **178,270 bytes**. All **107** hostile controls passed before
+one authorized first-party source read. Replacement ordering, template
+expansion, changing-buffer safety, and the no-external-introspection fix
+are all present together. Native build and actual original-suite matching
+remain **NOT MEASURED**.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)

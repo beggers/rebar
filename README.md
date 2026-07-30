@@ -204,6 +204,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen combined first-party Rust correction covering all 1,352 known original compatibility failures](oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V1.md).
 - [Preserved complete-correction rejection before any candidate source or matching run](oracle/phase2/evidence/rust-complete-semantic-correction-v1-preapplication-failure.json).
 - [Corrected complete Rust bridge freeze with deferred root-only access and all 1,352 known failures modeled](oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V2.md).
+- [Actual complete first-party Rust bridge correction covering all 1,352 known original failures](oracle/phase2/evidence/rust-complete-semantic-correction-v2-application.json).
 - [Preserved first corrected-Rust retest rejection before any candidate execution](oracle/phase2/evidence/rust-original-campaign-v25-preactivation-locale-failure.json).
 - [Preserved second corrected-Rust retest rejection of excess authority](oracle/phase2/evidence/rust-original-campaign-v25-preactivation-authority-failure.json).
 - [Frozen from-scratch Rust parsing and allocation improvements](oracle/phase2/RUST-COMPILER-ALLOCATION-FASTPATH-V1.md).
