@@ -100,8 +100,8 @@ has established the required runtime no-delegation. The current C
 run preserves all **606** observed failing examples. Its older run
 saved only **92**; those **514** missing historical examples remain
 **NOT RECORDED**. Separate, independently written C source corrections
-now cover all **606** observed failures; the combined build has not
-been compiled or tested.
+now cover all **606** observed failures; the combined engine has been
+compiled independently twice, but its complete matching test has not run.
 
 The latest C run correctly passes all **151** executable original
 Python tests while preserving all **152** test records and their
@@ -240,6 +240,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Corrected frozen C build: narrowly permits Python's required `/dev/urandom` access](oracle/phase2/C-COMPLETE-SEMANTIC-SOURCE-BUILD-V23.md).
 - [Actual independent complete C build: two byte-identical native engines and 14 verified compiler and inspection processes](oracle/phase2/evidence/native-source-build-v23-c-phase2-v23-c-complete-semantics-publication-receipt.json).
 - [Frozen complete 31,237-case original-suite test of the independently corrected C engine; not yet run](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V13.md).
+- [Corrected frozen C test installing the exact newly built native engine and Python interface; not yet run](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V14.md).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).

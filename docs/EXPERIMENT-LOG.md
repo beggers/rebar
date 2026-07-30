@@ -25244,3 +25244,7 @@ The [complete corrected C correctness campaign](../oracle/phase2/REPAIRED-C-ORIG
 ## Frozen same-build Rust visualization foundation
 
 The [same-build correctness visualization foundation](../oracle/phase2/RUST-SAME-BUILD-CORRECTNESS-OVERVIEW-V105.md) independently authenticates that identical Rust native-engine, native-binding, and Python-interface fingerprints pass all **31,237** original checks and **10,434** wider checks. Its frozen historical comparison predates the newer **18,056-check** Zig run, so no outdated graph is published. The frozen source is retained as an independently verified input for the clearer measured-speed visualization.
+
+## Corrected original-suite setup for the rebuilt C engine
+
+The [corrected complete C correctness campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V14.md) preserves the earlier frozen but unrun C campaign and corrects its inherited old-engine identity check before any candidate is activated. The exact newly compiled C matcher, corrected Python interface, strict isolation guard, reversible two-file recovery journal, all **606** historical failures, and unchanged **31,237-case** denominator are independently authenticated. Four isolated source-only gates pass **184** hostile controls. Complete corrected C compatibility remains **NOT MEASURED**.
