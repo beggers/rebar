@@ -319,6 +319,11 @@ earlier **1,145** differences, the original-suite **31,237-case** pass, and
 the successful zero-external-engine source inspection. All four ordinary and
 clean-environment source-only checks pass **24** hostile controls; the
 candidate run has **NOT BEEN STARTED**.
+The [first wider-suite Rust launch](../oracle/phase2/evidence/rust-full-public-correctness-v4-preworker-failure.json)
+stopped before either worker started because an output-safety assertion
+accepted only the Boolean value `True`, while a nonempty byte buffer was
+merely truthy. No correctness result was created or discarded; the complete
+rejection remains preserved for a corrected successor.
 
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 
