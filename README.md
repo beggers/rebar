@@ -227,7 +227,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual composed Zig native bridge preserving all 620 scanner fixes and correcting 32 legacy Match-pickling cases](oracle/phase2/evidence/zig-match-pickle-semantics-v1-application.json).
 - [Frozen fully composed Zig replacement bridge covering all 1,700 recorded scanner, pickling, and changing-buffer failures](oracle/phase2/ZIG-REPLACEMENT-EVENT-SEMANTICS-V1.md).
 - [Actual fully composed independently written Zig bridge targeting all 1,700 recorded compatibility differences](oracle/phase2/evidence/zig-replacement-event-semantics-v1-application.json).
-- [Frozen independent Zig build combining its complete first-party engine, corrected Python interface, and corrected native bridge; not yet built](oracle/phase2/ZIG-FULL-SEMANTIC-SOURCE-BUILD-V16.md).
+- [Frozen independent Zig build combining its complete first-party engine, corrected Python interface, and corrected native bridge](oracle/phase2/ZIG-FULL-SEMANTIC-SOURCE-BUILD-V16.md).
+- [Actual two-build Zig result: 26 verified processes, identical native engines, and all 1,700 historical failures preserved](oracle/phase2/evidence/zig-full-semantic-source-build-v16-phase2-v16-zig-full-semantic-root-provenance-build-receipt.json).
 - [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).
