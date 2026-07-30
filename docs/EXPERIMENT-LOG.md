@@ -8,6 +8,26 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze an independent Python answer for every new buffer question
+
+The [two-process Python reference](../oracle/phase1/P0-PUBLIC-BUFFER-CARRIERS-REFERENCE-V1.md)
+specifies exactly how to answer all **48,416** frozen real-world
+array, memory-map, callback, scanner, and buffer-lifetime questions.
+Two independently started official Python **3.14.6** processes
+must each record every answer and agree on the entire result.
+
+The procedure preserves exact error types, warnings, callback
+events, memory lifetimes, and cleanup failures. It requires
+lossless evidence; two complete worker reports require at least
+**214,192,384** bytes. Source-only checks pass **700** distinct
+controls without importing a matching engine, mapping a file, or
+starting a reference worker.
+
+Neither reference process has run. All **48,416** answers remain
+**NOT RECORDED**. The original **31,237**-case denominator is
+unchanged, and the **14,155,776**-case speed proposal remains
+sealed.
+
 ## Freeze the corrected from-scratch Zig rerun
 
 The [version-15 Zig procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md)

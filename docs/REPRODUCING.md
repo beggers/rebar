@@ -215,6 +215,29 @@ matrix SHA-256 is
 `4de04250c99a87d188bf1f8386ad80044ae86d136908ea7aa1bc86e8b7c32ab1`.
 Neither mode records a Python answer or opens the performance holdout.
 
+## Verify the two-process Python reference procedure
+
+This independent procedure is frozen before either Python reference
+worker runs. All **48,416** answers remain **NOT RECORDED**. Check
+its complete source, protocol, and canonical contract in a clean
+environment:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/run_owned_public_buffer_carriers_reference_v1.py \
+  --verify-frozen-context \
+  --source-sha256 e82e93fbc9c7474f17ca4d2fc5eb7682ccb997651d4ad21c334d1e0cab1da3ee \
+  --protocol-sha256 981015c163a4c428b74b8f545f3f8fc111ea56b399fd2df0d811d82f4293306d \
+  --contract-sha256 857a330b26f1441d7f16b3adbd28f11fa63021b8b671451b2c0ddc3ca96230a3
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce
+all **700** accepted and rejected controls. Both checks also pass
+outside the clean environment. Neither command starts a reference
+worker, imports `re`, creates a buffer, or accesses the speed
+holdout.
+
 ## Verify the next first-party Rust buffer correction
 
 The proposed Rust correction removes one overbroad replacement-buffer
