@@ -41,7 +41,8 @@ A new, independently written Rust/Python boundary optimization targets
 speed are **NOT MEASURED**.
 
 A potential Rust native-object lifetime error has also been identified
-from source inspection. Its proposed ownership correction is frozen;
+from source inspection. Its independently written ownership correction
+has now been implemented;
 runtime safety remains **NOT ESTABLISHED**.
 
 Every percentage uses the same **31,237** original Python checks.

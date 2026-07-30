@@ -1,0 +1,30 @@
+{
+  "schema": "rebar-owned-rust-native-handle-lease-v1-recorded-application",
+  "status": "APPLIED",
+  "frozen_commit": "b07ad7944593380bed44701eabb23c8d5288317f",
+  "source_sha256": "5c52dfec219a24a19d2771d1f6eb72fc08ab2e339249e32f2a627de017ab9cd7",
+  "protocol_sha256": "719fa00528b423132eea0856b9047ecbef4fbde55e80edcfa950f346655357ec",
+  "contract_sha256": "78d053d7663481b00bd63d1a8dd0c6fba008c260d1b486622da5d465c7e88370",
+  "created": {
+    "path": "candidates/rust/variants/native_handle_lease_v1/py_bridge.c",
+    "sha256": "c9b22c4443c36cc6e653af18fcd829561b7987df312368b30dfcbade254538f8",
+    "bytes": 182459,
+    "inode": 526633
+  },
+  "base_bridge_sha256": "e4ee92d9d651600d94cf371f6437638b639b3418103cb20044fbdd26a60d5d57",
+  "callback_finalization_case_count": 103184,
+  "operation_callback_sequence_count": 32768,
+  "scanner_and_finditer_lifetime_case_count": 20656,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "added_source_external_regex_dependency_count": 0,
+  "added_source_stdlib_matching_delegation_count": 0,
+  "final_holdout_files_opened": 0,
+  "current_exact_static_source_and_elf_non_delegation": "NOT ESTABLISHED",
+  "current_exact_live_runtime_non_delegation": "NOT ESTABLISHED",
+  "candidate_correctness": "NOT MEASURED",
+  "performance": "NOT MEASURED",
+  "memory": "NOT MEASURED",
+  "undefined_behavior": "NOT MEASURED",
+  "winner_selected": false
+}
