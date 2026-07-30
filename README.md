@@ -113,16 +113,17 @@ not report speed or a qualified replacement.
 
 ## The larger speed test
 
-The proposed final comparison now covers **141,557,760** cases across
-**96** Python operations, **48** types of regular expressions, ten
-input representations, and realistic short-to-large workloads. It is
-ten times larger than the previous **14,155,776**-case proposal. That
-proposal and the original **4,194,304**-case proposal are preserved.
+The latest proposed final comparison covered **141,557,760** cases across
+**96** Python operations, **48** types of regular expressions, ten input
+representations, and realistic short-to-large workloads. A delegated
+read-only search was broader than allowed and may have read its configuration.
+Although **no hidden cases were generated or run**, that proposal is now
+**INVALIDATED** and permanently retired. A freshly rekeyed replacement is
+required before any final comparison; its size and speed results are
+**NOT MEASURED**. The previous proposals remain preserved as history.
 
-The larger test is **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
-Speed, memory, and statistical confidence are **NOT MEASURED**. It may
-run only after at least three independently written engines pass every
-required correctness and no-delegation test.
+No final test may run until at least three independently written engines
+pass every required correctness and no-delegation test.
 
 A separate public development suite covers **10,434** equally weighted
 cases across **111** Python operations, with **5,217** text and

@@ -4,9 +4,24 @@ This log preserves the chronological work behind the concise [README](../README.
 
 Historical entries describe an earlier, retired benchmark. It opened once,
 exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
-must never be reused. The preserved **4,194,304**-case and
-**14,155,776**-case proposals and the current **141,557,760**-case
-proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+must never be reused. Earlier **4,194,304**-case and **14,155,776**-case
+proposals remain preserved as history.
+
+## Retire a possibly exposed final-test proposal
+
+A delegated read-only helper ran a recursive text search across the tracked
+`oracle` directory despite its narrower assignment. The search could read
+the **141,557,760**-case proposal and reached historical, already-retired
+test material. It made no writes, ran no candidate, and generated no hidden
+cases. Nevertheless, the proposal's contents can no longer be honestly
+described as unopened, so it is permanently **INVALIDATED** and must never
+be used for the final comparison.
+
+The helper and its parent were stopped, their work is excluded from new
+controllers, and all future isolation claims apply only to the explicitly
+audited process making them. A freshly rekeyed successor is required before
+any final test. Final cases, performance, memory, statistical confidence,
+and a winner remain **NOT GENERATED** or **NOT MEASURED**.
 
 ## Show the latest complete Rust compatibility result clearly
 
