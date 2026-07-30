@@ -8,6 +8,42 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete-record C correction against the original tests
+
+The [actual version-12 C result](../oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json)
+comes from exactly **13** distinct real workers and the same frozen
+**31,237** Python checks. The previously blocked original Python
+test group now passes all **151** executable cases. Its complete
+result preserves all **165** source methods, all **152** public
+test records, all **13** named private waivers, and the one genuine
+debug-build skip. The complete observed public-record digest is
+`b6f23860b340ff326347bdd103505c04bb2b84c21fc874758bd278bc90390276`.
+
+Twelve of the **13** groups completed. Seven passed in full. The C
+engine now verifies **16,413 / 31,237** checks, or **52.5%**,
+up **151** verified checks from version 11. Five completed groups
+still report **16**, **248**, **224**, **114**, and **4** genuine
+differences. All **606** individual observed failures remain
+preserved in **21** first-party chunks of the
+[complete compressed failure report](../oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures.json.gz).
+The complete **2,026,129**-byte uncompressed report was independently
+streamed and verified against SHA-256
+`a63e3540e55528986287c7ea98d23855c0d3ee262ba2293c1b34708f5f1b2012`.
+
+The interpreter-isolation group genuinely failed. Its **128** cases
+are not counted as passes or as invented mismatches. The complete
+global mismatch count is **NOT MEASURED**. The previous run's
+source-canonical and transport-only distinctions remain unchanged;
+the older version-10 report still lacks **514** historical
+examples. The original C native engine was restored with the same
+inode and SHA-256.
+
+Evidence publication passed; the C candidate **FAILED**. Runtime
+no-delegation remains **NOT ESTABLISHED**. There were no
+infrastructure failures or timeouts. Speed, memory, and undefined
+behavior are **NOT MEASURED**. The performance holdout remains
+unopened.
+
 ## Correct the C test without dropping its real skipped case
 
 The [version-12 C procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md)
@@ -27,10 +63,10 @@ denominator remain preserved. Both ordinary and clean source-only
 verification and self-tests pass, including **184** adversarial
 controls and **16** zero side-effect counters.
 
-This is an independently frozen, runnable test correction, not a
-new candidate result. The corrected C run, compatibility, runtime
-no-delegation, and performance are **NOT MEASURED**. The speed
-holdout remains unopened.
+At the time of this independent source freeze, the corrected C
+run had **NOT RUN** and its result was **NOT MEASURED**. The actual
+subsequent run and genuine remaining failures are recorded above.
+The speed holdout remains unopened.
 
 ## Independently verify all 48,416 additional Python answers
 

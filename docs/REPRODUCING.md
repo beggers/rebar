@@ -6,16 +6,16 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
-## Reproduce the current headline comparison
+## Verify the previous version-98 comparison
 
-The current graph compares unchanged Python with six independently
-written, from-scratch engine families. Its bars show compatibility,
-not speed. Python passes all **31,237** original checks; the latest
-C engine passes **16,262**, Rust **14,725**, and Zig **4,607**. The
+The preserved version-98 graph records the comparison before the
+version-12 C run. Its bars show compatibility, not speed. Python
+passes all **31,237** original checks; the historical C run passes
+**16,262**, Rust **14,725**, and Zig **4,607**. The
 previous Rust result of **15,749** is preserved: the latest attempt
 lost certification of a **1,024**-check group with **42** observed
 differences and has at least **2,018** observed differences overall.
-The latest C run completes **11** groups, verifies **2,656** more
+That historical C run completes **11** groups, verifies **2,656** more
 checks, and preserves every one of its **606** observed failing
 examples. Its remaining **two** incomplete groups are not counted
 as passing. The older C run saved only **92** failing examples;
@@ -34,9 +34,9 @@ statistical confidence are **NOT MEASURED**. The proposed
 **14,155,776**-case speed comparison is **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
-This pinned, read-only command independently verifies the complete
+This pinned, read-only command independently verifies the preserved
 version-98 graph, preserves the version-97 and rejected version-96
-history, and verifies the actual new C result without opening any
+history, and verifies the actual version-11 C result without opening any
 compressed failure report. It distinguishes the ten original
 source-canonical C vectors from the one fully preserved
 transport-only public-interface vector.
@@ -73,7 +73,7 @@ Replace `--verify-frozen-context` with `--self-test` to reproduce the
 checks. The previous **14,757** checks remain historical; they are
 not rerun. Neither command runs an engine or a speed test.
 
-Expected current graph files:
+Expected preserved version-98 graph files:
 
 ```text
 docs/evidence/candidate-current-overview-v98.inputs.json
@@ -169,7 +169,72 @@ docs/evidence/public-buffer-carriers-reference-overview-v1.svg
 ec8fea1acc51776587e07047345f50ec77872c8ef291effa2b9e6e12c846ac5e
 ```
 
-## Verify all current C failures were actually saved
+## Verify all current corrected C results and failures
+
+The actual version-12 C run proves **16,413 / 31,237** verified
+checks, **12** completed groups, and all **606** individually
+preserved failures. The original Python test group passes all
+**151** executed checks and retains all **152** public records.
+The interpreter-isolation group still fails. Receipt publication
+`PASS` means the evidence was durably saved; the candidate itself
+is `FAIL`.
+
+Verify the exact small, complete receipt without running a
+candidate or decompressing its archive:
+
+```bash
+jq -ce '
+  select(.schema == "rebar-owned-repaired-c-original-campaign-v12-durable-publication-receipt")
+  | select(.publication_status == "PASS" and .candidate_status == "FAIL")
+  | select(.candidate_qualified == false)
+  | select(.case_execution_denominator == 31237)
+  | select(.verified_passing_case_count == 16413)
+  | select(.suite_count == 13 and .attempted_suite_count == 13)
+  | select(.completed_suite_count == 12)
+  | select(.actual_candidate_workers == 13)
+  | select((.actual_worker_process_ids | unique | length) == 13)
+  | select(.complete_original_case_records_preserved)
+  | select(.complete_original_source_method_count == 165)
+  | select(.complete_original_public_record_count == 152)
+  | select(.complete_original_executed_case_count == 151)
+  | select(.observed_semantic_mismatch_lower_bound == 606)
+  | select(.all_observed_semantic_mismatch_records_preserved)
+  | select(.complete_observed_semantic_mismatch_record_count == 606)
+  | select(.complete_mismatch_chunk_count == 21)
+  | select(.candidate_execution_failure_count == 1)
+  | select(.infrastructure_failure_count == 0 and .worker_timeout_count == 0)
+  | select(.original_native_inode_restored)
+  | select(.performance == "NOT MEASURED" and .holdout == "NOT OPENED")
+  | {candidate_status, verified_passing_case_count,
+     case_execution_denominator, completed_suite_count,
+     complete_original_source_method_count,
+     complete_original_public_record_count,
+     complete_original_executed_case_count,
+     observed_semantic_mismatch_lower_bound,
+     complete_observed_semantic_mismatch_record_count,
+     complete_mismatch_chunk_count, candidate_execution_failure_count}' \
+  oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json
+```
+
+The complete receipt SHA-256 is
+`a3f4b90b8f289df9dfe49f776266e3c290edb2c21c62713137f501a5f997c21b`.
+The separately preserved archive SHA-256 is
+`f6f68b5c7222f47734515e8570a048e2f449623f6fcbc99493abff4babb0c1a1`.
+The receipt check does not open the archive.
+
+To independently check every byte of the complete actual report,
+stream the **2,026,129**-byte uncompressed evidence:
+
+```bash
+gzip -dc -- \
+  oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures.json.gz |
+  sha256sum
+```
+
+The expected uncompressed SHA-256 is
+`a63e3540e55528986287c7ea98d23855c0d3ee262ba2293c1b34708f5f1b2012`.
+
+## Verify all historical version-11 C failures were saved
 
 The real version-11 C result proves **16,262 / 31,237** passing
 checks, **11** completed groups, and all **606** observed failing
@@ -234,8 +299,9 @@ env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
 
 Replace `--verify-frozen-context` with `--self-test` to reproduce
 all **184** adversarial controls. Both checks also pass outside
-the clean environment. The original C result remains
-**16,262 / 31,237**. The corrected C12 candidate run and speed are
+the clean environment. At the time the source was frozen, the
+corrected C run had **NOT RUN**. The subsequently verified actual
+result is **16,413 / 31,237**, as recorded above. Speed is
 **NOT MEASURED**.
 
 ## Verify which historical C failures were saved
