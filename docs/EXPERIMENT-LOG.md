@@ -23,9 +23,14 @@ hostile controls. The separate from-scratch audit's one real private
 introspection finding is retained, so passing a correctness run cannot
 silently claim independent-engine qualification. Source verification starts
 no candidate, opens no private build root or archive, and never opens the
-**141,557,760**-case final proposal. The corrected full candidate run is
-**NOT RUN** at this freeze; its compatibility and final speed remain
-**NOT MEASURED**.
+**141,557,760**-case final proposal. The first
+[actual preactivation attempt](../oracle/phase2/evidence/rust-original-campaign-v25-preactivation-locale-failure.json)
+correctly rejected an unclean locale and command-search environment before
+opening the private build root, importing a candidate, loading native code,
+or starting any candidate worker. This failure is preserved; it is not a
+candidate compatibility result. A retry requires the exact independently
+prepared C locale and clean execution path. Corrected compatibility and
+final speed remain **NOT MEASURED**.
 
 ## Freeze lossless recording for all 10,434 public Rust checks
 
