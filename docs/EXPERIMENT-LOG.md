@@ -205,6 +205,16 @@ global inspection failure remains unchanged; this newer result is specific to
 the corrected Rust candidate, and live runtime no-delegation remains
 **NOT ESTABLISHED**.
 
+## Combine all original Rust fixes with the wider scanner correction
+
+The [composed first-party Rust scanner bridge](../oracle/phase2/RUST-COMPLETE-SCANNER-BRIDGE-V1.md)
+preserves all **1,352** previously repaired original-suite differences while
+adding the independently written serialization fix covering **470** wider
+scanner cases. Exactly **15** scanner rows overlap a separately identified
+comment-handling defect, leaving **455** independently corrected modeled
+rows. Four ordinary and clean-environment source-only checks pass **89**
+hostile controls; the composed source has **NOT BEEN CREATED OR TESTED**.
+
 ## Freeze the combined fast-search and reusable-workspace architecture
 
 The [independent combined matching-workspace experiment](../oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md)
