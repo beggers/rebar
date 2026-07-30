@@ -8,6 +8,24 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze an operational, entirely first-party Rust build
+
+The [version-24 Rust build procedure](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2-SOURCE-BUILD-V24.md)
+freezes the complete corrected **178,860**-byte first-party Rust
+bridge and a genuinely runnable offline build. Its Rust package has
+**zero** external dependencies. Two separately constructed source
+copies must each run **14** real compiler or binary-inspection
+processes and produce byte-identical native engines and bridges.
+
+Ordinary and clean source-only verification both pass. Their
+corresponding self-tests each pass **1,361** real adversarial
+controls without starting a compiler or candidate, opening an
+archive, or touching the unopened holdout. The preceding real Rust
+result remains **14,725 / 31,237** with at least **2,018** observed
+failures. The version-24 native build has **NOT RUN**. Corrected
+compatibility, runtime no-delegation, speed, memory, and undefined
+behavior remain **NOT MEASURED** or **NOT ESTABLISHED**.
+
 ## Run the complete-record C correction against the original tests
 
 The [actual version-12 C result](../oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json)

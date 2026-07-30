@@ -468,6 +468,33 @@ outside the clean environment. Neither command starts a reference
 worker, imports `re`, creates a buffer, or accesses the speed
 holdout.
 
+## Verify the first-party operational Rust build procedure
+
+The frozen version-24 Rust build uses the complete first-party
+**178,860**-byte corrected bridge, **zero** external Rust packages,
+and two independently compiled source copies. A successful future
+build must record **28** real compiler or binary-inspection process
+IDs. Freezing or verifying the procedure does not run that build or
+claim any Rust compatibility or speed.
+
+Verify the exact source, protocol, and contract without compiling,
+loading a candidate, opening an archive, or accessing the holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/reproduce_owned_rust_capture_shape_semantics_v2_source_build_v24.py \
+  --verify-frozen-context \
+  --source-sha256 5bf779c3f9df24814565c2342dd2972254c2703d6f08d771c4096b5152683ac2 \
+  --protocol-sha256 273ba50f4629961ed61e666593d9af49f9b49fbc73c83564d2453c3bf017b101 \
+  --contract-sha256 cd1a77792bbb9822bfe3e05f0005bb0629c05ecd16daa68a3e11337130a54876
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce
+all **1,361** adversarial controls. Both commands also pass outside
+the clean environment. Native build, corrected candidate results,
+and speed remain **NOT MEASURED**.
+
 ## Verify the next complete Rust correctness test
 
 The next Rust procedure authenticates the real **14,725** verified
