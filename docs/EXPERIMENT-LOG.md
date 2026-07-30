@@ -252,6 +252,11 @@ The [actual corrected first-party Zig scanner bridge](../oracle/phase2/evidence/
 now exists at its predicted **173,082-byte** source identity. All **620**
 scanner cases remain a source-level model until the independently built Zig
 candidate passes the full frozen correctness suite.
+The [composed first-party Zig Match-pickling bridge](../oracle/phase2/ZIG-MATCH-PICKLE-SEMANTICS-V1.md)
+preserves all **620** scanner corrections while restoring the exact **32**
+legacy pickle-protocol behaviors expected by Python. Higher pickle protocols
+still reject Match objects correctly. Four independent source-only checks
+pass; the composed native source has **NOT BEEN CREATED OR RUN**.
 
 ## Combine all original Rust fixes with the wider scanner correction
 
