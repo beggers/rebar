@@ -268,6 +268,21 @@ It preserves all **324** gross targets, **297** independent failures,
 and both categories of documented overlap. No regular-expression engine
 or candidate was run.
 
+## Freeze the scoped-Unicode fix for the final two public differences
+
+The [first-party scoped-Unicode start-set correction](../oracle/phase2/RUST-SCOPED-UNICODE-STARTSET-V1.md)
+targets the remaining two independently identified public failures. With a
+globally ASCII pattern containing a locally Unicode `(?u:\w+)` group,
+Python matches `é42`; the existing Rust start filter incorrectly skips `é`
+and returns only `42`.
+
+The minimal correction disables that start-position filter only when an
+existing first-party scoped-flag detector proves its assumptions invalid.
+Four ordinary and clean-environment source gates cover **42,718** bounded
+differential examples and **44** hostile controls, while preserving the
+original parser and matcher. The source remains **NOT BUILT**; actual
+compatibility and speed are **NOT MEASURED**.
+
 ## Freeze the separate correction for 88 Rust expansion differences
 
 The [independent Rust expansion and buffer-probe correction](../oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md)
