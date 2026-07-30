@@ -211,6 +211,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Corrected first-party Rust scanner source freeze preserving all 470 targeted cases](oracle/phase2/RUST-SCANNER-PICKLE-SEMANTICS-V2.md).
 - [Actual independently written Rust scanner bridge correcting serialization protocol behavior](oracle/phase2/evidence/rust-scanner-pickle-semantics-v2-application.json).
 - [Frozen combined Rust bridge preserving its complete original-suite fixes while correcting 470 wider scanner cases](oracle/phase2/RUST-COMPLETE-SCANNER-BRIDGE-V1.md).
+- [Actual composed first-party Rust bridge preserving all original-suite fixes and independently correcting wider scanner behavior](oracle/phase2/evidence/rust-complete-scanner-bridge-v1-application.json).
 - [Frozen first-party Rust Unicode-prefix correction for the final two known public matching differences](oracle/phase2/RUST-SCOPED-UNICODE-STARTSET-V1.md).
 - [Actual independent Rust engine source preserving scoped Unicode matching in ASCII-pattern contexts](oracle/phase2/evidence/rust-scoped-unicode-startset-v1-application.json).
 - [Frozen first-party Python adapter correction for 324 ignored-comment regular-expression cases](oracle/phase2/RUST-VERBOSE-NAMED-ESCAPE-SEMANTICS-V1.md).

@@ -213,7 +213,11 @@ adding the independently written serialization fix covering **470** wider
 scanner cases. Exactly **15** scanner rows overlap a separately identified
 comment-handling defect, leaving **455** independently corrected modeled
 rows. Four ordinary and clean-environment source-only checks pass **89**
-hostile controls; the composed source has **NOT BEEN CREATED OR TESTED**.
+hostile controls before any candidate source is admitted.
+The [actual composed scanner bridge](../oracle/phase2/evidence/rust-complete-scanner-bridge-v1-application.json)
+has been independently materialized at its predicted **178,472-byte** source
+identity. All existing original-suite corrections are preserved. Its wider
+candidate correctness and native build have **NOT BEEN RUN**.
 
 ## Freeze the combined fast-search and reusable-workspace architecture
 
