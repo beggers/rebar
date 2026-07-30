@@ -256,7 +256,11 @@ The [composed first-party Zig Match-pickling bridge](../oracle/phase2/ZIG-MATCH-
 preserves all **620** scanner corrections while restoring the exact **32**
 legacy pickle-protocol behaviors expected by Python. Higher pickle protocols
 still reject Match objects correctly. Four independent source-only checks
-pass; the composed native source has **NOT BEEN CREATED OR RUN**.
+pass before the composed native source is created.
+The [actual composed Zig scanner-and-pickling bridge](../oracle/phase2/evidence/zig-match-pickle-semantics-v1-application.json)
+now exists at its predicted **174,024-byte** source identity. Its modeled
+repairs cover **652** preserved scanner and pickle cases; matching remains
+**NOT MEASURED** until the complete candidate is independently built.
 
 ## Combine all original Rust fixes with the wider scanner correction
 
