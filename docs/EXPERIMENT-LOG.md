@@ -8,6 +8,25 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the safety-corrected Rust candidate's complete original retest
+
+The [version-25 full Rust correctness campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V25.md)
+authenticates the actual successful **28-process** double build, its two
+identical first-party native binaries, the unchanged official **31,237**
+checks, and the complete previous **1,352**-failure result. It runs all
+**13** original groups in isolated candidate workers, preserves every
+mismatch and infrastructure failure, applies the corrected real-interpreter
+guard, and restores all original live files afterward.
+
+All four normal and empty-environment source-only checks pass **2,300**
+hostile controls. The separate from-scratch audit's one real private
+introspection finding is retained, so passing a correctness run cannot
+silently claim independent-engine qualification. Source verification starts
+no candidate, opens no private build root or archive, and never opens the
+**141,557,760**-case final proposal. The corrected full candidate run is
+**NOT RUN** at this freeze; its compatibility and final speed remain
+**NOT MEASURED**.
+
 ## Freeze lossless recording for all 10,434 public Rust checks
 
 The [public Rust correctness recorder](../oracle/phase3/RUST-PUBLIC-CORRECTNESS-EVIDENCE-V2.md)
