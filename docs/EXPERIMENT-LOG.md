@@ -25291,3 +25291,7 @@ The [frozen Rust binding optimization](../oracle/phase2/RUST-LITERAL-BRIDGE-FAST
 ## Frozen plain-language comparison of measured public speeds
 
 The [frozen headline speed graph](../oracle/phase2/RUST-CORRECTED-SPEED-HEADLINE-V106.md) independently authenticates Python's **1.00×** baseline, the compatible Rust engine's measured **1.24×** public result and **1.19–1.30×** confidence interval, all **416** workloads, all **164** slower cases, all **14** substantial regressions, and every earlier unsuccessful architecture. Four isolated verification gates pass, including **1,030** hostile controls per self-test. No candidate, compiler, native library, hidden case, or timing process is started. The actual graph is **NOT RENDERED** until this protocol is committed and pushed.
+
+## Frozen independent C correction for all 224 remaining differences
+
+The [frozen final C compatibility correction](../oracle/phase2/C-FINAL-PUBLIC-SEMANTICS-V1.md) accounts for every observed mismatch: **two** original assertions, **62** public-flag-ordering cases, **96** string/bytes-subclass pattern-equality cases, and **64** indexed-flag cases. It independently corrects both the Python interface and the first-party native C matcher; no external package or regular-expression engine is introduced. Four isolated source-only gates pass, including **43** hostile controls, **20,481** public-flag values, **16,385** private pattern-flag values, and **96** equality/hash checks. The corrected source has **NOT YET BEEN MATERIALIZED**, compiled, tested, or timed.

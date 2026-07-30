@@ -33,6 +33,9 @@ passes **31,237 of 31,237** original checks with **zero** differences;
 its wider compatibility, live independence, and speed remain
 **NOT MEASURED**.
 
+An independently written C correction now accounts for all **224**
+remaining observed differences. Its rebuilt correctness is **NOT MEASURED**.
+
 A new, independently written Rust/Python boundary optimization targets
 **10 of 14** substantial measured slowdowns. Its corrected behavior and
 speed are **NOT MEASURED**.
