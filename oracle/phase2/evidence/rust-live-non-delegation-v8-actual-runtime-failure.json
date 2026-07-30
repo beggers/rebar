@@ -1,0 +1,1 @@
+{"candidate_qualified":false,"exit_code":137,"fresh_worker_isolation_hypothesis":"FALSIFIED","runtime_non_delegation":"NOT ESTABLISHED","schema":"rebar-phase2-first-party-rust-live-non-delegation-v8-root-execution-failure","signal":"SIGKILL","status":"FAIL","stderr_bytes":0,"stdout_bytes":0,"successful_runtime_proof_published":false,"winner_selected":false}
