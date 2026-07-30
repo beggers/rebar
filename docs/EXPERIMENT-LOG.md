@@ -271,6 +271,10 @@ All four ordinary and clean-environment source-only checks independently
 authenticate **111** owners, reject **18** hostile actions, and open neither
 the final proposal nor hidden cases. The two independent native builds and
 the complete **10,434-case** wider correctness run have **NOT BEEN RUN**.
+The [first integrated native-build attempt](../oracle/phase2/evidence/native-source-build-v32-rust-full-public-preexecution-failure.json)
+stopped before starting any compiler because an inherited build kernel still
+expected the previous Python-adapter source identity. Its complete failure is
+preserved; no candidate matching or native compilation took place.
 
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 
