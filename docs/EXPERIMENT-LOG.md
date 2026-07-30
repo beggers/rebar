@@ -8,6 +8,23 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the independently accelerated Rust search-engine build
+
+The [version-26 first-party Rust search build](../oracle/phase2/RUST-ANCHOR-SOURCE-BUILD-V26.md)
+compiles the actual required-character matcher and vectorized filter in two
+fresh offline source trees. Each tree receives four authenticated source
+overlays: its independently written Rust matcher, SIMD search helper,
+safety-corrected native bridge, and corrected private adapter. Cargo uses
+exactly one first-party package and **zero external dependencies**.
+
+Ordinary and empty-environment source checks pass while physically rejecting
+candidate execution, native loading, clocks, private roots, archives, hidden
+cases, and workspace writes. The controller preserves the complete latest
+**1,352**-failure Rust result, all **13** groups and **31,237** original
+cases, the strict audit failure, and every measured public search loss.
+The two real **28-process** native builds, candidate compatibility, and
+speed remain **NOT RUN** at this freeze.
+
 ## Freeze an independent build of the allocation-optimized Rust engine
 
 The [version-27 first-party Rust source build](../oracle/phase2/RUST-COMPILER-FASTPATH-SOURCE-BUILD-V27.md)

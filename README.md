@@ -175,6 +175,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen reproducible first-party native build of the allocation-optimized Rust parser](oracle/phase2/RUST-COMPILER-FASTPATH-SOURCE-BUILD-V27.md).
 - [Frozen first-party search improvement targeting the measured repeated-character slowdown](oracle/phase2/RUST-MANDATORY-ANCHOR-SEARCH-V1.md).
 - [Actual isolated Rust search-engine and vectorized-filter source variants](oracle/phase2/evidence/rust-mandatory-anchor-search-v1-application.json).
+- [Frozen reproducible native build of the first-party accelerated Rust search engine](oracle/phase2/RUST-ANCHOR-SOURCE-BUILD-V26.md).
 - [Frozen combined first-party Rust search and compilation improvements](oracle/phase2/RUST-COMBINED-SEARCH-COMPILER-FASTPATH-V1.md).
 - [Preserved combined-optimization source-creation failure before any candidate was built](oracle/phase2/evidence/rust-combined-search-compiler-fastpath-v1-application-failure.json).
 - [Actual successful first-party Rust build; matching not yet tested](oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-publication-receipt.json).
