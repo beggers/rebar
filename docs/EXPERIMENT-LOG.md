@@ -22,8 +22,16 @@ candidate execution, native loading, clocks, private roots, archives, hidden
 cases, and workspace writes. The controller preserves the complete latest
 **1,352**-failure Rust result, all **13** groups and **31,237** original
 cases, the strict audit failure, and every measured public search loss.
-The two real **28-process** native builds, candidate compatibility, and
-speed remain **NOT RUN** at this freeze.
+The [actual independently repeated accelerated-search build](../oracle/phase2/evidence/native-source-build-v26-rust-phase2-v26-rust-mandatory-anchor-root-provenance-publication-receipt.json)
+completed **28** verified offline compiler and inspection processes across
+two private source trees. Both produced the same independently written
+required-character Rust engine, SHA-256
+`fde7b6a6193cd3877753e0f119d29727014b836b2aa2e4c07bdcec0c9f29c102`,
+and the same safe native bridge, SHA-256
+`adcb000c036e075a52f43926750648a4610e853e628d5433b1fbcc17e99a89e4`.
+All original source and runtime identities remained unchanged. The build
+did not run matching or timing: candidate compatibility and speed remain
+**NOT MEASURED**, and the final proposal remains unopened.
 
 ## Freeze an independent build of the allocation-optimized Rust engine
 
