@@ -2,6 +2,16 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Preserve a Zig wider-compatibility setup failure before matching
+
+The [first Zig wider-public run](../oracle/phase2/evidence/zig-full-public-correctness-v1-v17-zig-public-v1-run-001-preactivation-failure.json)
+stopped before importing the candidate or running any of its **10,434**
+planned checks. Its recovery helper correctly rejected a directory whose
+name did not match the original campaign's authenticated safety prefix.
+No original source was changed and no hidden case was opened. The frozen
+test matrix remains unchanged; Zig's wider compatibility remains
+**NOT MEASURED** until an append-only corrected runner is frozen.
+
 ## Reject a Rust independence claim tied to the wrong build
 
 The [existing Rust source-and-binary inspection](../oracle/phase2/evidence/rust-clean-non-delegation-v5-actual-source-audit.json)
@@ -25339,6 +25349,10 @@ The [corrected final C build protocol](../oracle/phase2/C-COMPLETE-SEMANTIC-SOUR
 ## Completed two independent builds of the corrected first-party C engine
 
 The [actual completed C build](../oracle/phase2/evidence/native-source-build-v24-c-phase2-v24-c-complete-semantics-publication-receipt.json) records **14** isolated compiler and inspection processes across **two** independent phases. Both independently compiled final C engines are byte-identical: SHA-256 `891acc0d0f496045e90e2efc0f0a3125e4f508352c2ee5e31ee807ea2fb1801a`, **163,544 bytes**. Both snapshots contain the exact corrected native matcher and Python interface, and the installed candidate remains unchanged. Complete corrected C compatibility, live independence, and speed remain **NOT MEASURED** or **NOT ESTABLISHED**.
+
+## Preserved first full Zig wider-public recovery failure
+
+The [actual first 10,434-case Zig attempt](../oracle/phase2/evidence/zig-full-public-correctness-v1-preactivation-recovery-failure.json) fails before starting any candidate worker because its inherited original-suite recovery guard correctly rejects the new controller's mismatched temporary-directory prefix. All three installed Zig candidate files remain at their original identities. No matching case ran, no hidden case was opened, and wider Zig correctness remains **NOT MEASURED**. The unchanged original-suite success and every earlier failure remain preserved; the correction must fix recovery wiring without weakening the guard or the frozen **10,434-case** oracle.
 
 ## Frozen native Rust ownership and callback lifetime correction
 
