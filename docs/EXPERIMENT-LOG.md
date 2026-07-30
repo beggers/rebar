@@ -89,6 +89,21 @@ complete raw timing rows, both memory profiles, and every mismatch are
 preserved. This isolated compiler change is materially slower than the
 accelerated search design; neither architecture is qualified.
 
+## Freeze an offline combined Rust architecture with clean native bindings
+
+The [combined first-party Rust native-build protocol](../oracle/phase2/RUST-COMBINED-SOURCE-BUILD-V28.md)
+joins the independently written accelerated search engine, lower-allocation
+parser, safe changing-buffer bridge, and removal of the unused native
+introspection import. Two isolated offline source builds must produce
+byte-identical engines and bridges while using exactly one first-party Cargo
+package and **zero external dependencies**.
+
+Four ordinary and clean-environment source gates authenticate **58** exact
+owners and reject **17** hostile actions without building or running a
+candidate. The original **31,237**-case denominator and all **1,352** known
+Rust failures remain preserved. Actual combined native compilation,
+compatibility, speed, and runtime no-delegation remain **NOT MEASURED**.
+
 ## Freeze the correction targeting 1,264 Rust compatibility failures
 
 The [first-party replacement-order correction](../oracle/phase2/RUST-SUBSTITUTION-EVENT-ORDER-V1.md)
