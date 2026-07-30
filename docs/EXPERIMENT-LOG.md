@@ -8,6 +8,26 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze removal of Rust's only remaining indirect regex import
+
+The [first-party Rust introspection correction](../oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md)
+removes exactly one unused private bound-method signature getter and its
+registration. That getter could import `inspect`, whose unrelated Python
+dependencies eventually import the standard `re` module. Public Rust
+pattern methods already use native Python descriptors and do not need this
+private helper. Native calling, captures, matching, method names, ordinary
+introspection, memory cleanup, and the safety-corrected buffer behavior
+remain intact.
+
+The source self-test passes **80** hostile controls without reading any
+candidate source; verification authenticates **14** prior public evidence
+owners and the frozen source triple. It preserves the exact one-finding
+audit failure, both successful first-party native builds, all **1,352**
+previous Rust differences, zero external packages, and the unopened final
+proposal. Its corrected **177,146-byte** native bridge has not yet been
+created, built, or retested; audit success and compatibility are
+**NOT MEASURED**.
+
 ## Freeze the safety-corrected Rust candidate's complete original retest
 
 The [version-25 full Rust correctness campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V25.md)
