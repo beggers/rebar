@@ -212,6 +212,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual independently written Zig native bridge correcting all 620 recorded scanner differences](oracle/phase2/evidence/zig-scanner-capture-semantics-v1-application.json).
 - [Frozen independent Zig correction preserving scanner fixes while restoring all 32 legacy Match-pickling cases](oracle/phase2/ZIG-MATCH-PICKLE-SEMANTICS-V1.md).
 - [Actual composed Zig native bridge preserving all 620 scanner fixes and correcting 32 legacy Match-pickling cases](oracle/phase2/evidence/zig-match-pickle-semantics-v1-application.json).
+- [Frozen fully composed Zig replacement bridge covering all 1,700 recorded scanner, pickling, and changing-buffer failures](oracle/phase2/ZIG-REPLACEMENT-EVENT-SEMANTICS-V1.md).
 - [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).

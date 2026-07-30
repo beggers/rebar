@@ -261,6 +261,13 @@ The [actual composed Zig scanner-and-pickling bridge](../oracle/phase2/evidence/
 now exists at its predicted **174,024-byte** source identity. Its modeled
 repairs cover **652** preserved scanner and pickle cases; matching remains
 **NOT MEASURED** until the complete candidate is independently built.
+The [fully composed first-party Zig replacement bridge](../oracle/phase2/ZIG-REPLACEMENT-EVENT-SEMANTICS-V1.md)
+preserves all scanner and legacy pickle corrections while independently
+repairing **64** replacement-order and **672** changing-buffer differences.
+Together with the separately materialized Zig adapter, it models corrections
+for all **1,700** previously observed Zig failures. The **128** unfinished
+interpreter checks, the complete Zig build, and actual candidate correctness
+remain **NOT MEASURED**.
 
 ## Combine all original Rust fixes with the wider scanner correction
 
