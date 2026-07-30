@@ -8,6 +8,23 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected from-scratch Zig rerun
+
+The [version-15 Zig procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md)
+fixes the exact reason the previous test stopped before matching:
+the test controller retained an opener belonging to a temporary
+source-verification guard. The correction restores the genuine
+opener only after that guard has exited and only for a separately
+authorized Zig run.
+
+The independently written Zig matcher, every original Python check,
+all **27** required historical and implementation checks, and the
+complete failed previous attempt remain unchanged. Normal and clean
+source checks pass **413** adversarial controls; all **25** measured
+source-only effects stay zero. No engine runs during verification.
+Corrected Zig compatibility, cleanup, interpreter behavior, and
+runtime no-delegation remain **NOT MEASURED**.
+
 ## Freeze a C test that preserves every observed failure
 
 The [version-11 C test](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md)
