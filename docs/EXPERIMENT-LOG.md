@@ -278,6 +278,14 @@ incorrectly repeated after root-only access had been enabled. The failed
 attempt and all predecessor corrections are preserved; an immutable
 successor must separate source-only controls from root-only materialization.
 
+The [corrected complete semantic source freeze](../oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V2.md)
+keeps the first-party candidate input inaccessible while all **107** hostile
+source controls execute. Only after every frozen owner, model, and permission
+check succeeds may the root-only path authorize its single source read. Four
+ordinary and clean-environment gates pass all **1,352** disjoint historical
+models. The predicted corrected bridge remains exactly **178,270 bytes**;
+actual compilation and full correctness are still **NOT MEASURED**.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
