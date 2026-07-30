@@ -25240,3 +25240,7 @@ The [first-party exact-literal Rust build](../oracle/phase2/RUST-EXACT-LITERAL-S
 ## Frozen original-suite campaign for the complete C engine
 
 The [complete corrected C correctness campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V13.md) freezes all **31,237** original Python checks across **13** independent workers for the twice-built first-party C matcher and corrected Python interface. It preserves all **606** previous observed differences, safely journals both original installed files, installs the strict version-4 isolation guard before importing the candidate, and restores both original file identities after testing. Four isolated source-only gates pass **184** hostile controls; corrected C compatibility remains **NOT MEASURED**.
+
+## Frozen same-build Rust visualization foundation
+
+The [same-build correctness visualization foundation](../oracle/phase2/RUST-SAME-BUILD-CORRECTNESS-OVERVIEW-V105.md) independently authenticates that identical Rust native-engine, native-binding, and Python-interface fingerprints pass all **31,237** original checks and **10,434** wider checks. Its frozen historical comparison predates the newer **18,056-check** Zig run, so no outdated graph is published. The frozen source is retained as an independently verified input for the clearer measured-speed visualization.

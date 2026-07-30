@@ -223,6 +223,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved second exact-build rerun failure; detailed worker output was not recorded](oracle/phase2/evidence/repaired-rust-original-campaign-v28-unrecorded-worker-failure.json).
 - [Exact reproduced setup failure: the unchanged test requires its pinned C locale and clean process environment](oracle/phase2/evidence/repaired-rust-original-campaign-v28-exact-reproduction-failure.json).
 - [Actual same-build Rust pass on every original check: 31,237 of 31,237, zero differences, and 13 successful test workers](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v33-rust-full-public-semantic-source-root-provenance-original-p0-v28-publication-receipt.json).
+- [Frozen reproducible same-build Rust visualization foundation; its older Zig snapshot is retained only as history](oracle/phase2/RUST-SAME-BUILD-CORRECTNESS-OVERVIEW-V105.md).
 - [Frozen fair 416-case speed and memory comparison for the exact Rust build passing both complete suites](oracle/phase2/RUST-CORRECTED-PUBLIC-PERFORMANCE-V4.md).
 - [Actual exact-build result: 1.24× Python, 95% confidence 1.19–1.30×, 252 faster cases, all 14 substantial slowdowns preserved](oracle/phase2/evidence/rust-corrected-public-performance-v4-v33-corrected-performance-run-001-publication-receipt.json).
 - [Frozen first-party correction removing Rust's unused external-introspection path](oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md).
