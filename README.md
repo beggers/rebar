@@ -21,7 +21,8 @@ preserved; runtime no-delegation still requires a separate live proof.
 
 **Six independently written approaches. One exact Rust build passes all
 31,237 original checks and all 10,434 wider compatibility checks.
-Zero fully qualified replacements. Final speed: NOT MEASURED. No winner.**
+It is 1.24× faster than Python across 416 public workloads. Zero fully
+qualified replacements. Hidden-test speed: NOT MEASURED. No winner.**
 
 ![Current compatibility: Rust passes all 31,237 original Python checks and all 10,434 broader real-world checks, with zero differences and zero external regex engines. C passes 16,413 original checks and Zig passes 4,607; neither is complete. Runtime independence and final speed remain unproven.](docs/evidence/candidate-current-overview-v104.svg)
 
@@ -30,7 +31,16 @@ These results measure compatibility, **not speed**. Checks in an
 unfinished group are never counted as passing. The same Rust build now
 passes both complete suites with zero differences.
 
-![Five historical directly compared speeds: Python 1.00×, original Rust 0.86×, accelerated Rust search 1.25×, low-allocation Rust compiler 0.80×, and an earlier combined Rust design 1.23×. Those historical designs failed 1,145 wider checks; the newer corrected Rust engine now passes all 10,434 but has not yet been timed.](docs/evidence/rust-architecture-comparison-v2.svg)
+![Five historical directly compared speeds: Python 1.00×, original Rust 0.86×, accelerated Rust search 1.25×, low-allocation Rust compiler 0.80×, and an earlier combined Rust design 1.23×. These earlier Rust designs failed 1,145 wider checks. The current, fully correctness-tested build separately measures 1.24×.](docs/evidence/rust-architecture-comparison-v2.svg)
+
+The exact Rust build passing both complete compatibility suites is
+**1.24× faster than Python** across **416** public workloads (**95%
+interval: 1.19–1.30×**). It is faster in **252 of 416** cases
+(**60.6%**), slower in **164**, and has **14** slowdowns greater than
+20%. All **1,664** paired trials and every slower case are preserved.
+Both processes peak at **44,032 KiB**; Python-traced allocations peak
+at **111,026 bytes** for Rust and **181,952 bytes** for Python. This is
+a public development result; the hidden final test is **NOT MEASURED**.
 
 ![Public practice only: Rust is 0.865 times Python's typical-case speed and 0.596 times Python's speed across all recorded time. Six workload groups are faster; difficult repeated-character searches are slower.](docs/evidence/rust-public-practice-overall-v2.svg)
 
@@ -59,8 +69,8 @@ An earlier combination of the fast search and low-allocation compiler with
 clean first-party bindings achieved **1.23× Python** (**95% interval:
 1.18–1.28×**), with only **eight** substantial slowdowns. That historical
 version had **1,145** wider compatibility differences. Its corrected
-successor passes all **10,434** wider checks, but its own speed is
-**NOT MEASURED** and it remains **unqualified**.
+successor passes both complete suites and measures **1.24× Python** on
+the public workload; live independence remains **NOT ESTABLISHED**.
 
 A second complete practice run confirms **0.60× Python** across all recorded
 time. Its native allocation totals were **104.2 MB** for Rust and **100.5 MB**
@@ -101,8 +111,8 @@ groups, with **zero differences** and **13** successful independent workers.
 That identical engine, native binding, and Python interface also passed
 **10,434 of 10,434** wider checks across **111** Python operations with
 **zero differences**. Live runtime
-no-delegation and the corrected engine's speed remain **NOT ESTABLISHED**
-or **NOT MEASURED**.
+no-delegation remains **NOT ESTABLISHED**. Its public speed is **1.24×
+Python**; speed on the hidden final test is **NOT MEASURED**.
 A newly frozen, entirely first-party Rust build combines the validated
 original-suite engine with every known scanner, comment, replacement, and
 Unicode correction from the **10,434-case** wider public suite. Its native
@@ -207,7 +217,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved second exact-build rerun failure; detailed worker output was not recorded](oracle/phase2/evidence/repaired-rust-original-campaign-v28-unrecorded-worker-failure.json).
 - [Exact reproduced setup failure: the unchanged test requires its pinned C locale and clean process environment](oracle/phase2/evidence/repaired-rust-original-campaign-v28-exact-reproduction-failure.json).
 - [Actual same-build Rust pass on every original check: 31,237 of 31,237, zero differences, and 13 successful test workers](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v33-rust-full-public-semantic-source-root-provenance-original-p0-v28-publication-receipt.json).
-- [Frozen fair 416-case speed and memory comparison for the exact Rust build passing both complete suites; not yet measured](oracle/phase2/RUST-CORRECTED-PUBLIC-PERFORMANCE-V4.md).
+- [Frozen fair 416-case speed and memory comparison for the exact Rust build passing both complete suites](oracle/phase2/RUST-CORRECTED-PUBLIC-PERFORMANCE-V4.md).
+- [Actual exact-build result: 1.24× Python, 95% confidence 1.19–1.30×, 252 faster cases, all 14 substantial slowdowns preserved](oracle/phase2/evidence/rust-corrected-public-performance-v4-v33-corrected-performance-run-001-publication-receipt.json).
 - [Frozen first-party correction removing Rust's unused external-introspection path](oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md).
 - [Actual first-party bridge source with no indirect Python-regex import](oracle/phase2/evidence/rust-no-external-introspection-v1-application.json).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
