@@ -1,0 +1,26 @@
+{
+  "schema": "rebar-owned-rust-literal-bridge-fastpath-v1-recorded-application",
+  "status": "APPLIED",
+  "frozen_commit": "20e69a144a251413d31d36ace105a7027bdbb772",
+  "source_sha256": "e5745829c7e6099644218522e381b1d6dbfc49457546d10e4ef1f2dd39d10258",
+  "protocol_sha256": "5ac3d86cb56b9497a465ef67ce28ee7be12020ed415a207bb92a561c9f1647f7",
+  "contract_sha256": "edc4ce1cb34667a449773548de46d48292b5bf61f9bd9f334bdc271c7bac0323",
+  "created": {
+    "path": "candidates/rust/variants/literal_bridge_fastpath_v1/py_bridge.c",
+    "sha256": "e4ee92d9d651600d94cf371f6437638b639b3418103cb20044fbdd26a60d5d57",
+    "bytes": 180947,
+    "inode": 526538
+  },
+  "all_previous_regression_count": 14,
+  "targeted_previous_regression_count": 10,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "external_regex_dependency_count": 0,
+  "stdlib_matching_delegation_count": 0,
+  "final_holdout_files_opened": 0,
+  "candidate_correctness": "NOT MEASURED",
+  "performance": "NOT MEASURED",
+  "memory": "NOT MEASURED",
+  "undefined_behavior": "NOT MEASURED",
+  "winner_selected": false
+}

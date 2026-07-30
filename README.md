@@ -34,6 +34,10 @@ An updated Zig implementation addressing all **1,156** recorded
 differences has now been independently compiled twice. Its compatibility
 after those changes is **NOT MEASURED**.
 
+A new, independently written Rust/Python boundary optimization targets
+**10 of 14** substantial measured slowdowns. Its corrected behavior and
+speed are **NOT MEASURED**.
+
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
 unfinished group are never counted as passing. The same Rust build now
