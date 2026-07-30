@@ -2,6 +2,15 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Preserve a missing isolated Rust locale setup
+
+The [second optimized Rust retest](../oracle/phase2/evidence/repaired-rust-original-campaign-v29-v35-optimized-safe-locale-failure.json)
+included all inherited evidence authorities but stopped before candidate
+activation because its caller did not supply the frozen isolated C-locale
+environment. No candidate was imported, no build root was opened, and no
+matching case ran. Both setup failures remain recorded without changing
+the frozen correctness suite.
+
 ## Preserve a missing Rust test-authorization argument
 
 The [first optimized, lifetime-safe Rust retest](../oracle/phase2/evidence/repaired-rust-original-campaign-v29-v35-optimized-safe-missing-authority-failure.json)
