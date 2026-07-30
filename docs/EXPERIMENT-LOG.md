@@ -8,6 +8,23 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a C test that preserves every observed failure
+
+The [version-11 C test](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md)
+keeps the independently written C matching engine, all **31,237**
+original Python checks, and every recorded result of the real
+version-10 run. Its two narrow changes allow the existing original
+Python test controllers to recognize an already installed C candidate;
+they do not alter a test, a Python reference answer, or a matching
+engine.
+
+The new recorder must retain every individual failure actually
+observed in a future run. It cannot recover the **514** examples the
+previous recorder did not save. Both normal and isolated checks pass
+**127** adversarial controls with no candidate, native build,
+interpreter, archive, benchmark, or holdout access. The new C run,
+its correctness, and runtime no-delegation are **NOT MEASURED**.
+
 ## Run the complete, independently written C-engine test
 
 The [complete version-10 C failure](../oracle/phase2/evidence/repaired-c-original-campaign-v10-c-phase2-v21-c-original-match-semantics-original-p0-v10-failures-publication-receipt.json)

@@ -111,6 +111,32 @@ The compressed report SHA-256 is
 It is a complete copy of the original published report, **not**
 a complete record of every observed counterexample.
 
+## Verify the lossless follow-up C test
+
+The separately frozen C procedure preserves the real **606**
+observed differences and records that **514** individual historical
+examples remain **NOT RECORDED**. It requires every failure observed
+in a later run to be saved; it does not execute or qualify a C
+candidate.
+
+Verify its exact source, protocol, and contract in a clean
+environment:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/run_owned_repaired_c_original_campaign_v11.py \
+  --verify-frozen-context \
+  --source-sha256 b2871592ad3c2138e4a7a9dbea034fc50c699fb34c44f6ff6185087a144e52c2 \
+  --protocol-sha256 cfddebcfb5b481a495b86ed7958f2563ad5ffecc3aebcc94820cae5e0612ed39 \
+  --contract-sha256 e2396ea5a51fbe6ad0b34f2831461d3c6c362d4076a931791ce23820ca810b93
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce all
+**127** adversarial controls. Both checks also pass outside the clean
+environment. Do not add the separate actual-run arguments to either
+source-only command.
+
 ## Verify the expanded real-world input questions
 
 The additional matrix contains **48,416** separately identified
