@@ -283,6 +283,12 @@ differential examples and **44** hostile controls, while preserving the
 original parser and matcher. The source remains **NOT BUILT**; actual
 compatibility and speed are **NOT MEASURED**.
 
+The [actual exclusively created scoped-Unicode engine](../oracle/phase2/evidence/rust-scoped-unicode-startset-v1-application.json)
+has exactly **178,037 bytes** and SHA-256
+`e5971616329a1622a7514954ec26871ff8465db87ad1a956cea104ee8a8478ac`.
+The original engine was unchanged and no matching process ran. Its actual
+effect on the two public cases remains **NOT MEASURED** until compilation.
+
 ## Freeze the separate correction for 88 Rust expansion differences
 
 The [independent Rust expansion and buffer-probe correction](../oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md)
