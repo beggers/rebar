@@ -146,6 +146,16 @@ hostile actions. The procedure keeps every canonical candidate unchanged and
 records all failures, regressions, memory results, and confidence intervals.
 The combined engine's actual compatibility and speed remain **NOT MEASURED**.
 
+The [actual combined clean-bridge architecture comparison](../oracle/phase2/evidence/rust-native-architecture-public-gate-v3-v28-combined-public-run-001-publication-receipt.json)
+then completed all **10,434** public cases, preserving every one of the same
+**1,145** differences. Its independently correctness-gated **416** timing
+cases generated **1,664** paired observations. Typical-case speed was
+**1.2298×** Python, with a **1.1781–1.2850×** 95% interval; dense repeated-
+character searches reached **1.9604×**. Exactly **208 of 416** cases were
+faster, and all **eight** slowdowns exceeding 20% remain visible. The engine
+is faster overall but still **unqualified**; final speed and a winner are
+**NOT MEASURED**.
+
 ## Freeze the combined fast-search and reusable-workspace architecture
 
 The [independent combined matching-workspace experiment](../oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md)

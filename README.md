@@ -53,6 +53,11 @@ cases. Its difficult-search workload reached only **0.42×** Python and it
 shared the same **1,145** wider compatibility differences. This unsuccessful
 design and all **143** substantial slowdowns remain fully visible.
 
+Combining the fast search and low-allocation compiler with clean first-party
+bindings achieved **1.23× Python** (**95% interval: 1.18–1.28×**), with
+only **eight** substantial slowdowns. It still shares all **1,145** wider
+compatibility differences and remains **unqualified**.
+
 A second complete practice run confirms **0.60× Python** across all recorded
 time. Its native allocation totals were **104.2 MB** for Rust and **100.5 MB**
 for Python. Whole-process memory and Python-only memory are recorded
@@ -218,6 +223,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen offline build combining accelerated Rust search, allocation improvements, and no-external-introspection bindings](oracle/phase2/RUST-COMBINED-SOURCE-BUILD-V28.md).
 - [Actual combined Rust engine and clean bridge, each reproduced identically in two offline zero-dependency builds](oracle/phase2/evidence/native-source-build-v28-rust-phase2-v28-rust-combined-source-root-provenance-publication-receipt.json).
 - [Frozen identical public correctness and timing comparison for the combined Rust engine with clean native bindings](oracle/phase2/RUST-NATIVE-ARCHITECTURE-PUBLIC-GATE-V3.md).
+- [Actual combined Rust result: 1.23× Python with eight substantial regressions and all compatibility failures preserved](oracle/phase2/evidence/rust-native-architecture-public-gate-v3-v28-combined-public-run-001-publication-receipt.json).
 - [Frozen independent Rust matching-workspace reuse experiment targeting 408 measured allocations](oracle/phase2/RUST-VM-WORKSPACE-REUSE-V1.md).
 - [Actual independently written Rust matching engine with reusable matching workspace](oracle/phase2/evidence/rust-vm-workspace-reuse-v1-application.json).
 - [Frozen reproducible offline build of the standalone Rust reusable-workspace architecture](oracle/phase2/RUST-WORKSPACE-SOURCE-BUILD-V29.md).
