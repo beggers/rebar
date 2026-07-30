@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1510" height="1180" viewBox="0 0 1510 1180" role="img" aria-labelledby="title description">
+<title id="title">Can our new engine replace Python re?</title>
+<desc id="description">Correctness only, not speed. Both Python and Rust pass all 31,237 original checks and all 10,434 separate broader public checks. C passes 16,413 original checks with 606 observed differences and an unfinished group. Zig passes 4,607 original checks with at least 1,700 observed differences and unfinished groups. C++, Go, and Fortran have no complete measurement. Rust's static first-party audit passes with zero external regex engines, packages, or symbols. Live runtime independence is not established, no candidate is fully qualified, final speed is not measured, and no winner has been selected.</desc>
+<rect width="1510" height="1180" rx="24" fill="#0b1220"/>
+<text x="58" y="75" fill="#f8fafc" font-size="37" font-family="system-ui,sans-serif" font-weight="770">Can our new engine replace Python re?</text>
+<text x="60" y="110" fill="#cbd5e1" font-size="19" font-family="system-ui,sans-serif">Two separate test sets check correctness. Neither bar measures speed.</text>
+<rect x="56" y="140" width="1395" height="125" rx="16" fill="#122536" stroke="#326459"/>
+<text x="80" y="180" fill="#6ee7b7" font-size="24" font-family="system-ui,sans-serif" font-weight="750">Rust now matches Python in both test sets</text>
+<text x="82" y="219" fill="#f8fafc" font-size="20" font-family="system-ui,sans-serif" font-weight="660">31,237 / 31,237 original checks  +  10,434 / 10,434 broader checks</text>
+<text x="82" y="246" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Zero differences. More safety and independence checks are still required.</text>
+<text x="69" y="303" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="690">APPROACH</text>
+<text x="179" y="303" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="690">ORIGINAL PYTHON CHECKS</text>
+<text x="658" y="303" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="690">BROADER PUBLIC CHECKS</text>
+<text x="1105" y="303" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="690">CURRENT STATUS</text>
+<rect x="55" y="321" width="1396" height="74" rx="11" fill="#101b2b"/>
+<text x="74" y="358" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="690">Python re</text>
+<rect x="179" y="333" width="256" height="17" rx="6" fill="#29384e"/>
+<rect x="658" y="333" width="224" height="17" rx="6" fill="#29384e"/>
+<rect x="179" y="333" width="256" height="17" rx="6" fill="#34d399"/>
+<rect x="658" y="333" width="224" height="17" rx="6" fill="#34d399"/>
+<text x="179" y="375" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">31,237 / 31,237  ·  100%</text>
+<text x="658" y="375" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">10,434 / 10,434  ·  100%</text>
+<text x="1104" y="352" fill="#34d399" font-size="12" font-family="system-ui,sans-serif" font-weight="730">REFERENCE</text>
+<text x="1104" y="375" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">All checks pass</text>
+<rect x="55" y="407" width="1396" height="74" rx="11" fill="#10243a"/>
+<text x="74" y="444" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="690">Rust</text>
+<rect x="179" y="419" width="256" height="17" rx="6" fill="#29384e"/>
+<rect x="658" y="419" width="224" height="17" rx="6" fill="#29384e"/>
+<rect x="179" y="419" width="256" height="17" rx="6" fill="#60a5fa"/>
+<rect x="658" y="419" width="224" height="17" rx="6" fill="#60a5fa"/>
+<text x="179" y="461" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">31,237 / 31,237  ·  100%</text>
+<text x="658" y="461" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">10,434 / 10,434  ·  100%</text>
+<text x="1104" y="438" fill="#60a5fa" font-size="12" font-family="system-ui,sans-serif" font-weight="730">BOTH TEST SETS PASS</text>
+<text x="1104" y="461" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">Still not fully qualified</text>
+<rect x="55" y="493" width="1396" height="74" rx="11" fill="#101b2b"/>
+<text x="74" y="530" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="690">C</text>
+<rect x="179" y="505" width="256" height="17" rx="6" fill="#29384e"/>
+<rect x="658" y="505" width="224" height="17" rx="6" fill="#29384e"/>
+<rect x="179" y="505" width="135" height="17" rx="6" fill="#fbbf24"/>
+<text x="179" y="547" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">16,413 / 31,237  ·  52.5%</text>
+<text x="658" y="547" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1104" y="524" fill="#fbbf24" font-size="12" font-family="system-ui,sans-serif" font-weight="730">NOT COMPATIBLE</text>
+<text x="1104" y="547" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">606 differences; unfinished</text>
+<rect x="55" y="579" width="1396" height="74" rx="11" fill="#101b2b"/>
+<text x="74" y="616" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="690">Zig</text>
+<rect x="179" y="591" width="256" height="17" rx="6" fill="#29384e"/>
+<rect x="658" y="591" width="224" height="17" rx="6" fill="#29384e"/>
+<rect x="179" y="591" width="38" height="17" rx="6" fill="#fbbf24"/>
+<text x="179" y="633" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">4,607 / 31,237  ·  14.7%</text>
+<text x="658" y="633" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1104" y="610" fill="#fbbf24" font-size="12" font-family="system-ui,sans-serif" font-weight="730">NOT COMPATIBLE</text>
+<text x="1104" y="633" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">At least 1,700 differences</text>
+<rect x="55" y="665" width="1396" height="74" rx="11" fill="#101b2b"/>
+<text x="74" y="702" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="690">C++</text>
+<rect x="179" y="677" width="256" height="17" rx="6" fill="#29384e"/>
+<rect x="658" y="677" width="224" height="17" rx="6" fill="#29384e"/>
+<text x="179" y="719" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="658" y="719" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1104" y="696" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="730">NOT MEASURED</text>
+<text x="1104" y="719" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">Complete checks not measured</text>
+<rect x="55" y="751" width="1396" height="74" rx="11" fill="#101b2b"/>
+<text x="74" y="788" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="690">Go</text>
+<rect x="179" y="763" width="256" height="17" rx="6" fill="#29384e"/>
+<rect x="658" y="763" width="224" height="17" rx="6" fill="#29384e"/>
+<text x="179" y="805" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="658" y="805" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1104" y="782" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="730">NOT MEASURED</text>
+<text x="1104" y="805" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">Complete checks not measured</text>
+<rect x="55" y="837" width="1396" height="74" rx="11" fill="#101b2b"/>
+<text x="74" y="874" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="690">Fortran</text>
+<rect x="179" y="849" width="256" height="17" rx="6" fill="#29384e"/>
+<rect x="658" y="849" width="224" height="17" rx="6" fill="#29384e"/>
+<text x="179" y="891" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="658" y="891" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1104" y="868" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="730">NOT MEASURED</text>
+<text x="1104" y="891" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">Complete checks not measured</text>
+<rect x="55" y="942" width="677" height="158" rx="14" fill="#122536" stroke="#326459"/>
+<text x="77" y="975" fill="#6ee7b7" font-size="19" font-family="system-ui,sans-serif" font-weight="750">Built from scratch: static inspection passes</text>
+<text x="78" y="1007" fill="#f8fafc" font-size="14" font-family="system-ui,sans-serif">External regex engines: 0  ·  External regex packages: 0</text>
+<text x="78" y="1038" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">Python baseline and Rust ran in separate real processes.</text>
+<text x="78" y="1068" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">The older Rust failures and every C/Zig loss remain preserved.</text>
+<rect x="753" y="942" width="698" height="158" rx="14" fill="#291923" stroke="#754453"/>
+<text x="775" y="975" fill="#fda4af" font-size="19" font-family="system-ui,sans-serif" font-weight="750">What still needs to happen</text>
+<text x="775" y="1007" fill="#f8fafc" font-size="14" font-family="system-ui,sans-serif">A live runtime independence check has not yet been established.</text>
+<text x="775" y="1038" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">Three independently written engines must pass all requirements.</text>
+<text x="775" y="1068" fill="#fcd34d" font-size="14" font-family="system-ui,sans-serif">FINAL SPEED: NOT MEASURED  ·  NO WINNER</text>
+<text x="61" y="1138" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Original and public test sets are separate. The hidden final comparison has not been generated or opened.</text>
+</svg>

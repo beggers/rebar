@@ -23,7 +23,7 @@ preserved; runtime no-delegation still requires a separate live proof.
 31,237 original checks and all 10,434 wider compatibility checks.
 Zero fully qualified replacements. Final speed: NOT MEASURED. No winner.**
 
-![Current original-suite compatibility: Python and Rust both pass all 31,237 checks, C passes 16,413, and Zig passes 4,607. Rust has zero original-suite differences but is not yet fully qualified.](docs/evidence/candidate-current-overview-v103.svg)
+![Current compatibility: Rust passes all 31,237 original Python checks and all 10,434 broader real-world checks, with zero differences and zero external regex engines. C passes 16,413 original checks and Zig passes 4,607; neither is complete. Runtime independence and final speed remain unproven.](docs/evidence/candidate-current-overview-v104.svg)
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
@@ -177,7 +177,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 ## Evidence and reproduction
 
 - [Reproduce and audit the headline graph](docs/REPRODUCING.md).
-- [Complete generated headline correctness results: Rust passes all 31,237 original Python checks](docs/evidence/candidate-current-overview-v103.json).
+- [Complete generated headline correctness results: Rust passes all 31,237 original checks and all 10,434 broader checks](docs/evidence/candidate-current-overview-v104.json).
 - [Detailed experiment log, rejected designs, and full evidence](docs/EXPERIMENT-LOG.md).
 - [Frozen original Python correctness checks](oracle/phase1/P0-COMPLETENESS-V4.md) and [8,244 independent additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [48,416 additional real-world buffer and memory-mapping questions](oracle/phase1/P0-PUBLIC-BUFFER-CARRIERS-SUPPLEMENT-V1.md).

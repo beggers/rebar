@@ -579,13 +579,14 @@ remain **NOT MEASURED**.
 
 ## Show the latest complete Rust compatibility result clearly
 
-The [updated headline correctness chart](evidence/candidate-current-overview-v103.svg)
-is regenerated entirely from its [authenticated inputs](evidence/candidate-current-overview-v103.inputs.json)
-and [complete generated result](evidence/candidate-current-overview-v103.json).
-It includes the actual corrected Rust result: **31,237** verified checks,
-all **13** completed groups, **zero** differences, and **13** distinct
-successful workers. C remains at **16,413** verified checks and Zig at
-**4,607**, without changing the shared **31,237-case** denominator.
+The [updated headline correctness chart](evidence/candidate-current-overview-v104.svg)
+is regenerated entirely from its [authenticated inputs](evidence/candidate-current-overview-v104.inputs.json)
+and [complete generated result](evidence/candidate-current-overview-v104.json).
+It includes both actual corrected Rust results: **31,237** original verified
+checks and **10,434** wider verified checks, both with **zero** differences.
+C remains at **16,413** verified checks and Zig at **4,607**, without changing
+the shared **31,237-case** original denominator. A separate clean source and
+native inspection confirms **zero** external regular-expression packages.
 The earlier **1,352** Rust failures remain preserved as history. Final speed,
 live runtime no-delegation, and full candidate qualification remain
 **NOT MEASURED** or **NOT ESTABLISHED**.
