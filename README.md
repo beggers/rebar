@@ -30,6 +30,10 @@ The newer complete C run verifies **22,798 of 31,237** checks and
 records **224** differences; Zig verifies **18,056** and records
 **1,156**. Both candidates finish all **13** groups.
 
+An updated Zig implementation addressing all **1,156** recorded
+differences has now been independently compiled twice. Its compatibility
+after those changes is **NOT MEASURED**.
+
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
 unfinished group are never counted as passing. The same Rust build now
