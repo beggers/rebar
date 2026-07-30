@@ -8,6 +8,25 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## A first-party audit that understands real Rust syntax
+
+The previous stricter source audit failed on Rust's valid `<'a>` lifetime
+syntax before it inspected the candidates. Its exact
+[411-byte failure](../oracle/phase2/evidence/runtime-non-delegation-v2-actual-source-lexer-failure.json)
+remains unchanged. The independently corrected
+[version-three audit](../oracle/phase2/RUNTIME-NON-DELEGATION-V3.md)
+recognizes Rust lifetimes, labels, raw strings, byte literals, and nested
+comments while still rejecting external regular-expression engines,
+cross-candidate delegation, and generic candidate-owned dynamic loading.
+
+Its frozen source-only self-test passes **235** hostile and **45** clean
+controls in both normal and empty environments. Source verification
+authenticates exactly seven approved owners, including the previous failure;
+neither mode reads candidate source, loads native code, starts a process,
+opens a hidden test, or measures speed. Actual candidate inspection remains
+**NOT RUN**, runtime independence remains **NOT ESTABLISHED**, and final
+performance remains **NOT MEASURED**.
+
 ## Freeze public-only Rust profiling
 
 The [first-party public profiling procedure](../oracle/phase3/RUST-PUBLIC-PROFILE-V1.md)

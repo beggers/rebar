@@ -11,8 +11,9 @@ import rebar as re
 Wrapping Python, an existing regular-expression package, or another
 project engine does not count. Each candidate must implement its own
 regular-expression engine. Dependency files, native links, import
-paths, and Python-facing wrappers are independently checked; the
-current stricter source audit needs a Rust-syntax correction.
+paths, and Python-facing wrappers are independently checked. A stronger
+no-wrapping audit now correctly understands Rust source; its complete
+candidate inspection has not run yet.
 
 ## Results at a glance
 
@@ -119,6 +120,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Six independently authored engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and the [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Strict first-party dependency, wrapper, and no-delegation policy](oracle/phase2/RUNTIME-NON-DELEGATION-V2.md).
 - [Preserved strict-audit failure on valid Rust lifetime syntax](oracle/phase2/evidence/runtime-non-delegation-v2-actual-source-lexer-failure.json).
+- [Corrected strict from-scratch and no-wrapping source audit](oracle/phase2/RUNTIME-NON-DELEGATION-V3.md).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).

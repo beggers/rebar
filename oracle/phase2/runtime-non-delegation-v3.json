@@ -1,0 +1,130 @@
+{
+  "schema": "rebar-phase2-first-party-runtime-non-delegation-v3",
+  "version": 3,
+  "phase": "SOURCE FREEZE ONLY; CURRENT CANDIDATE POLICY FAILURES ARE NOT HIDDEN",
+  "source_freeze": {
+    "source": {
+      "path": "tools/audit_candidate_runtime_non_delegation_v3.py",
+      "sha256": "410fd1341eeab2256a1b5b5e8a0d16553f829ae943f655fc7b39f7fc7323f822"
+    },
+    "protocol": {
+      "path": "oracle/phase2/RUNTIME-NON-DELEGATION-V3.md",
+      "sha256": "c88af5593f3aa3b4ca92ffe626a15490f2a39e500daa5a07e91fed083d7f0440"
+    },
+    "contract_path": "oracle/phase2/runtime-non-delegation-v3.json",
+    "sole_owned_file_count": 3
+  },
+  "immutable_v2_predecessor": {
+    "owners": {
+      "tools/audit_candidate_runtime_non_delegation_v2.py": "23862f929d7b875cbc16059cb8c1d5c60df7aaba7379e17b57fe943a7d77bf6f",
+      "oracle/phase2/RUNTIME-NON-DELEGATION-V2.md": "bd8a393d8f385ea9ff55570b1a222a9baed347e9f238ec89534fc46a85127802",
+      "oracle/phase2/runtime-non-delegation-v2.json": "456439d8b0467b17bd40ee78b5de0f00ace6e0f01e5d558590fabb592dd49729"
+    },
+    "actual_failure_receipt": {
+      "path": "oracle/phase2/evidence/runtime-non-delegation-v2-actual-source-lexer-failure.json",
+      "sha256": "7f30581baf5b47adf7c2d21f0baf2218bc78e14a72aeba90355140519dbadf1a",
+      "bytes": 411,
+      "device": 2064,
+      "inode": 525976,
+      "mode": "0600",
+      "status": "FAIL",
+      "message": "candidates/rust/src/lib.rs:252: unterminated native literal",
+      "candidate_executions": 0,
+      "candidate_workers": 0,
+      "native_library_loads": 0,
+      "holdout": "NOT OPENED"
+    },
+    "v2_owners_modified": false,
+    "v2_failure_hidden": false
+  },
+  "rust_lexer": {
+    "rust_lifetimes": true,
+    "rust_loop_labels": true,
+    "rust_raw_strings": true,
+    "rust_raw_byte_strings": true,
+    "rust_c_strings": true,
+    "rust_byte_literals": true,
+    "rust_unicode_characters": true,
+    "rust_escaped_characters": true,
+    "rust_nested_block_comments": true,
+    "rust_doc_comments": true,
+    "computed_or_obfuscated_engine_dispatch": "FORBIDDEN",
+    "external_rust_crates": "FORBIDDEN",
+    "external_rust_link_attributes": "FORBIDDEN",
+    "source_only_candidate_source_reads": 0
+  },
+  "families": ["c_vm", "cpp", "fortran", "go", "rust", "zig"],
+  "family_count": 6,
+  "first_party_policy": {
+    "candidate_owned_re_sre_regex_packages": "FORBIDDEN",
+    "candidate_owned_inspect_tokenize_transitive_re": "FORBIDDEN",
+    "candidate_owned_ctypes_or_dynamic_library_loading": "FORBIDDEN",
+    "candidate_cross_family_dispatch": "FORBIDDEN",
+    "computed_native_python_imports": "FORBIDDEN",
+    "ordinary_metadata_modules": ["copyreg", "enum", "functools", "operator", "struct", "types", "unicodedata", "warnings"],
+    "caller_owned_warning_formatting": "HOST STDLIB PLUMBING; NOT CANDIDATE MATCHING DELEGATION",
+    "caller_owned_enum_introspection": "HOST STDLIB INTROSPECTION; NOT CANDIDATE MATCHING DELEGATION",
+    "rust_cargo_package_count": 1,
+    "rust_external_dependency_count": 0,
+    "c_zig_rust_dynamic_link_owners": "EXACT FIRST-PARTY ENGINE AND ORDINARY SYSTEM C RUNTIME ONLY",
+    "external_regex_packages": 0
+  },
+  "pinned_stdlib": {
+    "version": "3.14.6",
+    "root": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/",
+    "sha256": {
+      "inspect.py": "9e9793a663928e98cb7b5e300a6fd7a747bb977641eec94c22a6074009aa6c46",
+      "tokenize.py": "65ba1bacdc42e768382208ff27f3001ee77d9d61aafba686c67652d22b84b330",
+      "warnings.py": "142225786de63c593f1c9abdacf5b4fc0b05dd847f6bed0ebb4b4aa2d4d93b02",
+      "_py_warnings.py": "7728580177727fa3b295478cef4777a9d2a364c5cbd809efcea352db31144f85",
+      "linecache.py": "692daec68e2a419adf46bafc0eb2f8a2fb36c482183fa1ac47e00fec440f7d7e",
+      "enum.py": "fd23a7598fa1104ef892abcd4154d3627283e6361eb7a91cd11dc4a7b6fb3a93"
+    },
+    "tokenize_import_time_re_compile_count": 2,
+    "candidate_forbidden_chain": ["candidate native bridge", "inspect", "tokenize", "re", "re.compile"],
+    "host_warning_chain": ["warnings", "_py_warnings", "linecache", "tokenize", "re", "re.compile"],
+    "host_enum_signature_chain": ["enum.EnumType.__signature__", "inspect", "tokenize", "re", "re.compile"]
+  },
+  "current_source_findings": {
+    "rust": "FAIL: LATENT PRIVATE BRIDGE INSPECT ESCAPE HATCH",
+    "rust_public_pattern_methods": "PyDescr_NewMethod NATIVE DESCRIPTORS",
+    "rust_native_bind_adapter_calls": 0,
+    "rust_public_matching_delegation": "NOT PROVEN",
+    "zig": "FAIL: CANDIDATE-OWNED CTYPES DYNAMIC LOADER",
+    "zig_loaded_library": "FIRST-PARTY _zig_probe.so; EXTERNAL REGEX ENGINE NOT ESTABLISHED",
+    "public_rebar": "FAIL: TRANSITIVE ZIG CTYPES WRAPPER",
+    "candidate_runtime_execution": "NOT RUN"
+  },
+  "source_only_effects": {
+    "candidate_imports": 0,
+    "candidate_source_reads": 0,
+    "candidate_binary_reads": 0,
+    "pinned_stdlib_reads": 0,
+    "candidate_executions": 0,
+    "compiler_processes": 0,
+    "native_library_loads": 0,
+    "subprocesses": 0,
+    "archive_reads": 0,
+    "archive_decompressions": 0,
+    "private_reads": 0,
+    "holdout_reads": 0,
+    "hidden_case_reads": 0,
+    "benchmark_reads": 0,
+    "network_requests": 0,
+    "threads_started": 0,
+    "clock_samples": 0,
+    "workspace_mutations": 0,
+    "git_reads": 0
+  },
+  "boundaries": {
+    "source_only_modes": ["--self-test", "--verify-source"],
+    "static_audit": "ROOT AGENT ONLY AFTER VERIFIED SOURCE PUSH",
+    "runtime_audit": "NOT IMPLEMENTED; ROOT AGENT ONLY",
+    "runtime_non_delegation": "NOT ESTABLISHED",
+    "candidate_qualified": false,
+    "candidate_correctness": "NOT MEASURED",
+    "holdout": "NOT OPENED",
+    "performance": "NOT MEASURED",
+    "winner_selected": false
+  }
+}
