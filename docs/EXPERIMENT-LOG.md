@@ -232,6 +232,14 @@ existing first-party bridge. It created no source variant and ran no
 candidate. The exact failure remains preserved; an immutable successor must
 recognize the unique surrounding capture-clamp context.
 
+The [independently corrected scanner source freeze](../oracle/phase2/RUST-SCANNER-PICKLE-SEMANTICS-V2.md)
+authenticates the unique three-line safe capture-clamp context while
+preserving both legitimate shorter occurrences. Four ordinary and clean-
+environment gates retain all **470** scanner cases, **15** recorded overlaps,
+and **66** hostile controls. Its corrected first-party bridge is predicted
+to have exactly **177,348 bytes**; actual scanner behavior remains
+**NOT MEASURED** until materialization and a full retest.
+
 ## Freeze the separate correction for 88 Rust expansion differences
 
 The [independent Rust expansion and buffer-probe correction](../oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md)
