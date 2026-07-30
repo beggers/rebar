@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1276" viewBox="0 0 1560 1276" role="img" aria-labelledby="title description">
+<title id="title">Actual progress toward a faster Python re</title>
+<desc id="description">Bars show confirmed correct original Python regular-expression checks, not speed. Python passes 31,237 out of 31,237, or 100 percent. C passes 16,262, or 52.1 percent; Rust passes 14,725, or 47.1 percent; Zig passes 4,607, or 14.7 percent. Thirteen real C workers attempted the original groups; 11 completed groups. All 606 current C11 examples are preserved in 21 recorded chunks. There are 10 source-canonical completed vectors and 1 transport-only public-surface vector with 114 records; source digest not provided by the original observer. Two incomplete original groups remain, with zero infrastructure failures and zero timeouts. An earlier C10 audit reported 92 recorded and 514 not recorded; those audit counts are not independently established by this graph and historical losses are not repaired. The speed, memory and runtime independence are not measured or not established. The proposed 14,155,776-case comparison is not frozen, not generated, and not opened. No fully compatible candidate and no winner.</desc>
+<rect width="1560" height="1276" rx="24" fill="#0b1220"/>
+<text x="48" y="66" fill="#f8fafc" font-size="32" font-family="system-ui,sans-serif" font-weight="740">Building a faster Python re, from scratch</text>
+<text x="49" y="103" fill="#cbd5e1" font-size="17" font-family="system-ui,sans-serif">C improved; no fully compatible replacement; speed not measured; no winner</text>
+<rect x="46" y="126" width="1468" height="82" rx="13" fill="#172338"/>
+<text x="66" y="157" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="690">These bars show correctness against Python, not speed.</text>
+<text x="66" y="185" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Every bar uses the same 31,237 original checks. Failures, incomplete groups and unmeasured checks are never counted as passing.</text>
+<text x="50" y="247" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">APPROACH</text>
+<text x="159" y="247" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">ORIGINAL PYTHON CHECKS CONFIRMED</text>
+<text x="730" y="247" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">WHAT THE ACTUAL RUN RECORDED</text>
+<text x="1291" y="247" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">SPEED</text>
+<text x="1510" y="247" text-anchor="end" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">RESULT</text>
+<line x1="46" y1="265" x2="1514" y2="265" stroke="#334155"/>
+<text x="51" y="308" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Python re</text>
+<rect x="158" y="292" width="314" height="20" rx="6" fill="#1e293b"/>
+<rect x="158" y="292" width="314" height="20" rx="6" fill="#34d399"/>
+<text x="483" y="308" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">31,237 / 31,237 (100%)</text>
+<text x="730" y="308" fill="#cbd5e1" font-size="10" font-family="system-ui,sans-serif">All 13 original groups passed</text>
+<text x="1291" y="308" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1510" y="308" text-anchor="end" fill="#34d399" font-size="10" font-family="system-ui,sans-serif" font-weight="730">BASELINE</text>
+<text x="51" y="376" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">C</text>
+<rect x="158" y="360" width="314" height="20" rx="6" fill="#1e293b"/>
+<rect x="158" y="360" width="163" height="20" rx="6" fill="#fbbf24"/>
+<text x="483" y="376" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">16,262 / 31,237 (52.1%)</text>
+<text x="730" y="376" fill="#cbd5e1" font-size="10" font-family="system-ui,sans-serif">6 passed; 5 differ; 2 incomplete; all 606 current C11 examples recorded</text>
+<text x="1291" y="376" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1510" y="376" text-anchor="end" fill="#fbbf24" font-size="10" font-family="system-ui,sans-serif" font-weight="730">NOT YET COMPATIBLE</text>
+<text x="51" y="444" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Rust</text>
+<rect x="158" y="428" width="314" height="20" rx="6" fill="#1e293b"/>
+<rect x="158" y="428" width="148" height="20" rx="6" fill="#fb7185"/>
+<text x="483" y="444" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">14,725 / 31,237 (47.1%)</text>
+<text x="730" y="444" fill="#cbd5e1" font-size="10" font-family="system-ui,sans-serif">9 passed; 3 differ; 1 incomplete; captured failed-worker warnings remain</text>
+<text x="1291" y="444" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1510" y="444" text-anchor="end" fill="#fb7185" font-size="10" font-family="system-ui,sans-serif" font-weight="730">NOT YET COMPATIBLE</text>
+<text x="51" y="512" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Zig</text>
+<rect x="158" y="496" width="314" height="20" rx="6" fill="#1e293b"/>
+<rect x="158" y="496" width="46" height="20" rx="6" fill="#fbbf24"/>
+<text x="483" y="512" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">4,607 / 31,237 (14.7%)</text>
+<text x="730" y="512" fill="#cbd5e1" font-size="10" font-family="system-ui,sans-serif">Earlier result only; 13 workers warned; newer run stopped before matching</text>
+<text x="1291" y="512" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1510" y="512" text-anchor="end" fill="#fbbf24" font-size="10" font-family="system-ui,sans-serif" font-weight="730">NOT YET COMPATIBLE</text>
+<text x="51" y="580" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">C++</text>
+<rect x="158" y="564" width="314" height="20" rx="6" fill="#1e293b"/>
+<text x="483" y="580" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="730" y="580" fill="#cbd5e1" font-size="10" font-family="system-ui,sans-serif">Full current matching result not measured</text>
+<text x="1291" y="580" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1510" y="580" text-anchor="end" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif" font-weight="730">NOT MEASURED</text>
+<text x="51" y="648" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Go</text>
+<rect x="158" y="632" width="314" height="20" rx="6" fill="#1e293b"/>
+<text x="483" y="648" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="730" y="648" fill="#cbd5e1" font-size="10" font-family="system-ui,sans-serif">Full current matching result not measured</text>
+<text x="1291" y="648" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1510" y="648" text-anchor="end" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif" font-weight="730">NOT MEASURED</text>
+<text x="51" y="716" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Fortran</text>
+<rect x="158" y="700" width="314" height="20" rx="6" fill="#1e293b"/>
+<text x="483" y="716" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="730" y="716" fill="#cbd5e1" font-size="10" font-family="system-ui,sans-serif">Independent builds disagreed; matching not measured</text>
+<text x="1291" y="716" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1510" y="716" text-anchor="end" fill="#fb7185" font-size="10" font-family="system-ui,sans-serif" font-weight="730">BUILD FAILED</text>
+<line x1="46" y1="757" x2="1514" y2="757" stroke="#334155"/>
+<text x="51" y="789" fill="#f8fafc" font-size="17" font-family="system-ui,sans-serif" font-weight="700">What the new C run actually established</text>
+<text x="51" y="819" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">13 real workers; 11 completed groups; all 606 current C11 examples preserved in 21 recorded chunks.</text>
+<text x="51" y="847" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">10 source-canonical vectors; 1 transport-only public-surface vector; 114 records; source digest not provided by the original observer.</text>
+<text x="51" y="875" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Two incomplete original groups; zero infrastructure failures; zero timeouts. The complete overall failure total remains NOT MEASURED.</text>
+<rect x="46" y="902" width="1468" height="104" rx="13" fill="#172338"/>
+<text x="66" y="934" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="680">History stays honest</text>
+<text x="66" y="961" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Earlier C10 audit reported 92 recorded / 514 not recorded; not independently established by this graph.</text>
+<text x="66" y="986" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Historical losses not repaired. The new 606 recorded examples apply only to the new C11 run.</text>
+<rect x="46" y="1026" width="1468" height="108" rx="13" fill="#172338"/>
+<text x="66" y="1058" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="680">Future speed comparison: proposed 14,155,776 cases</text>
+<text x="66" y="1086" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">NOT FROZEN; NOT GENERATED; NOT OPENED; NOT RUN. Speed, memory, confidence and rankings: NOT MEASURED.</text>
+<text x="66" y="1111" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">The separate 8,244 reference checks are not added to the 31,237 original checks.</text>
+<text x="51" y="1173" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">The C improvement is real. Compatibility, speed and a winner are not established.</text>
+<text x="51" y="1204" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">Overview 98; observed C11 failing records preserved; historical losses not repaired; no speed claims; no winner</text>
+</svg>

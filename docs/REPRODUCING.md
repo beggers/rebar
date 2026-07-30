@@ -11,14 +11,15 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 The current graph compares unchanged Python with six independently
 written, from-scratch engine families. Its bars show compatibility,
 not speed. Python passes all **31,237** original checks; the latest
-Rust engine passes **14,725**, C **13,606**, and Zig **4,607**. The
+C engine passes **16,262**, Rust **14,725**, and Zig **4,607**. The
 previous Rust result of **15,749** is preserved: the latest attempt
 lost certification of a **1,024**-check group with **42** observed
 differences and has at least **2,018** observed differences overall.
-The latest complete C run reports at least **606** differences and
-**five** unfinished groups without increasing its passing count.
-Its recorder preserves only **92** individual failing examples;
-the other **514** are **NOT RECORDED**.
+The latest C run completes **11** groups, verifies **2,656** more
+checks, and preserves every one of its **606** observed failing
+examples. Its remaining **two** incomplete groups are not counted
+as passing. The older C run saved only **92** failing examples;
+its **514** missing historical examples remain **NOT RECORDED**.
 No engine is fully compatible.
 
 The one completely captured failed Rust worker produced **16** cleanup
@@ -34,53 +35,101 @@ statistical confidence are **NOT MEASURED**. The proposed
 **NOT GENERATED**, and **NOT OPENED**.
 
 This pinned, read-only command independently verifies the complete
-version-97 graph, the preserved and rejected version-96 graph, the
-actual C failure, the earlier Rust regression, and the Zig controller
-failure.
+version-98 graph, preserves the version-97 and rejected version-96
+history, and verifies the actual new C result without opening any
+compressed failure report. It distinguishes the ten original
+source-canonical C vectors from the one fully preserved
+transport-only public-interface vector.
 It does not create graph files, open compressed evidence, import an
 engine, compile code, or access the speed holdout:
 
 ```bash
 env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
   /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
-  -I -B -S tools/render_candidate_current_overview_v97.py \
+  -I -B -S tools/render_candidate_current_overview_v98.py \
   --verify-frozen-context \
-  --source-sha256 f83e055e2392a1efa193b1726ce9044bfdeadc4236103927be4ed8f2f6b060b9 \
-  --source-bytes 65091 \
-  --previous-source-sha256 9bb191556152393b650b75c0c4e3d584b6df9f3d060571789c1a89411011fd51 \
-  --previous-inputs-sha256 71cc5d77f66901d24c3d8c8db58f2cdc545634ec5da8ff0aaf9f630f3bafde7f \
-  --previous-summary-sha256 b5f7b35e9ec47e4d0793c0b5b38372c391ec1f3aaca37b80655802aa9c2f1ca2 \
-  --previous-svg-sha256 ec8ffd566b7da826441383c1fd44944189c153ffde252b9c8340e3e041770dcd \
-  --c-source-sha256 ad8b8451847b3e5c566c141e829bdf6eecea8ae9f502b608288449022c83c790 \
-  --c-protocol-sha256 ba673181c02daf3a572e3569283a5a4c490ed04e7cd76927e3f2fe1430630179 \
-  --c-contract-sha256 2aad4885fe80b93f61f59c28ed6969fbcf16dda0b8a3457c71b449a9972bb595 \
-  --zig-source-sha256 8757ff2fdda5e8e60ee694b0d803018ddf33ea7266b8d7a5eff6d52d0866569d \
-  --zig-protocol-sha256 691ab654b88ed30f6cd0729d987415162708fdfb90c36d91bf41dcefdbb5fcef \
-  --zig-contract-sha256 1c7326dc2f63635f3e32ec0558b51f21c952d51480f336e3b0d4d49e38428a0a \
-  --c-receipt-sha256 c5c85f828da7e960c90a23b1eb4d74c30a671d030de04ef61b0e4d00d7e5433a \
-  --zig-controller-receipt-sha256 2d1bad717e782b7ed3e0af856f8687e9a29abc93ebf1553adc6d65f668aa5c65
+  --source-sha256 39c7d058e0462f614ff81e9240f9c19690b8b43582a75a0fe80b460ba85a21ac \
+  --source-bytes 121628 \
+  --previous-source-sha256 f83e055e2392a1efa193b1726ce9044bfdeadc4236103927be4ed8f2f6b060b9 \
+  --previous-inputs-sha256 ebc81ead0b0741e02fdeef13ab9e740877ee1d2dc7d06ec25347a145f98ad916 \
+  --previous-summary-sha256 ba4ae8d609b94719dc37ff702d5461763ecba8bee94214961e096ee702636c24 \
+  --previous-svg-sha256 5c8dc279ee76655aa305ee2cb02ae92ea82b5ad36273cdd39a32f2f7ffcda13b \
+  --c-source-sha256 b2871592ad3c2138e4a7a9dbea034fc50c699fb34c44f6ff6185087a144e52c2 \
+  --c-protocol-sha256 cfddebcfb5b481a495b86ed7958f2563ad5ffecc3aebcc94820cae5e0612ed39 \
+  --c-contract-sha256 e2396ea5a51fbe6ad0b34f2831461d3c6c362d4076a931791ce23820ca810b93 \
+  --historical-c-source-sha256 ad8b8451847b3e5c566c141e829bdf6eecea8ae9f502b608288449022c83c790 \
+  --historical-c-protocol-sha256 ba673181c02daf3a572e3569283a5a4c490ed04e7cd76927e3f2fe1430630179 \
+  --historical-c-contract-sha256 2aad4885fe80b93f61f59c28ed6969fbcf16dda0b8a3457c71b449a9972bb595 \
+  --historical-zig-source-sha256 8757ff2fdda5e8e60ee694b0d803018ddf33ea7266b8d7a5eff6d52d0866569d \
+  --historical-zig-protocol-sha256 691ab654b88ed30f6cd0729d987415162708fdfb90c36d91bf41dcefdbb5fcef \
+  --historical-zig-contract-sha256 1c7326dc2f63635f3e32ec0558b51f21c952d51480f336e3b0d4d49e38428a0a \
+  --c-receipt-sha256 3db5daf9352f5c9837f4f7134bead6c0a05b2bddf9815a9cf134ea953b0ecd3e \
+  --historical-c-receipt-sha256 c5c85f828da7e960c90a23b1eb4d74c30a671d030de04ef61b0e4d00d7e5433a \
+  --historical-zig-controller-receipt-sha256 2d1bad717e782b7ed3e0af856f8687e9a29abc93ebf1553adc6d65f668aa5c65
 ```
 
 Replace `--verify-frozen-context` with `--self-test` to reproduce the
-source-only tamper and evidence-preservation checks. Neither command
-runs an engine or a speed test.
+**727** genuinely executed source-only tamper and evidence-preservation
+checks. The previous **14,757** checks remain historical; they are
+not rerun. Neither command runs an engine or a speed test.
 
 Expected current graph files:
 
 ```text
-docs/evidence/candidate-current-overview-v97.inputs.json
-ebc81ead0b0741e02fdeef13ab9e740877ee1d2dc7d06ec25347a145f98ad916
+docs/evidence/candidate-current-overview-v98.inputs.json
+e8dbcf9271fc39690739f6d93b1832181a0125abf65bd7ce14d6fb3fe248e102
 
-docs/evidence/candidate-current-overview-v97.summary.json
-ba4ae8d609b94719dc37ff702d5461763ecba8bee94214961e096ee702636c24
+docs/evidence/candidate-current-overview-v98.summary.json
+5eb2cb4146c608a0c2593d5fd7056bf5aa822ca6cbe4e7f70c972b62b4ed96d6
 
-docs/evidence/candidate-current-overview-v97.svg
-5c8dc279ee76655aa305ee2cb02ae92ea82b5ad36273cdd39a32f2f7ffcda13b
+docs/evidence/candidate-current-overview-v98.svg
+937c8cd420dbafdc7906d749288e1b56ed376617e6304c8fa61ce364acb87fa0
 ```
 
-## Verify which C failures were actually saved
+## Verify all current C failures were actually saved
 
-The latest C failure report proves **606** observed differences but
+The real version-11 C result proves **16,262 / 31,237** passing
+checks, **11** completed groups, and all **606** observed failing
+records preserved in **21** chunks. Its publication `PASS` means
+that the evidence was saved; the C candidate itself is `FAIL`.
+
+Verify the small, original, digest-bound publication receipt
+without running a candidate or decompressing any archive:
+
+```bash
+jq -ce '
+  select(.schema == "rebar-owned-repaired-c-original-campaign-v11-durable-publication-receipt")
+  | select(.publication_status == "PASS" and .candidate_status == "FAIL")
+  | select(.case_execution_denominator == 31237)
+  | select(.verified_passing_case_count == 16262)
+  | select(.completed_suite_count == 11)
+  | select(.actual_candidate_workers == 13)
+  | select((.actual_worker_process_ids | unique | length) == 13)
+  | select(.observed_semantic_mismatch_lower_bound == 606)
+  | select(.all_observed_semantic_mismatch_records_preserved)
+  | select(.complete_observed_semantic_mismatch_record_count == 606)
+  | select(.complete_mismatch_chunk_count == 21)
+  | select(.candidate_execution_failure_count == 2)
+  | select(.infrastructure_failure_count == 0 and .worker_timeout_count == 0)
+  | {candidate_status, verified_passing_case_count,
+     case_execution_denominator, completed_suite_count,
+     observed_semantic_mismatch_lower_bound,
+     complete_observed_semantic_mismatch_record_count,
+     complete_mismatch_chunk_count, candidate_execution_failure_count}' \
+  oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json
+```
+
+The exact receipt SHA-256 is
+`3db5daf9352f5c9837f4f7134bead6c0a05b2bddf9815a9cf134ea953b0ecd3e`.
+Its separately preserved archive SHA-256 is
+`2d580a5d321767b1753a645961d717cbc4345f1151c7a0d34304d6e6579cc609`.
+The public-interface group has **114** lossless transport records;
+the original observer does not supply an original canonical digest
+for that one group.
+
+## Verify which historical C failures were saved
+
+The older version-10 C failure report proves **606** differences but
 contains only **92** individual examples. The remaining **514**
 examples are **NOT RECORDED**. Verify the real compressed report
 without printing case contents or running an engine:

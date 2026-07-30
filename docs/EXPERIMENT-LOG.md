@@ -8,6 +8,52 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the corrected C engine and preserve every observed failure
+
+The [actual version-11 C result](../oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json)
+comes from exactly **13** distinct real workers and the unchanged
+**31,237** original Python checks. Eleven groups completed. Six
+passed in full, including the previously blocked public API,
+scanner, and buffer groups. The C engine now verifies
+**16,262 / 31,237** checks, or **52.1%**, an increase of **2,656**
+verified checks over version 10.
+
+Five complete groups reported **16**, **248**, **224**, **114**,
+and **4** actual differences. All **606** individual failing
+records are preserved in **21** independently authenticated
+chunks of the
+[new compressed failure report](../oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures.json.gz).
+Ten complete vectors retain original canonical source digests;
+the public-interface vector truthfully preserves its **114**
+records with a transport digest only. The original observer does
+not provide a canonical source digest for that vector.
+
+The bounded original group did not complete because its controller
+confused **152** public records with **151** executable checks;
+the additional record is a genuine skipped test. Its full source
+matrix separately retains **13** named private waivers, for **165**
+source methods in total. The interpreter group failed its real
+guard. Neither failure is counted as a matching difference or as
+a pass. There were no infrastructure failures or timeouts.
+
+The earlier version-10 archive still lacks **514** individual
+historical examples. Preserving all **606** newly observed
+failures does not recover those older missing records. The
+original C sources and native-file inode were restored. Evidence
+publication succeeded; the candidate itself **FAILED**. Runtime
+no-delegation, complete mismatch count, memory, speed, and
+undefined behavior remain **NOT MEASURED** or **NOT ESTABLISHED**.
+
+The first version-98 graph source, SHA-256
+`950a955ab7a46fc2b7f827fbddaa636a5dc374dcc3e851d216cdab118a4e18d4`,
+was rejected by all four source-only checks. Replaying the older
+graph builder would have opened a Zig candidate source; the new
+isolation wall correctly refused it before any chart was created.
+The corrected chart authenticates published historical evidence
+directly, touches no candidate, and executes **727** genuinely new
+source controls. It preserves the previous **14,757** historical
+controls without falsely claiming that it ran them again.
+
 ## Write and verify the complete corrected first-party Rust source
 
 The [materialized version-2 Rust correction](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2-SOURCE-BUILD-V23.md)
