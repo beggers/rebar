@@ -8,6 +8,34 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the corrected Rust engine twice from first-party source
+
+The [actual version-24 Rust build receipt](../oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-publication-receipt.json)
+records **28** distinct successful compiler or binary-inspection
+processes. Two isolated first-party source copies each ran **14**
+steps and produced byte-identical Rust engines and Python bridges.
+The Rust package has **zero** external dependencies.
+
+Both engine outputs have SHA-256
+`5e79f92b10d47f73919796af2349e44e7d16eceb515cc07571d0beaaec4a405f`.
+Both corrected bridge outputs have SHA-256
+`e0c26cb83fe35eb18297e7a9cd58b63be891d847479237d2ba972e4ba1b3b3bf`.
+The [independently authenticated root-provenance receipt](../oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-root-provenance-receipt.json)
+preserves all **28** real process IDs, both distinct source
+directories, all four independently built native files, and the
+complete original-file restoration.
+
+The [complete compressed build evidence](../oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance.json.gz)
+was independently streamed; its complete **755,944** uncompressed
+bytes have SHA-256
+`b8a253da39e7f1b62cd6153f5ba61c5b12171730681381cdf1076d2c15ffcf46`.
+Build success proves a first-party compiled engine, not matching
+correctness. The candidate was **NOT RUN**. Its prior verified
+score remains **14,725 / 31,237**, with at least **2,018** observed
+failures. Runtime no-delegation remains **NOT ESTABLISHED**; speed,
+memory, and undefined behavior remain **NOT MEASURED**. The
+performance holdout remains unopened.
+
 ## Freeze an operational, entirely first-party Rust build
 
 The [version-24 Rust build procedure](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2-SOURCE-BUILD-V24.md)
@@ -22,9 +50,10 @@ corresponding self-tests each pass **1,361** real adversarial
 controls without starting a compiler or candidate, opening an
 archive, or touching the unopened holdout. The preceding real Rust
 result remains **14,725 / 31,237** with at least **2,018** observed
-failures. The version-24 native build has **NOT RUN**. Corrected
-compatibility, runtime no-delegation, speed, memory, and undefined
-behavior remain **NOT MEASURED** or **NOT ESTABLISHED**.
+failures. At the time this source was frozen, the version-24 native
+build had **NOT RUN**; its later actual result is recorded above.
+Corrected compatibility, runtime no-delegation, speed, memory, and
+undefined behavior remain **NOT MEASURED** or **NOT ESTABLISHED**.
 
 ## Run the complete-record C correction against the original tests
 

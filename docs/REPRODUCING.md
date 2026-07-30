@@ -468,6 +468,55 @@ outside the clean environment. Neither command starts a reference
 worker, imports `re`, creates a buffer, or accesses the speed
 holdout.
 
+## Verify the actual independently compiled Rust engine
+
+Two independently compiled first-party Rust copies each ran **14**
+real compiler or binary-inspection processes. The resulting Rust
+engines match byte for byte; the corrected Python bridges also
+match byte for byte. This verifies a reproducible native build,
+not matching correctness or performance.
+
+Verify the small actual build receipt without compiling or opening
+the compressed build archive:
+
+```bash
+jq -ce '
+  select(.schema == "rebar-phase2-owned-rust-capture-shape-semantics-v2-source-build-v24-durable-publication-receipt")
+  | select(.status == "PASS" and .build_status == "PASS")
+  | select(.family == "rust")
+  | select(.actual_compiler_process_count == 28)
+  | select(.actual_completed_phase_count == 2)
+  | select(.combined_bridge_overlay_apply_count == 2)
+  | select(.corrected_public_adapter_overlay_apply_count == 2)
+  | select(.combined_bridge_sha256 == "1adb6bcecfa0b2fa80403e1c2caf372916466e8b9d0516980e60aef6a9ac08f0")
+  | select(.corrected_public_adapter_sha256 == "d47a976771206da468168ec22683e6d0204905a0f5b7e9e328fc1234b38f210e")
+  | select(.candidate_matching == "NOT RUN")
+  | select(.candidate_correctness == "NOT MEASURED")
+  | select(.performance == "NOT MEASURED" and .holdout == "NOT OPENED")
+  | {build_status, actual_compiler_process_count,
+     actual_completed_phase_count, combined_bridge_sha256,
+     corrected_public_adapter_sha256, candidate_matching,
+     candidate_correctness, performance, holdout}' \
+  oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-publication-receipt.json
+```
+
+The exact receipt SHA-256 is
+`da4edc2ff3352aab2a7b0c992286534b38dce422fd258f1fe1531464a277d6e4`.
+Its separately authenticated root-provenance receipt SHA-256 is
+`f2117effdca435e10fbc453bac28fd32b3517e60a9611209a96eca0f6b5d172e`.
+The compressed evidence SHA-256 is
+`9b33cae5a0ac9e367cb9383baf1e7f8db6984a75b3c9efe113e7ca04a7dc3191`.
+Optional complete uncompressed evidence verification:
+
+```bash
+gzip -dc -- \
+  oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance.json.gz |
+  sha256sum
+```
+
+The complete **755,944**-byte stream SHA-256 is
+`b8a253da39e7f1b62cd6153f5ba61c5b12171730681381cdf1076d2c15ffcf46`.
+
 ## Verify the first-party operational Rust build procedure
 
 The frozen version-24 Rust build uses the complete first-party
@@ -492,8 +541,9 @@ env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
 
 Replace `--verify-frozen-context` with `--self-test` to reproduce
 all **1,361** adversarial controls. Both commands also pass outside
-the clean environment. Native build, corrected candidate results,
-and speed remain **NOT MEASURED**.
+the clean environment. At the time of the source freeze, the native
+build had **NOT RUN**; its later actual build is verified above.
+Corrected candidate compatibility and speed remain **NOT MEASURED**.
 
 ## Verify the next complete Rust correctness test
 

@@ -48,9 +48,10 @@ The latest C run correctly passes all **151** executable original
 Python tests while preserving all **152** test records and their
 one genuine skipped case. Interpreter isolation still fails.
 
-The corrected, from-scratch Rust source and its reproducible offline
-build are frozen and independently verified. The build itself,
-complete compatibility, and speed are **NOT MEASURED**.
+The corrected, from-scratch Rust engine has now been built twice
+from its own source with **zero external packages**. The two builds
+produced identical native code. Full compatibility and speed are
+still **NOT MEASURED**.
 
 ## What a replacement must pass
 
@@ -116,7 +117,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).
 - [Next Rust test, preserving the previous regression; not yet run](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V23.md).
-- [First-party Rust correction and reproducible offline build; not yet built](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2-SOURCE-BUILD-V24.md).
+- [Reproducible first-party Rust build with no external packages](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2-SOURCE-BUILD-V24.md).
+- [Actual successful first-party Rust build; matching not yet tested](oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-publication-receipt.json).
 - [Preserved Rust activation failure](oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json).
 - [Expanded, unopened speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).
 - [Original objective](GOAL.md), SHA-256
