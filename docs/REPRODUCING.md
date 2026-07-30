@@ -129,6 +129,55 @@ Replace `--verify-frozen-context` with `--self-test` to reproduce all
 verify the normal environment. No mode builds, installs, or runs the
 corrected Zig engine.
 
+## Verify the next complete Zig correctness procedure
+
+Version 14 freezes a full **31,237**-case test of the independently
+written Zig engine with the previously frozen shutdown correction.
+It preserves the actual **4,607** passing checks, all **13** workers'
+warnings, and all known previous failures. The new engine has
+**NOT RUN**.
+
+Independently verify every previous campaign, correction, native-build
+receipt, and real interpreter-safety boundary in a clean environment:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/run_owned_repaired_zig_original_campaign_v14.py \
+  --verify-frozen-context \
+  --source-sha256 8757ff2fdda5e8e60ee694b0d803018ddf33ea7266b8d7a5eff6d52d0866569d \
+  --protocol-sha256 691ab654b88ed30f6cd0729d987415162708fdfb90c36d91bf41dcefdbb5fcef \
+  --contract-sha256 1c7326dc2f63635f3e32ec0558b51f21c952d51480f336e3b0d4d49e38428a0a \
+  --setter-source-sha256 42d9ceea51f8a8cb4ba980580ccbc5b079134bc8330bc65b3c05e2f1ec83395b \
+  --setter-protocol-sha256 5aad1504d2b834b2d794cff3659462bff89c573cb8f108010fd7f413683fc359 \
+  --setter-contract-sha256 b0b87af889a9147975ccfefc8d3f9cf03f5200a6e6ad90cfaa8679c8c9b5d084 \
+  --v13-source-sha256 fa46d4029f5590adceb22bfe4e612248da5f7f90ed6362d58faa5b631fee7ff8 \
+  --v13-protocol-sha256 6b42893161e37baec1695aefb414fb7179b778f2164018b024bd68b3c9bb5c2c \
+  --v13-contract-sha256 327b14096e36c7a2e4cab977a452fc2477fbf148396f50433cbf1dc8aba31a3f \
+  --receipt-sha256 b3443a647c638cbbbe7905a2c668a734770f38cb678f06a387af497917fc4bca \
+  --v1-source-sha256 2d2be05fb04d43c453b7e4cd47dc8f55542eeb06b18058c996751b7e8a476e4e \
+  --v1-protocol-sha256 88dbdad010617a1930bb7e701b8dca02078ab8b6310257bf7f404fc540f3a1bb \
+  --v1-contract-sha256 2021cca12e9c04ab421dca4fd7cc81e23ffe3b649317eb184dba21e47c6aad4e \
+  --adapter-sha256 e9e052fdd50bcec54145b828b1353cf082c6bc13869176486bcfa41d1624ab50 \
+  --corrected-adapter-sha256 c16a6e4c9745eff3a55dcf85eb14c26ec84092d70ddbc40d5e841ab0140d3032 \
+  --guard-source-sha256 03f051e428ee31bb671d8ced82f02d7a9fe3520f24191aba78d2e8a0697202c2 \
+  --guard-protocol-sha256 d3437b642d322ccccf12851981555cb596ff7f9c5a12e0a6a389d6b80b5a068a \
+  --guard-contract-sha256 31e9a5d2754b5b4b273d4fc30d6a27967e495b57684fdd1e9306bbac3b2caaa7 \
+  --v2-guard-source-sha256 f693b1576b63ae5ebe45663801834c05e7d03671a5d6f2b4beb1b62034d37c0a \
+  --v2-guard-protocol-sha256 2f11a29e08b6616d053269bc99e5283b5548ce88c74b384e1c5979c2e1d2288c \
+  --v2-guard-contract-sha256 813bbab0898d5a65a6b43533f7bfa024c4c215609c4f9fa6eb0f4cbe2791f473 \
+  --producer-source-sha256 b4886f424945d3a182a90737fd965fbc4a6e82cafa1c9ee456a9ea405ee18538 \
+  --producer-protocol-sha256 9cfd1fc189d555a596b84b6073471554dab6bd67c1b343c66b744f4dc7b053a4 \
+  --producer-contract-sha256 c751b8882fa331b4850271e68a1b43f965b5ddcb77c7ad0d0b4d3dec8ba79b53 \
+  --build-receipt-sha256 8d86fd25025caf440937679a7893aa2d72308f86eccd577073dbe502a341725d \
+  --root-receipt-sha256 03f661f87c9a061cb1fd1af49041b1dc5e616449ed91feb0575a1f013fafb3c2
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce all
+**245** adversarial controls. Repeat without `env -i` for the
+ordinary environment. Both commands are source-only and do not run,
+build, qualify, or benchmark a candidate.
+
 ## Reproduce the preserved version-94 comparison
 
 The version-94 graph preserves the comparison before the latest Rust

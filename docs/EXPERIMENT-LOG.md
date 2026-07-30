@@ -8,6 +8,28 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete, setter-safe Zig correctness run
+
+The [version-14 Zig correctness procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V14.md)
+was frozen only after its separately committed and pushed first-party
+shutdown correction. It requires all **31,237** original Python cases
+in all **13** groups, the original named private waivers, the actual
+previous Zig failure, the original independently written native Zig
+engine, and Python's real interpreter-safety boundary.
+
+Both normal and clean environments pass **245** adversarial checks,
+including **139** inherited shutdown checks and **106** new checks.
+All **25** actual source-only side effects remain zero. The corrected
+native-handle cleanup is derived only in memory; neither this freeze
+nor its checks builds, installs, or executes the corrected candidate.
+
+The previous actual outcome remains **4,607 / 31,237**, with at
+least **1,700** measured differences, warnings in all **13** workers,
+and an unfinished child-interpreter group. Corrected matching,
+corrected cleanup, and interpreter behavior are **NOT MEASURED**
+until the separately authorized real version-14 run. The performance
+holdout remains unopened; no candidate or winner is qualified.
+
 ## Freeze 48,416 additional real-world Python input questions
 
 The [separate buffer and memory-mapping matrix](../oracle/phase1/P0-PUBLIC-BUFFER-CARRIERS-SUPPLEMENT-V1.md)
