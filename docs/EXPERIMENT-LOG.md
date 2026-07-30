@@ -8,6 +8,25 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Harden the from-scratch, no-external-engine audit
+
+The [version-2 first-party source audit](../oracle/phase2/RUNTIME-NON-DELEGATION-V2.md)
+checks package manifests, Rust lockfiles, Python wrappers, native
+imports, dynamic linking, and direct or indirect access to foreign
+regular-expression engines. Its source-only self-tests passed
+**202** adversarial attacks and **27** valid first-party controls.
+All four ordinary and clean verification modes passed without
+running a candidate, loading native code, or accessing the holdout.
+
+The audit distinguishes a currently unused Rust bridge signature
+helper, which could load Python regex machinery if explicitly
+invoked, from the genuine native public Rust matching path. It also
+flags Zig's own-library `ctypes` loader and the public wrapper that
+reaches it. Ordinary caller-controlled warning and enum inspection
+are not mislabeled as matching delegation. A later actual source
+audit is separately authorized; runtime no-delegation remains
+**NOT ESTABLISHED** at this source freeze.
+
 ## Complete all original Rust test groups
 
 The [actual version-24 Rust run](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v24-rust-capture-shape-v2-root-provenance-original-p0-v24-failures-publication-receipt.json)

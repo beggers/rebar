@@ -6,6 +6,26 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the strict first-party no-delegation policy
+
+Independently authenticate the audit source, its plain-language
+policy, and its machine-readable contract without opening any
+candidate, native binary, benchmark, archive, or final holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/audit_candidate_runtime_non_delegation_v2.py --verify-source \
+  --source-sha256 23862f929d7b875cbc16059cb8c1d5c60df7aaba7379e17b57fe943a7d77bf6f \
+  --protocol-sha256 bd8a393d8f385ea9ff55570b1a222a9baed347e9f238ec89534fc46a85127802 \
+  --contract-sha256 456439d8b0467b17bd40ee78b5de0f00ace6e0f01e5d558590fabb592dd49729
+```
+
+The separate source-only `--self-test` takes no SHA-256 arguments;
+it repeats **202** rejected attacks and **27** accepted controls
+without reading even the candidate sources. The actual read-only
+source and binary audit requires separate explicit authorization.
+
 ## Verify the complete current Rust correctness result
 
 Check the small, exact actual-results receipt without running Rust,
