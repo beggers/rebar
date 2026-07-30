@@ -228,6 +228,10 @@ suite contains **324** targeted rows, including **297** independent failures,
 **15** scanner overlaps, and **12** replacement overlaps. All four source-only
 checks pass **98** hostile controls and **914** independent semantic
 witnesses; the composed candidate source has **NOT BEEN CREATED OR TESTED**.
+The [first root-only creation attempt](../oracle/phase2/evidence/rust-corrected-comment-adapter-v1-preapplication-failure.json)
+correctly stopped when an isolated hostile source-control assertion failed.
+No adapter variant was created and no candidate matching ran; the complete
+failure remains preserved while a separately frozen correction is prepared.
 
 ## Freeze the combined fast-search and reusable-workspace architecture
 
