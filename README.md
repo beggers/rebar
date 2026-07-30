@@ -17,7 +17,10 @@ regular-expression engine.
 **Six independently written approaches. Zero compatible
 replacements. Speed: NOT MEASURED. No winner.**
 
-![Current compatibility, not speed. Python passes all 31,237 original checks; C verifies 16,413, Rust verifies 14,725, and Zig verifies 4,607. No replacement is fully compatible.](docs/evidence/candidate-current-overview-v99.svg)
+![Previous compatibility snapshot, not speed. Python passes all 31,237 original checks; C verifies 16,413, Rust previously verified 14,725, and Zig verifies 4,607.](docs/evidence/candidate-current-overview-v99.svg)
+
+The latest Rust result has improved to **15,877** verified checks;
+the comparison table reflects the current results.
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
@@ -27,7 +30,7 @@ unfinished group are never counted as passing.
 | --- | --- | --- |
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
 | C | 16,413 / 31,237; 52.5% | FAIL; all 606 observed differences are preserved; interpreter isolation did not finish. |
-| Rust | 14,725 / 31,237; 47.1% | FAIL; at least 2,018 differences; 1,024 fewer verified checks; 16 cleanup errors in its failed worker. |
+| Rust | 15,877 / 31,237; 50.8% | FAIL; exactly 1,352 differences; all 13 test groups completed without worker failures. |
 | Zig | 4,607 / 31,237; 14.7% | FAIL; at least 1,700 differences; cleanup errors in all 13 workers; the corrected rerun stopped before matching. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
 | Go | NOT MEASURED | FAIL; 4,518 observed differences and four worker failures. |
@@ -45,15 +48,16 @@ The latest C run correctly passes all **151** executable original
 Python tests while preserving all **152** test records and their
 one genuine skipped case. Interpreter isolation still fails.
 
-The corrected, from-scratch Rust engine has now been built twice
-from its own source with **zero external packages**. The two builds
-produced identical native code. Full compatibility and speed are
-still **NOT MEASURED**.
+The corrected, from-scratch Rust engine has been built twice from
+its own source with **zero external packages**. Its full run passed
+**11 of 13** groups, including all memory-lifetime and interpreter
+checks. The remaining **240** replacement and **1,112** changing-
+buffer differences mean it is not yet compatible. Speed is
+**NOT MEASURED**.
 
 A corrected interpreter-isolation guard now recognizes real Python
 child interpreters while blocking borrowed regular-expression engines.
 An isolated proof created and safely destroyed one real interpreter.
-Its full compatibility result is **NOT MEASURED**.
 
 ## What a replacement must pass
 
@@ -119,7 +123,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).
 - [Historical C run with 514 missing individual examples](oracle/phase2/evidence/repaired-c-original-campaign-v10-c-phase2-v21-c-original-match-semantics-original-p0-v10-failures-publication-receipt.json).
-- [Latest real Rust run, regression, and complete preserved failure](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v22-rust-capture-shape-root-provenance-original-p0-v22-failures-publication-receipt.json).
+- [Latest full Rust run: 15,877 verified checks and all 1,352 preserved differences](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v24-rust-capture-shape-v2-root-provenance-original-p0-v24-failures-publication-receipt.json).
+- [Previous Rust regression and its preserved failure](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v22-rust-capture-shape-root-provenance-original-p0-v22-failures-publication-receipt.json).
 - [Latest real Zig run and complete observed failure](oracle/phase2/evidence/repaired-zig-original-campaign-v13-phase2-v13-zig-guard-clean-lifetime-v1-original-p0-v13-failures-publication-receipt.json).
 - [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).

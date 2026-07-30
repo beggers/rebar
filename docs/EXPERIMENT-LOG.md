@@ -8,6 +8,30 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Complete all original Rust test groups
+
+The [actual version-24 Rust run](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v24-rust-capture-shape-v2-root-provenance-original-p0-v24-failures-publication-receipt.json)
+completed all **13** original test groups using **13** distinct real
+workers, with no infrastructure or worker failures. The from-scratch
+Rust engine now verifies **15,877 / 31,237** checks, an improvement
+of **1,152** over its previous **14,725** verified checks.
+
+Eleven complete groups passed. The memory-lifetime group recovered
+all **1,024** checks; corrected interpreter isolation recovered all
+**128** checks. Two complete groups still fail: **240** replacement
+differences and **1,112** changing-buffer differences, for exactly
+**1,352** individually preserved mismatches. The candidate remains
+**FAIL** and is not qualified.
+
+The [complete compressed failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v24-rust-capture-shape-v2-root-provenance-original-p0-v24-failures.json.gz)
+has SHA-256
+`5d7a0342ab1060191d227a89d51fb53c77011e3840586efb07dea9b18ad84686`.
+Its independently streamed **5,827,595** uncompressed bytes have
+SHA-256 `a7650bad0bac4d46d7f9e30ad971b0a1bce93161b377b31018c6b3360f7d7268`.
+All four original runtime owners were restored. The final holdout
+was not opened. Speed, memory, undefined behavior, and cleanup-warning
+totals remain **NOT MEASURED**.
+
 ## Expand public development coverage to 10,434 cases
 
 The [independent public development suite](../oracle/phase3/RUST-PUBLIC-PRACTICE-BENCHMARK-V2.md)

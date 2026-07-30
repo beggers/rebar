@@ -6,6 +6,34 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the complete current Rust correctness result
+
+Check the small, exact actual-results receipt without running Rust,
+reading its complete compressed report, or accessing the holdout:
+
+```bash
+jq -ce '
+  select(.publication_status == "PASS")
+  | select(.candidate_status == "FAIL" and .candidate_qualified == false)
+  | select(.case_execution_denominator == 31237)
+  | select(.verified_passing_case_count == 15877)
+  | select(.semantic_mismatch_count == 1352)
+  | select(.completed_suite_count == 13)
+  | select(.actual_candidate_workers == 13)
+  | select(.distinct_worker_process_id_count == 13)
+  | select(.infrastructure_failure_count == 0)
+  | select(.worker_failure_capture_count == 0)
+  | select(.all_four_original_targets_restored == true)
+  | select(.holdout == "NOT OPENED")
+  | select(.performance == "NOT MEASURED")
+' oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v24-rust-capture-shape-v2-root-provenance-original-p0-v24-failures-publication-receipt.json
+```
+
+The exact actual-results receipt SHA-256 is
+`5acd8dee2a515af56306e61f6ae8774c567f1f47e0ef1930a17e6809c2aafa09`.
+Its compressed report SHA-256 is
+`5d7a0342ab1060191d227a89d51fb53c77011e3840586efb07dea9b18ad84686`.
+
 ## Verify the expanded, still-unopened final comparison
 
 The current proposal contains exactly **141,557,760** future cases;
