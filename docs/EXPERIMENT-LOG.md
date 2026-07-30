@@ -8,6 +8,17 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Show the latest complete Rust compatibility result clearly
+
+The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
+is regenerated entirely from its [authenticated inputs](evidence/candidate-current-overview-v101.inputs.json)
+and [complete public result](evidence/candidate-current-overview-v101.json).
+It includes the latest fully completed Rust retest: **15,877** verified checks,
+all **13** completed groups, and **1,352** preserved differences after the
+buffer-safety correction. The original denominator remains **31,237**. Its
+separate no-delegation audit still has one unresolved finding; final speed
+and candidate qualification remain **NOT MEASURED**.
+
 ## Freeze the independently accelerated Rust search-engine build
 
 The [version-26 first-party Rust search build](../oracle/phase2/RUST-ANCHOR-SOURCE-BUILD-V26.md)

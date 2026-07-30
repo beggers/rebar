@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="1215" viewBox="0 0 1480 1215" role="img" aria-labelledby="title description">
+<title id="title">Candidate correctness: Rust safety changed, compatibility did not</title>
+<desc id="description">Original public correctness, not speed: Python passes 31,237 of 31,237 checks, C verifies 16,413, Rust verifies 15,877, and Zig verifies 4,607. C++, Go, and Fortran remain unmeasured. Rust V25 changed its native capture-clamp bridge but improved zero compatibility checks over Rust V24: the same 1,352 semantic losses remain, 240 substitution and 1,112 shape. All 13 groups completed in 13 distinct workers and 11 groups passed. A separate non-delegation audit failed with one latent private candidate-owned import-chain finding; actual public matching delegation was not proven. No candidate qualifies. Speed and final memory are not measured. The proposed 141,557,760-case final comparison is not frozen, generated, or opened.</desc>
+<rect width="1480" height="1215" rx="24" fill="#0b1220"/>
+<text x="57" y="77" fill="#f8fafc" font-size="35" font-family="system-ui,sans-serif" font-weight="760">Can a replacement match Python re exactly?</text>
+<text x="60" y="112" fill="#cbd5e1" font-size="19" font-family="system-ui,sans-serif">These bars measure correctness, never speed.</text>
+<rect x="57" y="139" width="1365" height="106" rx="15" fill="#132238" stroke="#30445e"/>
+<text x="79" y="174" fill="#93c5fd" font-size="19" font-family="system-ui,sans-serif" font-weight="740">Rust V25 safety change: compatibility stayed exactly the same</text>
+<text x="80" y="208" fill="#f8fafc" font-size="17" font-family="system-ui,sans-serif">15,877 / 31,237 verified  ·  +0 checks versus V24  ·  1,352 failures remain</text>
+<text x="67" y="280" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="650">APPROACH</text>
+<text x="180" y="280" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="650">ORIGINAL CHECKS PASSED</text>
+<text x="758" y="280" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="650">WHAT IT MEANS</text>
+<text x="1272" y="280" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="650">SPEED</text>
+<rect x="57" y="303" width="1365" height="67" rx="11" fill="#101b2b"/>
+<text x="76" y="337" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="680">Python re</text>
+<rect x="180" y="317" width="330" height="18" rx="6" fill="#29384e"/>
+<rect x="180" y="317" width="330" height="18" rx="6" fill="#34d399"/>
+<text x="522" y="337" fill="#e2e8f0" font-size="15" font-family="system-ui,sans-serif">31,237 / 31,237  ·  100%</text>
+<text x="758" y="337" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">All 13 groups pass</text>
+<text x="758" y="359" fill="#34d399" font-size="12" font-family="system-ui,sans-serif" font-weight="690">REFERENCE</text>
+<text x="1267" y="337" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<rect x="57" y="382" width="1365" height="67" rx="11" fill="#101b2b"/>
+<text x="76" y="416" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="680">C</text>
+<rect x="180" y="396" width="330" height="18" rx="6" fill="#29384e"/>
+<rect x="180" y="396" width="173" height="18" rx="6" fill="#fbbf24"/>
+<text x="522" y="416" fill="#e2e8f0" font-size="15" font-family="system-ui,sans-serif">16,413 / 31,237  ·  52.5%</text>
+<text x="758" y="416" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">12 groups complete; 1 execution failure</text>
+<text x="758" y="438" fill="#fbbf24" font-size="12" font-family="system-ui,sans-serif" font-weight="690">NOT COMPATIBLE</text>
+<text x="1267" y="416" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<rect x="57" y="461" width="1365" height="67" rx="11" fill="#11243a"/>
+<text x="76" y="495" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="680">Rust</text>
+<rect x="180" y="475" width="330" height="18" rx="6" fill="#29384e"/>
+<rect x="180" y="475" width="168" height="18" rx="6" fill="#60a5fa"/>
+<text x="522" y="495" fill="#e2e8f0" font-size="15" font-family="system-ui,sans-serif">15,877 / 31,237  ·  50.8%</text>
+<text x="758" y="495" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">13 groups complete; 1,352 cases differ</text>
+<text x="758" y="517" fill="#60a5fa" font-size="12" font-family="system-ui,sans-serif" font-weight="690">NOT COMPATIBLE</text>
+<text x="1267" y="495" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<rect x="57" y="540" width="1365" height="67" rx="11" fill="#101b2b"/>
+<text x="76" y="574" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="680">Zig</text>
+<rect x="180" y="554" width="330" height="18" rx="6" fill="#29384e"/>
+<rect x="180" y="554" width="49" height="18" rx="6" fill="#fbbf24"/>
+<text x="522" y="574" fill="#e2e8f0" font-size="15" font-family="system-ui,sans-serif">4,607 / 31,237  ·  14.7%</text>
+<text x="758" y="574" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">Previously verified original checks</text>
+<text x="758" y="596" fill="#fbbf24" font-size="12" font-family="system-ui,sans-serif" font-weight="690">NOT COMPATIBLE</text>
+<text x="1267" y="574" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<rect x="57" y="619" width="1365" height="67" rx="11" fill="#101b2b"/>
+<text x="76" y="653" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="680">C++</text>
+<rect x="180" y="633" width="330" height="18" rx="6" fill="#29384e"/>
+<text x="522" y="653" fill="#e2e8f0" font-size="15" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="758" y="653" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">Complete original correctness not measured</text>
+<text x="758" y="675" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">NOT MEASURED</text>
+<text x="1267" y="653" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<rect x="57" y="698" width="1365" height="67" rx="11" fill="#101b2b"/>
+<text x="76" y="732" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="680">Go</text>
+<rect x="180" y="712" width="330" height="18" rx="6" fill="#29384e"/>
+<text x="522" y="732" fill="#e2e8f0" font-size="15" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="758" y="732" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">Complete original correctness not measured</text>
+<text x="758" y="754" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">NOT MEASURED</text>
+<text x="1267" y="732" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<rect x="57" y="777" width="1365" height="67" rx="11" fill="#101b2b"/>
+<text x="76" y="811" fill="#f8fafc" font-size="18" font-family="system-ui,sans-serif" font-weight="680">Fortran</text>
+<rect x="180" y="791" width="330" height="18" rx="6" fill="#29384e"/>
+<text x="522" y="811" fill="#e2e8f0" font-size="15" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="758" y="811" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">Complete original correctness not measured</text>
+<text x="758" y="833" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">NOT MEASURED</text>
+<text x="1267" y="811" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<rect x="58" y="880" width="669" height="185" rx="14" fill="#142135" stroke="#354459"/>
+<text x="82" y="912" fill="#93c5fd" font-size="18" font-family="system-ui,sans-serif" font-weight="730">What changed — and what did not</text>
+<text x="82" y="945" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">Capture-clamp bridge changed; the engine stayed the same.</text>
+<text x="82" y="974" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">13 of 13 groups ran; 11 passed; 13 workers were distinct.</text>
+<text x="82" y="1004" fill="#fda4af" font-size="14" font-family="system-ui,sans-serif">Exact unchanged losses: 240 substitution + 1,112 shape = 1,352.</text>
+<text x="82" y="1034" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Rust candidate: FAIL. Compatibility improvement: ZERO.</text>
+<rect x="746" y="880" width="676" height="185" rx="14" fill="#291923" stroke="#754453"/>
+<text x="769" y="912" fill="#fda4af" font-size="18" font-family="system-ui,sans-serif" font-weight="730">Independent non-delegation audit: FAIL</text>
+<text x="769" y="945" fill="#f8fafc" font-size="14" font-family="system-ui,sans-serif">One candidate-owned private import-chain finding remains.</text>
+<text x="769" y="974" fill="#e2e8f0" font-size="13" font-family="system-ui,sans-serif">bridge → inspect → tokenize → re → re.compile</text>
+<text x="769" y="1004" fill="#e2e8f0" font-size="13" font-family="system-ui,sans-serif">Latent reachability; actual matching delegation: NOT PROVEN.</text>
+<text x="769" y="1034" fill="#fda4af" font-size="14" font-family="system-ui,sans-serif">Runtime independence: NOT ESTABLISHED. No qualification.</text>
+<rect x="59" y="1080" width="1363" height="89" rx="13" fill="#142237" stroke="#30445e"/>
+<text x="81" y="1116" fill="#fcd34d" font-size="15" font-family="system-ui,sans-serif">FINAL SPEED: NOT MEASURED  ·  FINAL MEMORY: NOT MEASURED  ·  NO WINNER</text>
+<text x="81" y="1147" fill="#e2e8f0" font-size="14" font-family="system-ui,sans-serif">141,557,760-case final comparison: NOT FROZEN; NOT GENERATED; NOT OPENED.</text>
+<text x="65" y="1195" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Original denominator: 31,237. Separate supplemental checks: 8,244. No correctness loss or failed independence finding is hidden.</text>
+</svg>

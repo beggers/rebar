@@ -22,7 +22,7 @@ removes it, and no external package supplies matching.
 **Six independently written approaches. Zero compatible
 replacements. Final speed: NOT MEASURED. No winner.**
 
-![Current compatibility, not speed. Python passes all 31,237 original checks; C verifies 16,413, Rust verifies 15,877, and Zig verifies 4,607. Rust has 1,352 remaining differences.](docs/evidence/candidate-current-overview-v100.svg)
+![Current compatibility, not speed. Python passes all 31,237 original checks; C verifies 16,413, Rust verifies 15,877, and Zig verifies 4,607. Rust has 1,352 remaining differences after its safety correction.](docs/evidence/candidate-current-overview-v101.svg)
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
