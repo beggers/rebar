@@ -38,6 +38,13 @@ observations and every slower result are preserved. This is exploratory
 practice, not the hidden final test; statistical confidence and final speed
 are **NOT MEASURED**.
 
+An independently optimized Rust search engine subsequently reached
+**1.25× Python** on the same **416** public timing cases (**95% interval:
+1.20–1.31×**), including **1.98×** on difficult repeated-character searches.
+It was faster on **247 of 416** cases. However, the wider **10,434-case**
+test found **1,145** compatibility differences; the engine remains
+**unqualified**, and this improvement is not a final result.
+
 A second complete practice run confirms **0.60× Python** across all recorded
 time. Its native allocation totals were **104.2 MB** for Rust and **100.5 MB**
 for Python. Whole-process memory and Python-only memory are recorded
@@ -185,6 +192,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual successful accelerated Rust search build: two identical offline builds and 28 verified processes](oracle/phase2/evidence/native-source-build-v26-rust-phase2-v26-rust-mandatory-anchor-root-provenance-publication-receipt.json).
 - [Frozen identical 10,434-case correctness and 1,664-pair public timing comparison for both optimized Rust designs](oracle/phase2/RUST-NATIVE-ARCHITECTURE-PUBLIC-GATE-V2.md).
 - [Preserved first architecture-comparison failure before any candidate or timing ran](oracle/phase2/evidence/rust-native-architecture-public-gate-v1-v26-anchor-public-run-001-preexecution-failure.json).
+- [Actual accelerated Rust search result: 1.25× Python on 416 gated cases; 1,145 differences across 10,434 wider checks](oracle/phase2/evidence/rust-native-architecture-public-gate-v2-v26-anchor-public-run-001-publication-receipt.json).
 - [Frozen combined first-party Rust search and compilation improvements](oracle/phase2/RUST-COMBINED-SEARCH-COMPILER-FASTPATH-V1.md).
 - [Preserved combined-optimization source-creation failure before any candidate was built](oracle/phase2/evidence/rust-combined-search-compiler-fastpath-v1-application-failure.json).
 - [Corrected combined Rust search and compilation experiment, independently verified against 111,552 modeled cases](oracle/phase2/RUST-COMBINED-SEARCH-COMPILER-FASTPATH-V2.md).

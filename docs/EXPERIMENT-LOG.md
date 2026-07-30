@@ -58,6 +58,22 @@ ordinary and clean-environment source gates pass. Actual architecture
 correctness and timing remain **NOT MEASURED** until this corrected procedure
 is run.
 
+## Measure the independently accelerated Rust search engine
+
+The [complete accelerated-search public comparison](../oracle/phase2/evidence/rust-native-architecture-public-gate-v2-v26-anchor-public-run-001-publication-receipt.json)
+ran every **10,434** public correctness case and preserved all **1,145**
+differences. It separately matched Python on every **416** timing-gate case
+before collecting **1,664** counterbalanced paired observations.
+
+The engine achieved a **1.2521×** typical-case speedup, with a **1.1991–1.3083×**
+95% interval, and was faster on **247 of 416** cases. Its previously difficult
+dense required-character cohort improved to **1.9791×** Python. All **11**
+regressions exceeding 20%, every raw correctness record, both memory reports,
+and every paired timing row are preserved. Its wider correctness gate failed,
+the original **1,352** differences remain, and runtime no-delegation is not
+yet established; the architecture remains **unqualified** and no final
+winner exists.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
