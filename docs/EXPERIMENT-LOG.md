@@ -23,8 +23,12 @@ Two independent reviews and all four normal/empty-environment source gates
 pass **11,328** deterministic checks covering alternatives, conditions,
 overlap, windows, captures, lookarounds, repetition, locale, case folding,
 and Unicode. Ten attempted external-engine imports are rejected. Both
-prospective Rust files remain uncreated and unbuilt at this source freeze;
-actual compatibility and improvement remain **NOT MEASURED**. The
+prospective Rust files remained uncreated and unbuilt at their source freeze.
+After that freeze was committed and pushed,
+[one exclusive first-party application](../oracle/phase2/evidence/rust-mandatory-anchor-search-v1-application.json)
+created both the exact **189,369-byte** engine source and **24,305-byte**
+vectorized-search source. Canonical sources were not modified. Actual native
+build, compatibility, and resulting speed remain **NOT MEASURED**; the
 **141,557,760**-case final proposal remains unopened.
 
 ## Freeze two first-party Rust compilation allocation improvements
