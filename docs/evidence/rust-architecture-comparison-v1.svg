@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1180" viewBox="0 0 1280 1180" role="img" aria-labelledby="title description">
+<title id="title">Rust architecture comparison: public speed gains do not establish correctness</title>
+<desc id="description">Python standard-library baseline 1.0x; original public Rust 0.8649792983684755x; Rust V26 exploratory public 1.2520878685068846x, 95 percent confidence interval 1.1990748170405823 to 1.3083112791522158; V26 dense public cohort 1.979099276996251x. Rust V27 exploratory public 0.7967512788167544x, 95 percent confidence interval 0.7477430408484538 to 0.8453719226231972; V27 dense public cohort 0.4205648528352947x. V26 and V27 both remain unqualified: their full 10,434-case public gates failed with 1,145 mismatches. V26 has 247 of 416 public cases faster and 11 regressions over 20 percent; V27 has 138 of 416 faster and 143 regressions over 20 percent. The frozen original suite retains 1,352 mismatches; no final winner exists.</desc>
+<rect width="1280" height="1180" fill="#f6f8fc"/>
+<rect x="34" y="32" width="1212" height="1112" rx="24" fill="#ffffff" stroke="#d9e1ed" stroke-width="1.5"/>
+<text x="70" y="91" fill="#172238" font-family="system-ui, sans-serif" font-size="30" font-weight="760">Rust architecture: V26 faster, V27 slower, both fail</text>
+<text x="70" y="122" fill="#56647b" font-family="system-ui, sans-serif" font-size="15">Public development evidence only. Speed is relative to Python; above 1.0x is faster.</text>
+<rect x="70" y="145" width="574" height="33" rx="16.5" fill="#e7eefb"/>
+<text x="86" y="166" fill="#295097" font-family="system-ui, sans-serif" font-size="12.5" font-weight="700">BOTH 416-CASE TIMING SAMPLES PASSED; BOTH FULL GATES FAILED</text>
+<line x1="344.00" y1="209" x2="344.00" y2="588" stroke="#e6ebf2" stroke-width="1"/>
+<text x="344.00" y="200" text-anchor="middle" fill="#66748a" font-family="system-ui, sans-serif" font-size="13">0.0x</text>
+<line x1="522.64" y1="209" x2="522.64" y2="588" stroke="#e6ebf2" stroke-width="1"/>
+<text x="522.64" y="200" text-anchor="middle" fill="#66748a" font-family="system-ui, sans-serif" font-size="13">0.5x</text>
+<line x1="701.27" y1="209" x2="701.27" y2="588" stroke="#8795ac" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="701.27" y="200" text-anchor="middle" fill="#66748a" font-family="system-ui, sans-serif" font-size="13">1.0x</text>
+<line x1="879.91" y1="209" x2="879.91" y2="588" stroke="#e6ebf2" stroke-width="1"/>
+<text x="879.91" y="200" text-anchor="middle" fill="#66748a" font-family="system-ui, sans-serif" font-size="13">1.5x</text>
+<line x1="1058.55" y1="209" x2="1058.55" y2="588" stroke="#e6ebf2" stroke-width="1"/>
+<text x="1058.55" y="200" text-anchor="middle" fill="#66748a" font-family="system-ui, sans-serif" font-size="13">2.0x</text>
+<text x="70" y="256" fill="#253149" font-family="system-ui, sans-serif" font-size="16" font-weight="680">Python standard library</text>
+<text x="70" y="277" fill="#6a778a" font-family="system-ui, sans-serif" font-size="12.5">Reference: same public cases</text>
+<rect x="344" y="241" width="357.27" height="30" rx="7" fill="#8391a7"/>
+<text x="713.27" y="261" fill="#1e2b42" font-family="system-ui, sans-serif" font-size="16" font-weight="750">1.00x</text>
+<text x="344" y="291" fill="#657389" font-family="ui-monospace, monospace" font-size="11.5">baseline = 1.0</text>
+<text x="70" y="342" fill="#253149" font-family="system-ui, sans-serif" font-size="16" font-weight="680">Original Rust</text>
+<text x="70" y="363" fill="#6a778a" font-family="system-ui, sans-serif" font-size="12.5">Frozen public V2 profile</text>
+<rect x="344" y="327" width="309.03" height="30" rx="7" fill="#df9252"/>
+<text x="665.03" y="347" fill="#1e2b42" font-family="system-ui, sans-serif" font-size="16" font-weight="750">0.865x</text>
+<text x="344" y="377" fill="#657389" font-family="ui-monospace, monospace" font-size="11.5">exact: 0.8649792983684755</text>
+<text x="70" y="431" fill="#253149" font-family="system-ui, sans-serif" font-size="16" font-weight="680">V26 Rust: public overall</text>
+<text x="70" y="452" fill="#6a778a" font-family="system-ui, sans-serif" font-size="12.5">Required-character search; 416 cases</text>
+<rect x="344" y="416" width="447.34" height="30" rx="7" fill="#2876ca"/>
+<text x="803.34" y="436" fill="#1e2b42" font-family="system-ui, sans-serif" font-size="16" font-weight="750">1.252x</text>
+<text x="344" y="466" fill="#657389" font-family="ui-monospace, monospace" font-size="11.5">exact: 1.2520878685068846</text>
+<line x1="772.40" y1="407" x2="811.42" y2="407" stroke="#164a89" stroke-width="3"/>
+<line x1="772.40" y1="401" x2="772.40" y2="413" stroke="#164a89" stroke-width="2"/>
+<line x1="811.42" y1="401" x2="811.42" y2="413" stroke="#164a89" stroke-width="2"/>
+<text x="344" y="484" fill="#164a89" font-family="ui-monospace, monospace" font-size="11.5">95% CI: [1.1990748170405823, 1.3083112791522158]</text>
+<text x="70" y="535" fill="#253149" font-family="system-ui, sans-serif" font-size="16" font-weight="680">V27 Rust: public overall</text>
+<text x="70" y="556" fill="#6a778a" font-family="system-ui, sans-serif" font-size="12.5">Compiler architecture; 416 cases</text>
+<rect x="344" y="520" width="284.66" height="30" rx="7" fill="#b45464"/>
+<text x="640.66" y="540" fill="#1e2b42" font-family="system-ui, sans-serif" font-size="16" font-weight="750">0.797x</text>
+<text x="344" y="570" fill="#657389" font-family="ui-monospace, monospace" font-size="11.5">exact: 0.7967512788167544</text>
+<line x1="611.15" y1="511" x2="646.03" y2="511" stroke="#833845" stroke-width="3"/>
+<line x1="611.15" y1="505" x2="611.15" y2="517" stroke="#833845" stroke-width="2"/>
+<line x1="646.03" y1="505" x2="646.03" y2="517" stroke="#833845" stroke-width="2"/>
+<text x="344" y="588" fill="#833845" font-family="ui-monospace, monospace" font-size="11.5">95% CI: [0.7477430408484538, 0.8453719226231972]</text>
+<rect x="70" y="606" width="1058" height="72" rx="11" fill="#eef7f3"/>
+<text x="89" y="634" fill="#2d5544" font-family="system-ui, sans-serif" font-size="14" font-weight="750">DENSE SAME-FIRST-BYTE COHORT: 104 PUBLIC CASES</text>
+<text x="89" y="657" fill="#236945" font-family="ui-monospace, monospace" font-size="12.5">V26: 1.979099276996251x (86 faster)</text>
+<text x="634" y="657" fill="#8b4650" font-family="ui-monospace, monospace" font-size="12.5">V27: 0.4205648528352947x (23 faster)</text>
+<rect x="70" y="696" width="540" height="179" rx="14" fill="#fff1ef" stroke="#edb2aa" stroke-width="1.4"/>
+<text x="91" y="728" fill="#9a2921" font-family="system-ui, sans-serif" font-size="13.5" font-weight="780">V26 + V27 FULL PUBLIC CORRECTNESS: FAIL</text>
+<text x="91" y="776" fill="#941f19" font-family="system-ui, sans-serif" font-size="38" font-weight="800">1,145 / 10,434</text>
+<text x="91" y="804" fill="#7d3530" font-family="system-ui, sans-serif" font-size="14">the same public mismatches in both designs</text>
+<rect x="91" y="822" width="218" height="32" rx="16" fill="#bf3529"/>
+<text x="200" y="843" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="13" font-weight="790">BOTH UNQUALIFIED</text>
+<rect x="628" y="696" width="540" height="179" rx="14" fill="#fff8eb" stroke="#edcf99" stroke-width="1.4"/>
+<text x="649" y="728" fill="#865819" font-family="system-ui, sans-serif" font-size="14" font-weight="780">FROZEN ORIGINAL SUITE: STILL FAILING</text>
+<text x="649" y="776" fill="#724717" font-family="system-ui, sans-serif" font-size="38" font-weight="800">1,352 mismatches</text>
+<text x="649" y="804" fill="#735937" font-family="system-ui, sans-serif" font-size="14">V24/V25 unchanged; 31,237 original case executions</text>
+<text x="649" y="835" fill="#735937" font-family="system-ui, sans-serif" font-size="13">Different case set from the 10,434-case public gate.</text>
+<rect x="70" y="890" width="1058" height="93" rx="13" fill="#edf5fc"/>
+<line x1="606" y1="904" x2="606" y2="969" stroke="#c9dbee"/>
+<text x="91" y="922" fill="#173e69" font-family="system-ui, sans-serif" font-size="17" font-weight="740">V26: 247 / 416 cases faster</text>
+<text x="91" y="950" fill="#385474" font-family="system-ui, sans-serif" font-size="13.5">169 slower; 11 regressions &gt;20% slower</text>
+<text x="630" y="922" fill="#813a48" font-family="system-ui, sans-serif" font-size="17" font-weight="740">V27: 138 / 416 cases faster</text>
+<text x="630" y="950" fill="#813a48" font-family="system-ui, sans-serif" font-size="13.5">278 slower; 143 regressions &gt;20% slower</text>
+<rect x="70" y="999" width="1058" height="91" rx="13" fill="#f2f1f8"/>
+<text x="91" y="1031" fill="#443d63" font-family="system-ui, sans-serif" font-size="15" font-weight="760">V3 PUBLIC FINAL PROPOSAL: 226m proposed; SEED ABSENT; NO WINNER</text>
+<text x="91" y="1058" fill="#615a77" font-family="system-ui, sans-serif" font-size="12.5">Proposal size/seed status are user-supplied; proposal and seed files were not opened. Final speed: NOT MEASURED.</text>
+<text x="70" y="1120" fill="#66748a" font-family="system-ui, sans-serif" font-size="11.5">Authenticated owners: original V2 profile, root-owned V26 and V27 publication receipts, and existing V101 public chart inputs.</text>
+</svg>

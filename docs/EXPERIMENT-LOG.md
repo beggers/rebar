@@ -89,6 +89,22 @@ complete raw timing rows, both memory profiles, and every mismatch are
 preserved. This isolated compiler change is materially slower than the
 accelerated search design; neither architecture is qualified.
 
+## Compare all measured Rust approaches in one clear headline chart
+
+The [direct plain-language architecture chart](evidence/rust-architecture-comparison-v1.svg)
+uses only its [authenticated public inputs](evidence/rust-architecture-comparison-v1.inputs.json)
+and [complete generated summary](evidence/rust-architecture-comparison-v1.json).
+It places Python at **1.00×**, the original Rust engine at **0.86×**, the
+accelerated search engine at **1.25×**, and the lower-allocation compiler at
+**0.80×**. It displays both 95% intervals, all faster-case counts, both
+difficult-search results, the **11** versus **143** major regressions, and
+the identical **1,145 / 10,434** compatibility failures without claiming a
+qualified candidate or winner.
+
+Four ordinary and clean-environment source-only graph gates reject **66**
+hostile changes while reading no candidate, native binary, raw cases, final
+proposal, secret seed, or hidden result.
+
 ## Freeze an offline combined Rust architecture with clean native bindings
 
 The [combined first-party Rust native-build protocol](../oracle/phase2/RUST-COMBINED-SOURCE-BUILD-V28.md)
