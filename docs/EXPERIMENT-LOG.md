@@ -111,6 +111,23 @@ any variant or running any candidate. The exact failure remains preserved;
 a separately frozen successor must correct the source-surface check without
 weakening the no-external-engine protection.
 
+## Freeze the separate correction for 88 Rust expansion differences
+
+The [independent Rust expansion and buffer-probe correction](../oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md)
+targets the remaining **88** distinct changing-buffer differences: **56**
+missing outer length checks and **32** unnecessary subject reacquisitions
+during failed template expansion. Another **32** length-check cases overlap
+the separately counted replacement-order failures and are never added to
+the denominator.
+
+The first-party native bridge checks outer length only for the exact trailing
+escape error, preserving original error positions. It also validates a
+buffer-exported template before reading capture groups. Four ordinary and
+clean-environment source gates pass **78** hostile controls without reading
+candidate files, archives, hidden cases, or native binaries. Candidate
+correctness, timing, and qualification remain **NOT MEASURED** until a
+separately authorized build and complete retest.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
