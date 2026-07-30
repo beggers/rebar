@@ -167,8 +167,12 @@ builds must produce identical native engines and bridges without external
 packages or regular-expression implementations.
 
 All four ordinary and clean-environment source-only safety gates pass.
-The historical **1,352** differences remain preserved; the corrected
-architecture's actual build, original-suite result, wider-suite result,
+The [actual fully corrected optimized Rust build](../oracle/phase2/evidence/native-source-build-v30-rust-phase2-v30-rust-complete-semantic-source-root-provenance-publication-receipt.json)
+completed **28** authenticated compiler and native-inspection processes in
+two completely independent offline source trees. Both engine binaries and
+both corrected bridge binaries were identical, with **zero external Cargo
+dependencies**. The historical **1,352** differences remain preserved;
+the corrected architecture's original-suite result, wider-suite result,
 runtime no-delegation, and speed are **NOT MEASURED**.
 
 ## Freeze the combined fast-search and reusable-workspace architecture
