@@ -28,7 +28,7 @@ unfinished group are never counted as passing.
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
 | Rust | 14,725 / 31,237; 47.1% | FAIL; at least 2,018 differences; 1,024 fewer verified checks; 16 cleanup errors in its failed worker. |
 | C | 13,606 / 31,237; 43.6% | FAIL; at least 492 observed differences; six groups did not finish. |
-| Zig | 4,607 / 31,237; 14.7% | FAIL; at least 1,700 differences; cleanup errors in all 13 workers; one group did not finish. |
+| Zig | 4,607 / 31,237; 14.7% | FAIL; at least 1,700 differences; cleanup errors in all 13 workers; the corrected rerun stopped before matching. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
 | Go | NOT MEASURED | FAIL; 4,518 observed differences and four worker failures. |
 | Fortran | NOT MEASURED | FAIL; independent builds disagree; matching was not tested. |
@@ -86,7 +86,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Six independently authored engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and the [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Latest real Rust run, regression, and complete preserved failure](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v22-rust-capture-shape-root-provenance-original-p0-v22-failures-publication-receipt.json).
 - [Latest real Zig run and complete observed failure](oracle/phase2/evidence/repaired-zig-original-campaign-v13-phase2-v13-zig-guard-clean-lifetime-v1-original-p0-v13-failures-publication-receipt.json).
-- [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [next full Zig correctness run; not yet executed](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V14.md).
+- [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).
 - [Preserved Rust activation failure](oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json).
 - [Expanded, unopened speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).

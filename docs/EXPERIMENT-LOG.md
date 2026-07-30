@@ -8,6 +8,33 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the actual setter-safe Zig controller failure
+
+The [complete version-14 pre-publication failure](../oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json)
+records exactly **one** real attempt to execute the separately frozen
+and pushed Zig correctness procedure. The official locale, all
+required caller pins, all original owner hashes, and the complete
+error are preserved. The source-verification wall remained active
+during campaign preparation and rejected a required native,
+recovery, or write operation:
+
+```text
+actual three-role campaign/recovery failed: CampaignError: source-only wall rejected unlisted, native, archive, holdout or write open
+```
+
+The corrected engine produced **no published matching result**. Its
+passing-case count, failure count, workers, and cleanup behavior are
+**NOT MEASURED**. No successful or failed matching archive was
+created; the recovery directory was never created. A separate,
+complete physical check verified that all **3** original Zig files
+still have their exact pre-run contents, owner, mode, and inode.
+
+The existing observed Zig score remains **4,607 / 31,237**, with at
+least **1,700** prior differences and cleanup warnings in all **13**
+prior workers. The new infrastructure failure is not a matching
+pass, a new semantic difference, or proof that cleanup is fixed.
+The final holdout remains unopened.
+
 ## Freeze a narrower first-party Rust replacement-buffer correction
 
 The [version-2 Rust buffer correction](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md)
@@ -52,8 +79,9 @@ The previous actual outcome remains **4,607 / 31,237**, with at
 least **1,700** measured differences, warnings in all **13** workers,
 and an unfinished child-interpreter group. Corrected matching,
 corrected cleanup, and interpreter behavior are **NOT MEASURED**
-until the separately authorized real version-14 run. The performance
-holdout remains unopened; no candidate or winner is qualified.
+after the separately recorded version-14 controller failure above.
+The performance holdout remains unopened; no candidate or winner is
+qualified.
 
 ## Freeze 48,416 additional real-world Python input questions
 

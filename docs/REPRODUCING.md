@@ -160,8 +160,10 @@ corrected Zig engine.
 Version 14 freezes a full **31,237**-case test of the independently
 written Zig engine with the previously frozen shutdown correction.
 It preserves the actual **4,607** passing checks, all **13** workers'
-warnings, and all known previous failures. The new engine has
-**NOT RUN**.
+warnings, and all known previous failures. Its one actual attempt
+[stopped during preparation](../oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json)
+before a matching result could be published. The corrected engine's
+compatibility and warning count are **NOT MEASURED**.
 
 Independently verify every previous campaign, correction, native-build
 receipt, and real interpreter-safety boundary in a clean environment:
