@@ -255,6 +255,11 @@ previously observed reusable allocation targets and the full **31,237-case**
 original denominator. Actual compilation, correctness, and speed have not
 yet been measured for this standalone architecture.
 
+The [first actual reusable-workspace build attempt](../oracle/phase2/evidence/native-source-build-v29-rust-workspace-prepublication-failure.json)
+started its offline build but rejected private native-artifact authentication
+before durable publication or candidate execution. The complete rejection is
+preserved; standalone compatibility and performance remain **NOT MEASURED**.
+
 ## Freeze the independently accelerated Rust search-engine build
 
 The [version-26 first-party Rust search build](../oracle/phase2/RUST-ANCHOR-SOURCE-BUILD-V26.md)
